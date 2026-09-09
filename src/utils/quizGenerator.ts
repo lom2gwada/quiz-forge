@@ -94,7 +94,9 @@ export function parseCsv(text: string): Row[] {
 // --- Inférence du schéma --------------------------------------------------
 const hasValue = (v: string | undefined): boolean => v != null && String(v).trim() !== ''
 const asNumber = (v: string): number => Number(String(v).replace(/[\s ]/g, '').replace(',', '.'))
-const isNumeric = (v: string): boolean => hasValue(v) && Number.isFinite(asNumber(v))
+// Un `+` en tête (indicatif téléphonique « +1 268 », « +590 ») n'est pas une quantité :
+// on l'exclut du kind « number » pour éviter estimation / classement absurdes.
+const isNumeric = (v: string): boolean => hasValue(v) && !/^\s*\+/.test(v) && Number.isFinite(asNumber(v))
 const isUrl = (v: string): boolean => /^https?:\/\//i.test(v.trim())
 const looksLikeImage = (v: string): boolean => /\.(svg|png|jpe?g|webp|gif|avif)(\?|$)/i.test(v) || /filepath/i.test(v)
 const IMAGE_HEADER = /drapeau|flag|image|photo|logo|blason|armoiries|embl/i
@@ -102,6 +104,8 @@ const IMAGE_HEADER = /drapeau|flag|image|photo|logo|blason|armoiries|embl/i
 const ARTICLE_VALUES = new Set(['', 'le', 'la', 'les', "l'"])
 const SUBJECT_HINTS = ['nom', 'name', 'pays', 'sujet', 'titre', 'title', 'ville', 'city', 'entité', 'entite']
 const UNIT_SUFFIXES: Array<[RegExp, string]> = [
+  [/_hab_km2$/i, 'hab/km²'],
+  [/_mds_usd$/i, 'Mds $'],
   [/_km2$/i, 'km²'],
   [/_m$/i, 'm'],
   [/_pct$/i, '%'],

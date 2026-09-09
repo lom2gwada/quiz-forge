@@ -54,6 +54,18 @@ describe('inferSchema', () => {
     expect(schema.columns.drapeau.include).toBe(true)
   })
 
+  it('reads the enriched columns without mis-typing phone codes as numbers', () => {
+    expect(schema.columns.pib_mds_usd.kind).toBe('number')
+    expect(schema.columns.pib_mds_usd.label).toBe('pib')
+    expect(schema.columns.pib_mds_usd.unit).toBe('Mds $')
+    expect(schema.columns.densite_hab_km2.unit).toBe('hab/km²')
+    expect(schema.columns.densite_hab_km2.label).toBe('densite')
+    expect(schema.columns.indicatif_telephonique.kind).toBe('string')
+    expect(schema.columns.domaine_internet.kind).toBe('string')
+    expect(schema.columns.domaine_internet.unique).toBe(true)
+    expect(schema.columns.president.include).toBe(true)
+  })
+
   it('honours a subject column override', () => {
     expect(inferSchema(caribbeanRows, { subjectColumn: 'capitale' }).subjectColumn).toBe('capitale')
   })
