@@ -201,7 +201,7 @@ const CFG = {
   qcmBackward: { choices: 3, points: 2, difficulty: 'medium' as const },
   image: { choices: 3, points: 2, difficulty: 'medium' as const },
   boolean: { points: 1, difficulty: 'easy' as const },
-  cloze: { points: 2, difficulty: 'medium' as const },
+  cloze: { points: 3, difficulty: 'hard' as const },
   estimate: { points: 2, difficulty: 'medium' as const },
   order: { groupSize: 4, points: 3, difficulty: 'hard' as const },
   matching: { groupSize: 4, points: 2, difficulty: 'medium' as const },
