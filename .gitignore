@@ -10,10 +10,6 @@ coverage/
 # sortie par défaut du générateur de quiz (généré, non versionné)
 scripts/quiz-gen/caribbean-quiz.json
 
-# ancien nom du jeu de données, renommé en caribbean.csv ; fichier orphelin encore
-# verrouillé sur le poste au moment du renommage — à supprimer physiquement plus tard
-scripts/quiz-gen/caraibes.csv
-
 .vscode/*
 !.vscode/extensions.json
 .idea
