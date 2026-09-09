@@ -1,0 +1,105 @@
+{
+  "dataset": "caraibes.csv",
+  "delimiter": ";",
+  "theme": { "id": "caraibes", "label": "Pays des Caraïbes" },
+  "metadata": {
+    "title": "Pays des Caraïbes",
+    "author": "Générateur Oliver Quiz",
+    "description": "Quiz généré automatiquement à partir d'un tableau de 13 États souverains des Caraïbes (capitale, population, superficie, point culminant, monnaie, indépendance). Chaque partie tire un sous-ensemble de questions au hasard."
+  },
+
+  "subject": { "column": "pays", "articleColumn": "article" },
+
+  "columns": {
+    "capitale": {
+      "kind": "string",
+      "unique": true,
+      "label": "la capitale",
+      "matchingLabel": "sa capitale",
+      "templates": {
+        "forward": "Quelle est la capitale {de_sujet} ?",
+        "backward": "Quel pays a pour capitale {valeur} ?"
+      },
+      "explanation": "La capitale {de_sujet} est {valeur}.",
+      "ask": ["qcm", "qcm_backward", "matching"]
+    },
+    "point_culminant": {
+      "kind": "string",
+      "unique": true,
+      "label": "le point culminant",
+      "matchingLabel": "son point culminant",
+      "templates": {
+        "forward": "Quel est le point culminant {de_sujet} ?"
+      },
+      "explanation": "Le point culminant {de_sujet} est {valeur} ({ligne.altitude_m} m).",
+      "ask": ["qcm", "matching"]
+    },
+    "monnaie": {
+      "kind": "string",
+      "unique": false,
+      "label": "la monnaie",
+      "templates": {
+        "forward": "Quelle est la monnaie {de_sujet} ?"
+      },
+      "explanation": "La monnaie {de_sujet} est {valeur}. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
+      "ask": ["qcm"]
+    },
+    "langues": {
+      "kind": "string",
+      "multivalue": "|",
+      "label": "la langue officielle",
+      "templates": {
+        "forward": "Quelle est la langue officielle {de_sujet} ?",
+        "forwardMulti": "Quelles sont les langues officielles {de_sujet} ? (plusieurs réponses)"
+      },
+      "explanation": "La langue officielle {de_sujet} est {valeur}.",
+      "explanationMulti": "Les langues officielles {de_sujet} sont : {valeur}.",
+      "ask": ["qcm"]
+    },
+    "population": {
+      "kind": "number",
+      "unit": "habitants",
+      "label": "la population",
+      "estimateTemplate": "Estimez la population {de_sujet}.",
+      "explanation": "{nom_sujet} compte environ {valeur} habitants.",
+      "ask": ["estimate", "order"],
+      "order": { "question": "Classez ces pays du plus peuplé au moins peuplé.", "direction": "desc" }
+    },
+    "superficie_km2": {
+      "kind": "number",
+      "unit": "km²",
+      "label": "la superficie",
+      "estimateTemplate": "Estimez la superficie {de_sujet} (en km²).",
+      "explanation": "{nom_sujet} couvre environ {valeur} km².",
+      "ask": ["estimate", "order"],
+      "order": { "question": "Classez ces pays du plus vaste au plus petit.", "direction": "desc" }
+    },
+    "altitude_m": {
+      "kind": "number",
+      "unit": "m",
+      "label": "l'altitude du point culminant",
+      "estimateTemplate": "À quelle altitude culmine {ligne.point_culminant} (en m) ?",
+      "explanation": "{ligne.point_culminant}, point culminant {de_sujet}, atteint {valeur} m.",
+      "ask": ["estimate", "order"],
+      "order": { "question": "Classez ces sommets du plus haut au plus bas.", "direction": "desc", "itemFrom": "point_culminant" }
+    },
+    "independance": {
+      "kind": "number",
+      "isYear": true,
+      "label": "l'année d'indépendance",
+      "estimateTemplate": "En quelle année a eu lieu l'indépendance {de_sujet} ?",
+      "explanation": "L'indépendance {de_sujet} a été proclamée en {valeur}.",
+      "ask": ["estimate", "order"],
+      "order": { "question": "Classez ces pays du plus anciennement au plus récemment indépendant.", "direction": "asc" }
+    }
+  },
+
+  "generation": {
+    "qcm": { "perColumn": 4, "choices": 3, "points": 1, "difficulty": "easy" },
+    "qcm_multi": { "perColumn": 3, "options": 5, "points": 2, "difficulty": "medium" },
+    "qcm_backward": { "perColumn": 3, "choices": 3, "points": 2, "difficulty": "medium" },
+    "estimate": { "perColumn": 3, "points": 2, "difficulty": "medium" },
+    "order": { "perColumn": 2, "items": 4, "points": 3, "difficulty": "hard" },
+    "matching": { "perColumn": 1, "items": 4, "points": 2, "difficulty": "medium" }
+  }
+}
