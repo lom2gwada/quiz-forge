@@ -244,10 +244,11 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
   const questions: Question[] = []
   let counter = 0
   const nextId = (): string => `q-${String((counter += 1)).padStart(3, '0')}`
-  const themeId = 'dataset'
 
   for (const [col, spec] of Object.entries(schema.columns)) {
     if (!spec.include) continue
+    // Un thème par colonne : le joueur filtre « capitale », « population »… depuis l'accueil.
+    const themeId = col
     const sep = spec.multivalueSeparator
     const atomsOf = (row: Row): string[] => {
       if (!hasValue(row[col])) return []
@@ -423,6 +424,13 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     }
   }
 
+  // Les thèmes proposés au joueur = les colonnes qui ont effectivement produit des questions,
+  // dans l'ordre du tableau source.
+  const used = new Set(questions.map((q) => q.theme))
+  const themes = Object.entries(schema.columns)
+    .filter(([col]) => used.has(col))
+    .map(([col, spec]) => ({ id: col, label: capitalize(spec.label) }))
+
   return {
     version: '1.0',
     metadata: {
@@ -431,7 +439,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       createdAt: new Date().toISOString().slice(0, 10),
       description: `${formatNumber(questions.length)} questions générées à partir de ${formatNumber(rows.length)} ${noun}s (seed « ${opts.seed} »).`,
     },
-    themes: [{ id: themeId, label: schema.title }],
+    themes,
     questions: shuffle(questions),
   }
 }

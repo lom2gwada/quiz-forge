@@ -41,6 +41,14 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
     }))
     .filter((slice) => slice.value > 0)
 
+  const byDifficulty = DIFFICULTIES
+    .map((difficulty) => ({
+      label: DIFFICULTY_LABELS[difficulty],
+      value: quiz.questions.filter((question) => question.difficulty === difficulty).length,
+      color: DIFFICULTY_COLORS[difficulty],
+    }))
+    .filter((slice) => slice.value > 0)
+
   return <section className="stats-page">
     <div className="stats-header">
       <h2>Quiz</h2>
@@ -58,18 +66,7 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
     <div className="stats-grid">
       <PieChart title={`Thèmes — ${formatNumber(quiz.questions.length)} questions`} data={byTheme} />
       <PieChart title={`Types — ${formatNumber(quiz.questions.length)} questions`} data={byType} />
-      {quiz.themes.map((theme) => {
-        const themeQuestions = quiz.questions.filter((question) => question.theme === theme.id)
-        if (!themeQuestions.length) return null
-        const byDifficulty = DIFFICULTIES
-          .map((difficulty) => ({
-            label: DIFFICULTY_LABELS[difficulty],
-            value: themeQuestions.filter((question) => question.difficulty === difficulty).length,
-            color: DIFFICULTY_COLORS[difficulty],
-          }))
-          .filter((slice) => slice.value > 0)
-        return <PieChart key={theme.id} title={`${theme.label} — ${formatNumber(themeQuestions.length)} questions`} data={byDifficulty} />
-      })}
+      <PieChart title={`Difficulté — ${formatNumber(quiz.questions.length)} questions`} data={byDifficulty} />
     </div>
     {dataset && <DataTable rows={dataset.rows} schema={dataset.schema} />}
   </section>

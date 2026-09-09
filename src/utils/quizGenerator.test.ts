@@ -80,6 +80,19 @@ describe('generateQuiz', () => {
     expect(quiz.questions.length).toBeGreaterThan(15)
   })
 
+  it('exposes one theme per column that produced questions', () => {
+    const cols = new Set(Object.entries(schema.columns).filter(([, s]) => s.include).map(([c]) => c))
+    const themeIds = new Set(quiz.themes.map((t) => t.id))
+    expect(themeIds.has('capitale')).toBe(true)
+    expect(themeIds.has('population')).toBe(true)
+    expect(themeIds.has('drapeau')).toBe(true)
+    expect(themeIds.has('pays')).toBe(false)
+    // chaque question pointe vers un thème listé, et chaque thème est une colonne incluse
+    for (const q of quiz.questions) expect(themeIds.has(q.theme)).toBe(true)
+    for (const id of themeIds) expect(cols.has(id)).toBe(true)
+    expect(quiz.themes.find((t) => t.id === 'pib_mds_usd')?.label).toBe('Pib')
+  })
+
   it('is deterministic for a given seed', () => {
     expect(generateQuiz(caribbeanRows, schema, { seed: 'test' })).toEqual(quiz)
     expect(generateQuiz(caribbeanRows, schema, { seed: 'other' })).not.toEqual(quiz)
