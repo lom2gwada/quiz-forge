@@ -88,7 +88,7 @@ function parseQuestion(value: unknown): Question {
     if (content.min >= content.max || content.target < content.min || content.target > content.max || content.tolerance < 0) {
       throw new Error(`Question « ${id} » : bornes ou tolérance du curseur invalides.`)
     }
-    return { ...base, type, content: { min: content.min, max: content.max, step: content.step, target: content.target, tolerance: content.tolerance, unit: content.unit as string | undefined } }
+    return { ...base, type, content: { min: content.min, max: content.max, step: content.step, target: content.target, tolerance: content.tolerance, unit: content.unit as string | undefined, isYear: content.isYear === true } }
   }
   throw new Error(`Le contenu de la question « ${id} » ne correspond pas au type « ${String(type)} ».`)
 }

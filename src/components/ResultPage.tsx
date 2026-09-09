@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { AnswersByQuestion, Difficulty, Question, Theme } from '../types/quiz'
+import { formatNumericValue } from '../utils/number'
 import { formatDuration } from '../utils/time'
 import { playFinish, playVictory } from '../utils/sound'
 import { Confetti } from './Confetti'
@@ -137,7 +138,7 @@ export function userAnswer(question: Question, answer: AnswersByQuestion[string]
   if (question.type === 'numeric') {
     if (typeof answer !== 'string' || answer === '') return 'Aucune réponse'
     const suffix = question.content.unit ? ` ${question.content.unit}` : ''
-    return `${answer}${suffix}`
+    return `${formatNumericValue(Number(answer), question.content.isYear)}${suffix}`
   }
   if (!Array.isArray(answer) || !answer.length) return 'Aucune réponse'
   if (question.type === 'ordering') return answer.map((id) => question.content.items.find((item) => item.id === id)?.label).join(' → ')
@@ -157,9 +158,10 @@ export function userAnswer(question: Question, answer: AnswersByQuestion[string]
 export function correctAnswer(question: Question): string {
   if (question.type === 'text' || question.type === 'cloze') return question.content.expectedAnswers.join(' ou ')
   if (question.type === 'numeric') {
-    const { target, tolerance, unit } = question.content
+    const { target, tolerance, unit, isYear } = question.content
     const suffix = unit ? ` ${unit}` : ''
-    return tolerance > 0 ? `${target}${suffix} (± ${tolerance}${suffix})` : `${target}${suffix}`
+    const shown = `${formatNumericValue(target, isYear)}${suffix}`
+    return tolerance > 0 ? `${shown} (± ${formatNumericValue(tolerance, isYear)}${suffix})` : shown
   }
   if (question.type === 'ordering') return question.content.correctOrder.map((id) => question.content.items.find((item) => item.id === id)?.label).join(' → ')
   if (question.type === 'boolean') return question.content.isTrue ? 'Vrai' : 'Faux'

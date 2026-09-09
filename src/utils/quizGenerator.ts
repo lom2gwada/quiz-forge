@@ -1,4 +1,5 @@
 import type { AnswerOption, MatchingItem, OrderingItem, Question, Quiz } from '../types/quiz'
+import { formatNumber, formatNumericValue } from './number'
 
 // Génère un quiz jouable à partir de lignes tabulaires (un CSV, plus tard une base de données)
 // et d'un schéma décrivant les colonnes. Tout est pur et tourne dans le navigateur.
@@ -166,7 +167,6 @@ function niceStep(span: number): number {
   return [1, 2, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag
 }
 const roundTo = (v: number, step: number): number => Math.round(v / step) * step
-const fmtNumber = (n: number): string => new Intl.NumberFormat('fr-FR').format(n)
 const capitalize = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s)
 const humanList = (items: string[]): string =>
   items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`
@@ -344,8 +344,8 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           question: spec.isYear
             ? `En quelle année : ${spec.label} ${de(row)} ?`
             : `Estimez : ${spec.label} ${de(row)}${spec.unit ? ` (en ${spec.unit})` : ''}.`,
-          explanation: `${Label} ${de(row)} : ${spec.isYear ? String(target) : fmtNumber(target)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}.`,
-          content: { min, max, step, target, tolerance, ...(spec.unit && !spec.isYear ? { unit: spec.unit } : {}) },
+          explanation: `${Label} ${de(row)} : ${formatNumericValue(target, spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}.`,
+          content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(spec.unit && !spec.isYear ? { unit: spec.unit } : {}) },
         })
       }
     }
@@ -363,7 +363,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           id: nextId(), type: 'ordering', theme: themeId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
           question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
           explanation: sorted
-            .map((r) => `${nameOf(r)} (${fmtNumber(asNumber(r[col]))}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
+            .map((r) => `${nameOf(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
             .join(' › '),
           content: {
             items: shuffle(group).map<OrderingItem>((r) => ({ id: idOf(r), label: nameOf(r) })),
@@ -398,7 +398,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       title: schema.title,
       author: 'Quiz Forge',
       createdAt: new Date().toISOString().slice(0, 10),
-      description: `${questions.length} questions générées à partir de ${rows.length} ${noun}s (seed « ${opts.seed} »).`,
+      description: `${formatNumber(questions.length)} questions générées à partir de ${formatNumber(rows.length)} ${noun}s (seed « ${opts.seed} »).`,
     },
     themes: [{ id: themeId, label: schema.title }],
     questions: shuffle(questions),

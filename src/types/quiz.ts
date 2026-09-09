@@ -63,6 +63,8 @@ export interface NumericContent {
   target: number
   tolerance: number
   unit?: string
+  /** Une année : on n'y met pas de séparateur de milliers à l'affichage. */
+  isYear?: boolean
 }
 
 export interface BaseQuestion {

@@ -1,5 +1,6 @@
 import type { Difficulty, Question, Quiz } from '../types/quiz'
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import { formatNumber } from '../utils/number'
 import { DataTable } from './DataTable'
 import { GeneratorPanel } from './GeneratorPanel'
 import { PieChart } from './PieChart'
@@ -53,8 +54,8 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
     {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} onGenerate={onGenerate} error={genError} />}
     <h3 className="stats-group-title">Répartition des questions</h3>
     <div className="stats-grid">
-      <PieChart title={`Thèmes — ${quiz.questions.length} questions`} data={byTheme} />
-      <PieChart title={`Types — ${quiz.questions.length} questions`} data={byType} />
+      <PieChart title={`Thèmes — ${formatNumber(quiz.questions.length)} questions`} data={byTheme} />
+      <PieChart title={`Types — ${formatNumber(quiz.questions.length)} questions`} data={byType} />
       {quiz.themes.map((theme) => {
         const themeQuestions = quiz.questions.filter((question) => question.theme === theme.id)
         if (!themeQuestions.length) return null
@@ -65,9 +66,9 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
             color: DIFFICULTY_COLORS[difficulty],
           }))
           .filter((slice) => slice.value > 0)
-        return <PieChart key={theme.id} title={`${theme.label} — ${themeQuestions.length} questions`} data={byDifficulty} />
+        return <PieChart key={theme.id} title={`${theme.label} — ${formatNumber(themeQuestions.length)} questions`} data={byDifficulty} />
       })}
     </div>
-    {dataset && <DataTable rows={dataset.rows} />}
+    {dataset && <DataTable rows={dataset.rows} schema={dataset.schema} />}
   </section>
 }
