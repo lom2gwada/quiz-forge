@@ -1,5 +1,5 @@
 {
-  "name": "oliver-quiz",
+  "name": "quiz-forge",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -10,10 +10,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "check-images": "node scripts/check-image-links.mjs"
+    "check-images": "node scripts/check-image-links.mjs",
+    "gen": "node scripts/quiz-gen/generate.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.3",
     "@vitejs/plugin-react": "4.3.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",

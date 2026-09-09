@@ -1,7 +1,28 @@
 import type { AnswersByQuestion, Question, Theme } from '../types/quiz'
 import type { ChartGroup, MissedQuestion, QuestionResultPayload, QuestionResultRow, QuizRecords, QuizResultPayload, QuizResultRow, StatBucket } from '../types/history'
 import { isCorrect } from '../components/ResultPage'
-import { supabase } from './supabase'
+
+const QUIZ_KEY = 'quiz-forge:quiz-results'
+const QUESTION_KEY = 'quiz-forge:question-results'
+
+function readRows<T>(key: string): T[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) ?? '[]')
+    return Array.isArray(parsed) ? (parsed as T[]) : []
+  } catch {
+    return []
+  }
+}
+
+function writeRows<T>(key: string, rows: T[]): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(rows))
+  } catch {
+    /* quota dépassé ou navigation privée : l'historique n'est pas bloquant */
+  }
+}
+
+const newId = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
 function aggregate(questions: Question[], answers: AnswersByQuestion, keyOf: (question: Question) => string): Record<string, StatBucket> {
   const buckets: Record<string, StatBucket> = {}
@@ -37,14 +58,13 @@ export function buildQuizResultPayload(questions: Question[], answers: AnswersBy
 
 /** Best-effort : une partie non enregistrée ne doit jamais empêcher l'utilisateur de voir son résultat. */
 export async function saveQuizResult(payload: QuizResultPayload): Promise<void> {
-  const { error } = await supabase.from('quiz_results').insert(payload)
-  if (error) console.error("Impossible d'enregistrer le résultat du quiz.", error)
+  const rows = readRows<QuizResultRow>(QUIZ_KEY)
+  rows.unshift({ ...payload, id: newId(), created_at: new Date().toISOString() })
+  writeRows(QUIZ_KEY, rows)
 }
 
 export async function fetchQuizHistory(): Promise<QuizResultRow[]> {
-  const { data, error } = await supabase.from('quiz_results').select('*').order('created_at', { ascending: false })
-  if (error) throw error
-  return data ?? []
+  return readRows<QuizResultRow>(QUIZ_KEY).sort((a, b) => b.created_at.localeCompare(a.created_at))
 }
 
 /** Une ligne par question de la partie, pour pouvoir repérer plus tard les questions ratées de façon récurrente. */
@@ -60,14 +80,14 @@ export function buildQuestionResultPayloads(questions: Question[], answers: Answ
 /** Best-effort, comme `saveQuizResult`. */
 export async function saveQuestionResults(payloads: QuestionResultPayload[]): Promise<void> {
   if (!payloads.length) return
-  const { error } = await supabase.from('question_results').insert(payloads)
-  if (error) console.error("Impossible d'enregistrer le détail des réponses.", error)
+  const rows = readRows<QuestionResultRow>(QUESTION_KEY)
+  const created_at = new Date().toISOString()
+  rows.push(...payloads.map((payload) => ({ ...payload, id: newId(), created_at })))
+  writeRows(QUESTION_KEY, rows)
 }
 
 export async function fetchQuestionResults(): Promise<QuestionResultRow[]> {
-  const { data, error } = await supabase.from('question_results').select('*')
-  if (error) throw error
-  return data ?? []
+  return readRows<QuestionResultRow>(QUESTION_KEY)
 }
 
 /** Regroupe les résultats par question pour un quiz donné, ne garde que celles ratées au moins une fois, triées de la plus problématique à la moins. */

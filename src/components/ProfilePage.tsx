@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { Profile, Theme } from '../types/profile'
 import { playClick } from '../utils/sound'
-import { supabase } from '../utils/supabase'
 import { applyTheme } from '../utils/theme'
 
 export const AVATAR_OPTIONS = ['🙂', '😎', '🤓', '🦊', '🐱', '🐶', '🦁', '🐼', '🚀', '🎯', '⭐', '🔥']
@@ -11,10 +10,9 @@ interface ProfilePageProps {
   onBack: () => void
   onSave: (profile: Profile) => Promise<void>
   onViewHistory: () => void
-  onViewLeaderboard: () => void
 }
 
-export function ProfilePage({ profile, onBack, onSave, onViewHistory, onViewLeaderboard }: ProfilePageProps) {
+export function ProfilePage({ profile, onBack, onSave, onViewHistory }: ProfilePageProps) {
   const [pseudo, setPseudo] = useState(profile?.pseudo ?? '')
   const [avatar, setAvatar] = useState(profile?.avatar ?? AVATAR_OPTIONS[0])
   const [theme, setTheme] = useState<Theme>(profile?.theme ?? 'dark')
@@ -23,12 +21,6 @@ export function ProfilePage({ profile, onBack, onSave, onViewHistory, onViewLead
   const [saved, setSaved] = useState(false)
 
   const previewTheme = (next: Theme) => { playClick(); setTheme(next); applyTheme(next); setSaved(false) }
-
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [passwordError, setPasswordError] = useState('')
-  const [passwordSaving, setPasswordSaving] = useState(false)
-  const [passwordSaved, setPasswordSaved] = useState(false)
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -43,22 +35,6 @@ export function ProfilePage({ profile, onBack, onSave, onViewHistory, onViewLead
     }
   }
 
-  const submitPassword = async (event: React.FormEvent) => {
-    event.preventDefault()
-    if (password !== confirmPassword) {
-      setPasswordError('Les mots de passe ne correspondent pas.')
-      return
-    }
-    setPasswordSaving(true); setPasswordError(''); setPasswordSaved(false)
-    const { error: updateError } = await supabase.auth.updateUser({ password })
-    setPasswordSaving(false)
-    if (updateError) {
-      setPasswordError('Impossible de modifier le mot de passe. Réessayez.')
-      return
-    }
-    setPassword(''); setConfirmPassword(''); setPasswordSaved(true)
-  }
-
   return <section className="stats-page">
     <div className="stats-header">
       <h2>Profil</h2>
@@ -66,7 +42,6 @@ export function ProfilePage({ profile, onBack, onSave, onViewHistory, onViewLead
     </div>
     <div className="nav-links">
       <button type="button" className="secondary" onClick={onViewHistory}>🕓 Historique</button>
-      <button type="button" className="secondary" onClick={onViewLeaderboard}>🏆 Classement</button>
     </div>
     <form className="profile-form" onSubmit={submit}>
       <label>Pseudo
@@ -97,19 +72,6 @@ export function ProfilePage({ profile, onBack, onSave, onViewHistory, onViewLead
       {error && <p className="alert" role="alert">{error}</p>}
       {saved && !error && <p className="profile-saved">Profil enregistré ✓</p>}
       <button type="submit" disabled={saving || !pseudo.trim()}>{saving ? 'Enregistrement…' : 'Enregistrer'}</button>
-    </form>
-
-    <h3 className="stats-group-title profile-section-title">Mot de passe</h3>
-    <form className="profile-form" onSubmit={submitPassword}>
-      <label>Nouveau mot de passe
-        <input type="password" value={password} onChange={(event) => { setPassword(event.target.value); setPasswordSaved(false) }} required minLength={6} autoComplete="new-password" />
-      </label>
-      <label>Confirmer le mot de passe
-        <input type="password" value={confirmPassword} onChange={(event) => { setConfirmPassword(event.target.value); setPasswordSaved(false) }} required minLength={6} autoComplete="new-password" />
-      </label>
-      {passwordError && <p className="alert" role="alert">{passwordError}</p>}
-      {passwordSaved && !passwordError && <p className="profile-saved">Mot de passe modifié ✓</p>}
-      <button type="submit" disabled={passwordSaving}>{passwordSaving ? 'Modification…' : 'Modifier le mot de passe'}</button>
     </form>
   </section>
 }

@@ -1,14 +1,18 @@
-# Oliver Quiz
+# Quiz Forge
 
-Application web de quiz construite avec React, TypeScript et Vite. Elle permet de s'entraîner sur des questions à choix multiples, du code, du texte libre, du réordonnancement, du vrai/faux, du texte à trous, de l'association ou de l'estimation numérique, filtrées par thème et niveau de difficulté.
+Application web de quiz construite avec React, TypeScript et Vite, dérivée d'[oliver-quiz](https://github.com/lom2gwada/oliver-quiz). Elle partage le même moteur de jeu (huit types de questions, filtres, tirage aléatoire, historique) mais se concentre sur la **génération automatique de quiz** à partir d'un tableau de données.
+
+L'idée : au lieu d'écrire chaque question à la main, on décrit un jeu de données (CSV) et un schéma, et le générateur produit un quiz complet — QCM directs et inversés, estimations numériques, classements, associations, QCM à réponses multiples.
 
 ## Fonctionnalités
 
-- Huit types de questions : QCM, code, texte libre, ordonnancement, vrai/faux, texte à trous, association et estimation numérique (`src/components`)
+- Sept types de questions jouables : QCM, texte libre, ordonnancement, vrai/faux, texte à trous, association et estimation numérique (`src/components`)
+- Génération de quiz à partir d'un CSV + un schéma (`scripts/quiz-gen/`)
 - Filtrage des questions par thème et par difficulté (`src/components/FilterPanel.tsx`)
 - Tirage aléatoire d'un nombre de questions choisi par l'utilisateur
-- Import d'un quiz personnalisé au format JSON, validé avant utilisation (`src/utils/quizValidation.ts`)
-- Un quiz d'exemple est fourni dans [`src/data/sample-quiz.json`](src/data/sample-quiz.json)
+- Import d'un quiz au format JSON, validé avant utilisation (`src/utils/quizValidation.ts`)
+- Historique des parties et profil (pseudo / avatar / thème) stockés localement (`localStorage`), sans backend
+- Quiz d'exemple : [`src/data/sample-quiz.json`](src/data/sample-quiz.json), généré depuis [`scripts/quiz-gen/caraibes.csv`](scripts/quiz-gen/caraibes.csv)
 
 ## Prérequis
 
@@ -20,19 +24,17 @@ Application web de quiz construite avec React, TypeScript et Vite. Elle permet d
 npm install
 ```
 
-## Authentification
+Pas de variables d'environnement, pas de service externe : le projet tourne entièrement dans le navigateur.
 
-L'accès au site est protégé par [Supabase Auth](https://supabase.com/docs/guides/auth) (connexion par email/mot de passe uniquement, pas d'inscription publique).
+## Génération d'un quiz
 
-1. Crée un projet sur [supabase.com](https://supabase.com).
-2. Dans **Authentication > Users**, crée manuellement un compte pour chaque personne autorisée.
-3. Copie `.env.local.example` vers `.env.local` et renseigne l'URL du projet et la clé `anon` (**Project Settings > API**) :
-   ```bash
-   cp .env.local.example .env.local
-   ```
-4. Pour un déploiement (ex. GitHub Actions), définis `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` comme secrets du dépôt et passe-les à l'étape de build.
+```bash
+npm run gen -- scripts/quiz-gen/caraibes.schema.json --seed maPartie --out src/data/sample-quiz.json
+```
 
-La clé `anon` est prévue pour être publique (elle finit de toute façon dans le bundle JS envoyé au navigateur) ; elle n'accorde par elle-même aucun accès aux données, elle sert uniquement à parler à l'API Supabase.
+- Le **CSV** contient une ligne par entité (pays, élément, film…) et une colonne par attribut. Une cellule peut porter plusieurs valeurs séparées par `|` (→ QCM à réponses multiples).
+- Le **schéma JSON** décrit chaque colonne : nature (`string` / `number`), cardinalité (`unique`), gabarits de phrase, et quels types de questions elle alimente (`ask`). C'est lui qui empêche les questions ambiguës.
+- Le **seed** rend le tirage reproductible ; il est inscrit dans `metadata.seed` du quiz généré.
 
 ## Scripts disponibles
 
@@ -41,8 +43,8 @@ La clé `anon` est prévue pour être publique (elle finit de toute façon dans 
 | `npm run dev`     | Démarre le serveur de développement Vite           |
 | `npm run build`   | Vérifie les types puis génère le build de production |
 | `npm run preview` | Prévisualise le build de production en local       |
+| `npm run gen`     | Génère un quiz depuis un CSV + un schéma           |
 | `npm test`        | Lance les tests unitaires (Vitest)                 |
-| `npm run test:watch` | Lance les tests unitaires en mode watch         |
 | `npm run test:coverage` | Lance les tests avec un rapport de couverture |
 
 ## Format d'un quiz JSON

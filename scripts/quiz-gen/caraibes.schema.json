@@ -4,7 +4,7 @@
   "theme": { "id": "caraibes", "label": "Pays des Caraïbes" },
   "metadata": {
     "title": "Pays des Caraïbes",
-    "author": "Générateur Oliver Quiz",
+    "author": "Quiz Forge",
     "description": "Quiz généré automatiquement à partir d'un tableau de 13 États souverains des Caraïbes (capitale, population, superficie, point culminant, monnaie, indépendance). Chaque partie tire un sous-ensemble de questions au hasard."
   },
 
