@@ -113,6 +113,7 @@ export default function App() {
     if (!file) return
     try {
       applyQuiz(parseQuiz(JSON.parse(await file.text())))
+      setDataset(null) // un quiz JSON importé n'a pas de données source à afficher/éditer
       setFileError('')
     } catch (error) {
       setFileError(error instanceof Error ? error.message : 'Fichier JSON invalide.')

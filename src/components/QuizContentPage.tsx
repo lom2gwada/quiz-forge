@@ -1,5 +1,6 @@
 import type { Difficulty, Question, Quiz } from '../types/quiz'
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import { DataTable } from './DataTable'
 import { GeneratorPanel } from './GeneratorPanel'
 import { PieChart } from './PieChart'
 import { QuestionImage } from './QuestionImage'
@@ -53,6 +54,7 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
       {fileError && <p className="alert" role="alert">{fileError}</p>}
     </div>
     {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} onGenerate={onGenerate} error={genError} />}
+    {dataset && <DataTable rows={dataset.rows} />}
     <h3 className="stats-group-title">Répartition des questions</h3>
     <div className="stats-grid">
       <PieChart title={`Thèmes — ${quiz.questions.length} questions`} data={byTheme} />
