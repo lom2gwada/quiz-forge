@@ -192,11 +192,15 @@ for (const [col, def] of Object.entries(schema.columns)) {
   }
 
   // ---- Classement (ordering) ----
-  if (ask.has('order') && def.order && numRowsWith.length >= 3) {
+  // Une seule ligne par valeur distincte : deux ex æquo rendraient l'ordre attendu ambigu.
+  const orderPool = def.order
+    ? [...new Map(shuffle(numRowsWith).map((r) => [Number(r[col]), r])).values()]
+    : []
+  if (ask.has('order') && def.order && orderPool.length >= 3) {
     const cfg = gen.order
-    const n = Math.min(cfg.items, numRowsWith.length)
+    const n = Math.min(cfg.items, orderPool.length)
     for (let k = 0; k < cfg.perColumn; k++) {
-      const chosen = sample(numRowsWith, n)
+      const chosen = sample(orderPool, n)
       const sorted = [...chosen].sort((a, b) =>
         def.order.direction === 'asc' ? Number(a[col]) - Number(b[col]) : Number(b[col]) - Number(a[col]))
       const itemCol = def.order.itemFrom ?? subjectCol
