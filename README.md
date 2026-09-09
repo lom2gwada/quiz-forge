@@ -9,7 +9,7 @@ L'idée : au lieu d'écrire chaque question à la main, on charge un CSV (une li
 - Génération de quiz **dans le navigateur** à partir d'un CSV : [`src/utils/quizGenerator.ts`](src/utils/quizGenerator.ts) (`parseCsv` → `inferSchema` → `generateQuiz`)
 - Panneau de réglage avant génération (colonne « sujet », colonnes à ignorer, séparateur multivaleur, seed) : [`src/components/GeneratorPanel.tsx`](src/components/GeneratorPanel.tsx)
 - Sept types de questions jouables : QCM, texte libre, ordonnancement, vrai/faux, texte à trous, association, estimation numérique (`src/components`)
-- Filtrage des questions par thème et par difficulté ; tirage aléatoire d'un nombre de questions choisi
+- Filtrage des questions par catégorie (une par colonne du jeu de données) et par difficulté ; tirage aléatoire d'un nombre de questions choisi
 - Import d'un quiz au format JSON, validé avant utilisation (`src/utils/quizValidation.ts`)
 - Historique des parties et profil (pseudo / avatar / thème) stockés localement (`localStorage`), sans backend
 - Jeu de données embarqué : [`src/data/caribbean.csv`](src/data/caribbean.csv) (29 pays et territoires du bassin caribéen), généré à l'ouverture

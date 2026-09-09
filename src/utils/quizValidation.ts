@@ -11,32 +11,35 @@ export function parseQuiz(value: unknown): Quiz {
   if (!isRecord(value) || typeof value.version !== 'string' || !isRecord(value.metadata)) {
     throw new Error('Racine invalide : version et metadata sont requises.')
   }
-  const { metadata, themes, questions } = value
+  const { metadata, questions } = value
+  // `themes` est l'ancien nom de `categories` : on l'accepte encore à l'import de quiz JSON existants.
+  const categories = value.categories ?? value.themes
   if (
     typeof metadata.title !== 'string' ||
     typeof metadata.author !== 'string' ||
     typeof metadata.createdAt !== 'string' ||
     (metadata.description !== undefined && typeof metadata.description !== 'string') ||
-    !Array.isArray(themes) ||
-    !themes.every((theme) => isRecord(theme) && typeof theme.id === 'string' && typeof theme.label === 'string') ||
+    !Array.isArray(categories) ||
+    !categories.every((category) => isRecord(category) && typeof category.id === 'string' && typeof category.label === 'string') ||
     !Array.isArray(questions)
   ) {
-    throw new Error('Metadata, themes ou questions ne respecte pas le schéma attendu.')
+    throw new Error('Metadata, categories ou questions ne respecte pas le schéma attendu.')
   }
 
   const parsedQuestions = questions.map(parseQuestion)
-  const themeIds = new Set(themes.map((theme) => (theme as { id: string }).id))
-  if (parsedQuestions.some((question) => !themeIds.has(question.theme))) {
-    throw new Error('Chaque question doit référencer un thème existant.')
+  const categoryIds = new Set(categories.map((category) => (category as { id: string }).id))
+  if (parsedQuestions.some((question) => !categoryIds.has(question.category))) {
+    throw new Error('Chaque question doit référencer une catégorie existante.')
   }
-  return { version: value.version, metadata: metadata as Quiz['metadata'], themes: themes as Quiz['themes'], questions: parsedQuestions }
+  return { version: value.version, metadata: metadata as Quiz['metadata'], categories: categories as Quiz['categories'], questions: parsedQuestions }
 }
 
 function parseQuestion(value: unknown): Question {
   if (!isRecord(value) || !isRecord(value.content)) throw new Error('Question ou contenu invalide.')
-  const { id, type, theme, difficulty, question, tags, explanation, points, content, imageUrl, imageAlt } = value
+  const { id, type, difficulty, question, tags, explanation, points, content, imageUrl, imageAlt } = value
+  const category = value.category ?? value.theme // `theme` : ancien nom accepté à l'import
   if (
-    typeof id !== 'string' || typeof theme !== 'string' || typeof question !== 'string' ||
+    typeof id !== 'string' || typeof category !== 'string' || typeof question !== 'string' ||
     typeof explanation !== 'string' || typeof points !== 'number' || points < 0 || !hasStrings(tags) ||
     !['easy', 'medium', 'hard'].includes(String(difficulty)) ||
     (imageUrl !== undefined && (typeof imageUrl !== 'string' || !imageUrl)) ||
@@ -44,7 +47,7 @@ function parseQuestion(value: unknown): Question {
   ) throw new Error(`Question « ${String(id ?? '?')} » invalide.`)
 
   const base = {
-    id, theme, difficulty: difficulty as Question['difficulty'], question, tags, explanation, points,
+    id, category, difficulty: difficulty as Question['difficulty'], question, tags, explanation, points,
     imageUrl: imageUrl as string | undefined, imageAlt: imageAlt as string | undefined,
   }
   if (type === 'qcm' && typeof content.multiple === 'boolean' && validAnswers(content.answers)) {

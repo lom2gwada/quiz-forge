@@ -80,17 +80,17 @@ describe('generateQuiz', () => {
     expect(quiz.questions.length).toBeGreaterThan(15)
   })
 
-  it('exposes one theme per column that produced questions', () => {
+  it('exposes one category per column that produced questions', () => {
     const cols = new Set(Object.entries(schema.columns).filter(([, s]) => s.include).map(([c]) => c))
-    const themeIds = new Set(quiz.themes.map((t) => t.id))
-    expect(themeIds.has('capitale')).toBe(true)
-    expect(themeIds.has('population')).toBe(true)
-    expect(themeIds.has('drapeau')).toBe(true)
-    expect(themeIds.has('pays')).toBe(false)
-    // chaque question pointe vers un thème listé, et chaque thème est une colonne incluse
-    for (const q of quiz.questions) expect(themeIds.has(q.theme)).toBe(true)
-    for (const id of themeIds) expect(cols.has(id)).toBe(true)
-    expect(quiz.themes.find((t) => t.id === 'pib_mds_usd')?.label).toBe('Pib')
+    const categoryIds = new Set(quiz.categories.map((c) => c.id))
+    expect(categoryIds.has('capitale')).toBe(true)
+    expect(categoryIds.has('population')).toBe(true)
+    expect(categoryIds.has('drapeau')).toBe(true)
+    expect(categoryIds.has('pays')).toBe(false)
+    // chaque question pointe vers une catégorie listée, et chaque catégorie est une colonne incluse
+    for (const q of quiz.questions) expect(categoryIds.has(q.category)).toBe(true)
+    for (const id of categoryIds) expect(cols.has(id)).toBe(true)
+    expect(quiz.categories.find((c) => c.id === 'pib_mds_usd')?.label).toBe('Pib')
   })
 
   it('is deterministic for a given seed', () => {

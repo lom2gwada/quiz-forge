@@ -1,4 +1,4 @@
-import type { AnswersByQuestion, Question, Theme } from '../types/quiz'
+import type { AnswersByQuestion, Category, Question } from '../types/quiz'
 import type { ChartGroup, MissedQuestion, QuestionResultPayload, QuestionResultRow, QuizRecords, QuizResultPayload, QuizResultRow, StatBucket } from '../types/history'
 import { isCorrect } from '../components/ResultPage'
 
@@ -36,11 +36,11 @@ function aggregate(questions: Question[], answers: AnswersByQuestion, keyOf: (qu
   return buckets
 }
 
-/** Construit le résumé d'une partie terminée, prêt à être enregistré. Les thèmes sont figés en libellés (pas des ids) pour rester lisibles même si le quiz importé change ensuite. */
-export function buildQuizResultPayload(questions: Question[], answers: AnswersByQuestion, themes: Theme[], elapsedSeconds: number, quizTitle: string): QuizResultPayload {
+/** Construit le résumé d'une partie terminée, prêt à être enregistré. Les catégories sont figées en libellés (pas des ids) pour rester lisibles même si le quiz importé change ensuite. */
+export function buildQuizResultPayload(questions: Question[], answers: AnswersByQuestion, categories: Category[], elapsedSeconds: number, quizTitle: string): QuizResultPayload {
   const earnedPoints = questions.filter((question) => isCorrect(question, answers[question.id])).reduce((sum, question) => sum + question.points, 0)
   const totalPoints = questions.reduce((sum, question) => sum + question.points, 0)
-  const themeLabel = (id: string) => themes.find((theme) => theme.id === id)?.label ?? id
+  const categoryLabel = (id: string) => categories.find((category) => category.id === id)?.label ?? id
 
   return {
     quiz_title: quizTitle,
@@ -49,8 +49,8 @@ export function buildQuizResultPayload(questions: Question[], answers: AnswersBy
     total_points: totalPoints,
     elapsed_seconds: elapsedSeconds,
     question_count: questions.length,
-    themes: Array.from(new Set(questions.map((question) => themeLabel(question.theme)))),
-    by_theme: aggregate(questions, answers, (question) => themeLabel(question.theme)),
+    categories: Array.from(new Set(questions.map((question) => categoryLabel(question.category)))),
+    by_category: aggregate(questions, answers, (question) => categoryLabel(question.category)),
     by_type: aggregate(questions, answers, (question) => question.type),
     by_difficulty: aggregate(questions, answers, (question) => question.difficulty),
   }
@@ -63,8 +63,16 @@ export async function saveQuizResult(payload: QuizResultPayload): Promise<void> 
   writeRows(QUIZ_KEY, rows)
 }
 
+type LegacyQuizResultRow = QuizResultRow & { themes?: string[]; by_theme?: Record<string, StatBucket> }
+
+/** Reprend les anciennes lignes d'historique (`themes`/`by_theme`) sous les noms actuels. */
+function normalizeRow(row: LegacyQuizResultRow): QuizResultRow {
+  if (row.by_category !== undefined) return row
+  return { ...row, categories: row.categories ?? row.themes ?? [], by_category: row.by_theme ?? {} }
+}
+
 export async function fetchQuizHistory(): Promise<QuizResultRow[]> {
-  return readRows<QuizResultRow>(QUIZ_KEY).sort((a, b) => b.created_at.localeCompare(a.created_at))
+  return readRows<LegacyQuizResultRow>(QUIZ_KEY).map(normalizeRow).sort((a, b) => b.created_at.localeCompare(a.created_at))
 }
 
 /** Une ligne par question de la partie, pour pouvoir repérer plus tard les questions ratées de façon récurrente. */
@@ -114,7 +122,7 @@ export function computeRecords(rows: QuizResultRow[]): QuizRecords {
   }
 }
 
-/** Cumule les buckets `correct`/`total` d'une clé (par ex. `by_theme`) sur l'ensemble de l'historique. */
+/** Cumule les buckets `correct`/`total` d'une clé (par ex. `by_category`) sur l'ensemble de l'historique. */
 export function sumBuckets(rows: QuizResultRow[], pick: (row: QuizResultRow) => Record<string, StatBucket>): Record<string, StatBucket> {
   const totals: Record<string, StatBucket> = {}
   rows.forEach((row) => {

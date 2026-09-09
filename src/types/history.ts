@@ -10,8 +10,8 @@ export interface QuizResultPayload {
   total_points: number
   elapsed_seconds: number
   question_count: number
-  themes: string[]
-  by_theme: Record<string, StatBucket>
+  categories: string[]
+  by_category: Record<string, StatBucket>
   by_type: Record<string, StatBucket>
   by_difficulty: Record<string, StatBucket>
 }

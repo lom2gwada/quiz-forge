@@ -1,23 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import type { BooleanQuestion, QCMQuestion, Theme } from '../types/quiz'
+import type { BooleanQuestion, Category, QCMQuestion } from '../types/quiz'
 import type { QuestionResultRow, QuizResultRow } from '../types/history'
 import { bucketsToChartGroups, buildQuestionResultPayloads, buildQuizResultPayload, computeMissedQuestions, computeRecords, sumBuckets } from './quizHistory'
 
-const themes: Theme[] = [{ id: 'histoire', label: 'Histoire' }, { id: 'geo', label: 'Géographie' }]
+const categories: Category[] = [{ id: 'histoire', label: 'Histoire' }, { id: 'geo', label: 'Géographie' }]
 
 const qcm: QCMQuestion = {
-  id: 'q1', theme: 'histoire', difficulty: 'easy', tags: [], explanation: '', points: 1,
+  id: 'q1', category: 'histoire', difficulty: 'easy', tags: [], explanation: '', points: 1,
   type: 'qcm', question: 'Q ?',
   content: { multiple: false, answers: [{ id: 'a', label: 'A', isCorrect: true }, { id: 'b', label: 'B', isCorrect: false }] },
 }
 const bool: BooleanQuestion = {
-  id: 'q2', theme: 'geo', difficulty: 'medium', tags: [], explanation: '', points: 2,
+  id: 'q2', category: 'geo', difficulty: 'medium', tags: [], explanation: '', points: 2,
   type: 'boolean', question: 'Vrai ou faux ?', content: { isTrue: true },
 }
 
 describe('buildQuizResultPayload', () => {
   it('computes the score and point totals', () => {
-    const payload = buildQuizResultPayload([qcm, bool], { q1: ['a'], q2: ['true'] }, themes, 42, 'Culture générale')
+    const payload = buildQuizResultPayload([qcm, bool], { q1: ['a'], q2: ['true'] }, categories, 42, 'Culture générale')
     expect(payload.score).toBe(100)
     expect(payload.earned_points).toBe(3)
     expect(payload.total_points).toBe(3)
@@ -27,44 +27,44 @@ describe('buildQuizResultPayload', () => {
   })
 
   it('computes a partial score when some answers are wrong', () => {
-    const payload = buildQuizResultPayload([qcm, bool], { q1: ['b'], q2: ['true'] }, themes, 0, 'Culture générale')
+    const payload = buildQuizResultPayload([qcm, bool], { q1: ['b'], q2: ['true'] }, categories, 0, 'Culture générale')
     expect(payload.score).toBe(67)
     expect(payload.earned_points).toBe(2)
   })
 
-  it('resolves theme ids to labels and dedupes them', () => {
-    const payload = buildQuizResultPayload([qcm, bool], {}, themes, 0, 'Culture générale')
-    expect(payload.themes).toEqual(['Histoire', 'Géographie'])
+  it('resolves category ids to labels and dedupes them', () => {
+    const payload = buildQuizResultPayload([qcm, bool], {}, categories, 0, 'Culture générale')
+    expect(payload.categories).toEqual(['Histoire', 'Géographie'])
   })
 
-  it('falls back to the raw id when a theme is unknown', () => {
-    const orphan: QCMQuestion = { ...qcm, id: 'q3', theme: 'unknown' }
-    const payload = buildQuizResultPayload([orphan], {}, themes, 0, 'Culture générale')
-    expect(payload.themes).toEqual(['unknown'])
+  it('falls back to the raw id when a category is unknown', () => {
+    const orphan: QCMQuestion = { ...qcm, id: 'q3', category: 'unknown' }
+    const payload = buildQuizResultPayload([orphan], {}, categories, 0, 'Culture générale')
+    expect(payload.categories).toEqual(['unknown'])
   })
 
-  it('aggregates correctness by theme, type and difficulty', () => {
-    const payload = buildQuizResultPayload([qcm, bool], { q1: ['a'], q2: ['false'] }, themes, 0, 'Culture générale')
-    expect(payload.by_theme).toEqual({ Histoire: { correct: 1, total: 1 }, Géographie: { correct: 0, total: 1 } })
+  it('aggregates correctness by category, type and difficulty', () => {
+    const payload = buildQuizResultPayload([qcm, bool], { q1: ['a'], q2: ['false'] }, categories, 0, 'Culture générale')
+    expect(payload.by_category).toEqual({ Histoire: { correct: 1, total: 1 }, Géographie: { correct: 0, total: 1 } })
     expect(payload.by_type).toEqual({ qcm: { correct: 1, total: 1 }, boolean: { correct: 0, total: 1 } })
     expect(payload.by_difficulty).toEqual({ easy: { correct: 1, total: 1 }, medium: { correct: 0, total: 1 } })
   })
 
   it('returns a score of 0 for an empty question set', () => {
-    const payload = buildQuizResultPayload([], {}, themes, 0, 'Culture générale')
+    const payload = buildQuizResultPayload([], {}, categories, 0, 'Culture générale')
     expect(payload.score).toBe(0)
-    expect(payload.themes).toEqual([])
+    expect(payload.categories).toEqual([])
   })
 
   it('tags the payload with the given quiz title', () => {
-    expect(buildQuizResultPayload([qcm], {}, themes, 0, 'Test technique IT').quiz_title).toBe('Test technique IT')
+    expect(buildQuizResultPayload([qcm], {}, categories, 0, 'Test technique IT').quiz_title).toBe('Test technique IT')
   })
 })
 
 function row(overrides: Partial<QuizResultRow>): QuizResultRow {
   return {
     id: '1', created_at: '2026-01-01T00:00:00Z', quiz_title: 'Culture générale', score: 50, earned_points: 1, total_points: 2,
-    elapsed_seconds: 60, question_count: 2, themes: [], by_theme: {}, by_type: {}, by_difficulty: {},
+    elapsed_seconds: 60, question_count: 2, categories: [], by_category: {}, by_type: {}, by_difficulty: {},
     ...overrides,
   }
 }
@@ -94,25 +94,25 @@ describe('computeRecords', () => {
 describe('sumBuckets', () => {
   it('sums correct/total across every row for the same key', () => {
     const rows = [
-      row({ by_theme: { Histoire: { correct: 1, total: 2 } } }),
-      row({ by_theme: { Histoire: { correct: 2, total: 3 } } }),
+      row({ by_category: { Histoire: { correct: 1, total: 2 } } }),
+      row({ by_category: { Histoire: { correct: 2, total: 3 } } }),
     ]
-    expect(sumBuckets(rows, (r) => r.by_theme)).toEqual({ Histoire: { correct: 3, total: 5 } })
+    expect(sumBuckets(rows, (r) => r.by_category)).toEqual({ Histoire: { correct: 3, total: 5 } })
   })
 
   it('keeps separate keys separate', () => {
     const rows = [
-      row({ by_theme: { Histoire: { correct: 1, total: 1 } } }),
-      row({ by_theme: { Géographie: { correct: 0, total: 1 } } }),
+      row({ by_category: { Histoire: { correct: 1, total: 1 } } }),
+      row({ by_category: { Géographie: { correct: 0, total: 1 } } }),
     ]
-    expect(sumBuckets(rows, (r) => r.by_theme)).toEqual({
+    expect(sumBuckets(rows, (r) => r.by_category)).toEqual({
       Histoire: { correct: 1, total: 1 },
       Géographie: { correct: 0, total: 1 },
     })
   })
 
   it('returns an empty object for an empty history', () => {
-    expect(sumBuckets([], (r) => r.by_theme)).toEqual({})
+    expect(sumBuckets([], (r) => r.by_category)).toEqual({})
   })
 })
 

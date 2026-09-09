@@ -5,12 +5,12 @@ function quiz(questions: unknown[]) {
   return {
     version: '1.0',
     metadata: { title: 'Test', author: 'Test', createdAt: '2026-01-01' },
-    themes: [{ id: 'general', label: 'Général' }],
+    categories: [{ id: 'general', label: 'Général' }],
     questions,
   }
 }
 
-const base = { id: 'q1', theme: 'general', difficulty: 'easy', tags: [], explanation: 'Explication.', points: 1 }
+const base = { id: 'q1', category: 'general', difficulty: 'easy', tags: [], explanation: 'Explication.', points: 1 }
 
 describe('parseQuiz — root schema', () => {
   it('parses a minimal valid quiz', () => {
@@ -32,9 +32,21 @@ describe('parseQuiz — root schema', () => {
     expect(() => parseQuiz({ ...quiz([]), metadata: { title: 'Test' } })).toThrow()
   })
 
-  it('rejects a question referencing an unknown theme', () => {
-    const bad = quiz([{ ...base, theme: 'unknown', type: 'boolean', question: 'Vrai ou faux ?', content: { isTrue: true } }])
-    expect(() => parseQuiz(bad)).toThrow('thème existant')
+  it('rejects a question referencing an unknown category', () => {
+    const bad = quiz([{ ...base, category: 'unknown', type: 'boolean', question: 'Vrai ou faux ?', content: { isTrue: true } }])
+    expect(() => parseQuiz(bad)).toThrow('catégorie existante')
+  })
+
+  it('still accepts the legacy "themes"/"theme" keys from older quiz JSON', () => {
+    const legacy = {
+      version: '1.0',
+      metadata: { title: 'Test', author: 'Test', createdAt: '2026-01-01' },
+      themes: [{ id: 'general', label: 'Général' }],
+      questions: [{ id: 'q1', theme: 'general', difficulty: 'easy', tags: [], explanation: '', points: 1, type: 'boolean', question: 'Vrai ou faux ?', content: { isTrue: true } }],
+    }
+    const result = parseQuiz(legacy)
+    expect(result.categories).toEqual([{ id: 'general', label: 'Général' }])
+    expect(result.questions[0].category).toBe('general')
   })
 
   it('parses an optional metadata description', () => {

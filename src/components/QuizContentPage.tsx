@@ -25,10 +25,10 @@ interface QuizContentPageProps {
 }
 
 export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, onRegenerate, fileError, genError }: QuizContentPageProps) {
-  const byTheme = quiz.themes
-    .map((theme, index) => ({
-      label: theme.label,
-      value: quiz.questions.filter((question) => question.theme === theme.id).length,
+  const byCategory = quiz.categories
+    .map((category, index) => ({
+      label: category.label,
+      value: quiz.questions.filter((question) => question.category === category.id).length,
       color: THEME_COLORS[index % THEME_COLORS.length],
     }))
     .filter((slice) => slice.value > 0)
@@ -64,7 +64,7 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
     {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} onGenerate={onGenerate} error={genError} />}
     <h3 className="stats-group-title">Répartition des questions</h3>
     <div className="stats-grid">
-      <PieChart title={`Thèmes — ${formatNumber(quiz.questions.length)} questions`} data={byTheme} />
+      <PieChart title={`Catégories — ${formatNumber(quiz.questions.length)} questions`} data={byCategory} />
       <PieChart title={`Types — ${formatNumber(quiz.questions.length)} questions`} data={byType} />
       <PieChart title={`Difficulté — ${formatNumber(quiz.questions.length)} questions`} data={byDifficulty} />
     </div>

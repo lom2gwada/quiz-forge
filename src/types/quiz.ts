@@ -1,7 +1,7 @@
 export type Difficulty = 'easy' | 'medium' | 'hard'
 export type QuestionType = 'qcm' | 'text' | 'code' | 'ordering' | 'boolean' | 'cloze' | 'matching' | 'numeric'
 
-export interface Theme {
+export interface Category {
   id: string
   label: string
 }
@@ -69,7 +69,7 @@ export interface NumericContent {
 
 export interface BaseQuestion {
   id: string
-  theme: string
+  category: string
   difficulty: Difficulty
   question: string
   tags: string[]
@@ -125,7 +125,7 @@ export type Question = QCMQuestion | TextQuestion | CodeQuestion | OrderingQuest
 export interface Quiz {
   version: string
   metadata: { title: string; author: string; createdAt: string; description?: string }
-  themes: Theme[]
+  categories: Category[]
   questions: Question[]
 }
 

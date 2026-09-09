@@ -27,7 +27,7 @@ const questionCounts = [5, 10, 20, 30, 50]
 const FALLBACK_QUIZ: Quiz = {
   version: '1.0',
   metadata: { title: 'Quiz Forge', author: 'Quiz Forge', createdAt: '2026-09-09', description: 'Importe un CSV pour générer un quiz.' },
-  themes: [{ id: 'dataset', label: 'Quiz Forge' }],
+  categories: [{ id: 'dataset', label: 'Quiz Forge' }],
   questions: [],
 }
 
@@ -55,7 +55,7 @@ export default function App() {
   const [quiz, setQuiz] = useState<Quiz>(initialQuiz)
   const [dataset, setDataset] = useState<Dataset | null>(initialDataset)
   const [genError, setGenError] = useState('')
-  const [selectedThemes, setSelectedThemes] = useState<string[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [difficulty, setDifficulty] = useState<Difficulty | ''>('')
   const [view, setView] = useState<View>('start')
   const [answers, setAnswers] = useState<AnswersByQuestion>({})
@@ -96,14 +96,14 @@ export default function App() {
   // "quiz" (fin de partie ou abandon), qui n'est pas un état vers lequel on veut pouvoir revenir en arrière.
   const replace = (next: View) => { setView(next); window.history.replaceState({ view: next }, '') }
   const filteredQuestions = useMemo(() => quiz.questions.filter((question) =>
-    (!selectedThemes.length || selectedThemes.includes(question.theme)) && (!difficulty || question.difficulty === difficulty)), [quiz, selectedThemes, difficulty])
+    (!selectedCategories.length || selectedCategories.includes(question.category)) && (!difficulty || question.difficulty === difficulty)), [quiz, selectedCategories, difficulty])
 
-  const toggleTheme = (themeId: string) => setSelectedThemes((previous) =>
-    previous.includes(themeId) ? previous.filter((id) => id !== themeId) : [...previous, themeId])
+  const toggleCategory = (categoryId: string) => setSelectedCategories((previous) =>
+    previous.includes(categoryId) ? previous.filter((id) => id !== categoryId) : [...previous, categoryId])
 
   const applyQuiz = (next: Quiz) => {
     setQuiz(next)
-    setSelectedThemes([]); setDifficulty(''); setSessionQuestions([])
+    setSelectedCategories([]); setDifficulty(''); setSessionQuestions([])
   }
 
   const applyGenerated = (nextDataset: Dataset, seed: string) => {
@@ -183,13 +183,13 @@ export default function App() {
   return <main className="app-shell">
     <ChartBackground />
     <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>par {quiz.metadata.author}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? 'Activer le son' : 'Couper le son'}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : '👤 Profil'}</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ Quiz</button>}</div></header>
-    {view === 'start' && <section className="start-page"><FilterPanel themes={quiz.themes} selectedThemes={selectedThemes} difficulty={difficulty} onThemeToggle={toggleTheme} onDifficultyChange={setDifficulty} /><label className="question-count">Nombre de questions<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{count} {count === 1 ? 'question' : 'questions'}{count > filteredQuestions.length ? ' (indisponible)' : ''}</option>)}<option value={filteredQuestions.length}>Toutes les questions ({formatNumber(filteredQuestions.length)})</option></select></label><p>{formatNumber(filteredQuestions.length)} question{filteredQuestions.length > 1 ? 's' : ''} disponible{filteredQuestions.length > 1 ? 's' : ''} — {Math.min(questionCount, filteredQuestions.length)} seront tirées aléatoirement.</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>Démarrer le quiz</button></div></section>}
+    {view === 'start' && <section className="start-page"><FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} /><label className="question-count">Nombre de questions<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{count} {count === 1 ? 'question' : 'questions'}{count > filteredQuestions.length ? ' (indisponible)' : ''}</option>)}<option value={filteredQuestions.length}>Toutes les questions ({formatNumber(filteredQuestions.length)})</option></select></label><p>{formatNumber(filteredQuestions.length)} question{filteredQuestions.length > 1 ? 's' : ''} disponible{filteredQuestions.length > 1 ? 's' : ''} — {Math.min(questionCount, filteredQuestions.length)} seront tirées aléatoirement.</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>Démarrer le quiz</button></div></section>}
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} onFinish={(nextAnswers, duration) => {
       setAnswers(nextAnswers); setElapsedSeconds(duration); replace('results')
-      saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.themes, duration, quiz.metadata.title))
+      saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.categories, duration, quiz.metadata.title))
       saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, quiz.metadata.title))
     }} onCancel={backToStart} />}
-    {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} themes={quiz.themes} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} />}
+    {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); setProfile((current) => ({ ...current, ...next })) }} onViewHistory={() => viewHistory('profile')} />}

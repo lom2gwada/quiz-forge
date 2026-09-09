@@ -28,7 +28,7 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
 
   const records = quizRows ? computeRecords(quizRows) : null
   const chartPoints = quizRows ? [...quizRows].reverse().map((row) => ({ label: shortDate(row.created_at), score: row.score })) : []
-  const byTheme = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_theme), (key) => key) : []
+  const byCategory = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_category), (key) => key) : []
   const byType = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_type), (key) => TYPE_LABELS[key as keyof typeof TYPE_LABELS] ?? key) : []
   const byDifficulty = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_difficulty), (key) => DIFFICULTY_LABELS[key as keyof typeof DIFFICULTY_LABELS] ?? key) : []
 
@@ -61,8 +61,8 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
       <ScoreChart points={chartPoints} />
       <div className="stats-groups">
         <div className="stats-group">
-          <h3 className="stats-group-title">Par thème</h3>
-          <div className="stats-grid">{byTheme.map((group) => <PieChart key={`theme-${group.key}`} title={group.label} data={group.data} />)}</div>
+          <h3 className="stats-group-title">Par catégorie</h3>
+          <div className="stats-grid">{byCategory.map((group) => <PieChart key={`category-${group.key}`} title={group.label} data={group.data} />)}</div>
         </div>
         <div className="stats-group">
           <h3 className="stats-group-title">Par type de question</h3>
@@ -90,7 +90,7 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
       {quizRows.map((row) => <li className="history-item" key={row.id}>
         <span className="history-score">{row.score}%</span>
         <span className="history-date">{longDate(row.created_at)}</span>
-        <span className="history-themes">{row.themes.join(', ')}</span>
+        <span className="history-categories">{row.categories.join(', ')}</span>
         <span>{row.earned_points} / {row.total_points} pts</span>
         <span>⏱ {formatDuration(row.elapsed_seconds)}</span>
       </li>)}

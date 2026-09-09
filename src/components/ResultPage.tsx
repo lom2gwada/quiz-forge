@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { AnswersByQuestion, Difficulty, Question, Theme } from '../types/quiz'
+import type { AnswersByQuestion, Category, Difficulty, Question } from '../types/quiz'
 import { formatNumericValue } from '../utils/number'
 import { formatDuration } from '../utils/time'
 import { playFinish, playVictory } from '../utils/sound'
@@ -82,18 +82,18 @@ function mention(score: number): { emoji: string; label: string } {
 interface ResultPageProps {
   questions: Question[]
   answers: AnswersByQuestion
-  themes: Theme[]
+  categories: Category[]
   elapsedSeconds: number
   onRestart: () => void
   onViewHistory: () => void
 }
 
-export function ResultPage({ questions, answers, themes, elapsedSeconds, onRestart, onViewHistory }: ResultPageProps) {
+export function ResultPage({ questions, answers, categories, elapsedSeconds, onRestart, onViewHistory }: ResultPageProps) {
   const earned = questions.filter((question) => isCorrect(question, answers[question.id])).reduce((total, question) => total + question.points, 0)
   const total = questions.reduce((sum, question) => sum + question.points, 0)
   const score = total ? Math.round((earned / total) * 100) : 0
   const { emoji, label } = mention(score)
-  const byTheme = correctnessBreakdown(questions, answers, (question) => question.theme, (id) => themes.find((theme) => theme.id === id)?.label ?? id)
+  const byCategory = correctnessBreakdown(questions, answers, (question) => question.category, (id) => categories.find((category) => category.id === id)?.label ?? id)
   const byDifficulty = correctnessBreakdown(questions, answers, (question) => question.difficulty, (difficulty) => DIFFICULTY_LABELS[difficulty])
   const displayScore = useAnimatedNumber(score)
   useEffect(() => { score >= 90 ? playVictory() : playFinish() }, [])
@@ -112,8 +112,8 @@ export function ResultPage({ questions, answers, themes, elapsedSeconds, onResta
     </div>
     <div className="stats-groups">
       <div className="stats-group">
-        <h3 className="stats-group-title">Par thème</h3>
-        <div className="stats-grid">{byTheme.map((group) => <PieChart key={`theme-${group.key}`} title={`${group.label} — score`} data={group.data} />)}</div>
+        <h3 className="stats-group-title">Par catégorie</h3>
+        <div className="stats-grid">{byCategory.map((group) => <PieChart key={`category-${group.key}`} title={`${group.label} — score`} data={group.data} />)}</div>
       </div>
       <div className="stats-group">
         <h3 className="stats-group-title">Par difficulté</h3>

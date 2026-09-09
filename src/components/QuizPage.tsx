@@ -37,9 +37,9 @@ export function QuizPage({ quiz, questions, onFinish, onCancel }: QuizPageProps)
   }, [])
 
   if (!question) return <section className="empty"><h2>Aucune question</h2><p>Modifiez les filtres pour lancer le quiz.</p><button type="button" className="secondary" onClick={onCancel}>Retour</button></section>
-  const theme = quiz.themes.find((item) => item.id === question.theme)?.label ?? question.theme
+  const category = quiz.categories.find((item) => item.id === question.category)?.label ?? question.category
   return <section className="quiz-card">
-    <div className="question-meta"><span>{TYPE_ICONS[question.type]} {TYPE_LABELS[question.type]}</span><span>{theme}</span><span>{question.difficulty}</span><span>{question.points} pts</span><span>⏱ {formatDuration(elapsed)}</span></div>
+    <div className="question-meta"><span>{TYPE_ICONS[question.type]} {TYPE_LABELS[question.type]}</span><span>{category}</span><span>{question.difficulty}</span><span>{question.points} pts</span><span>⏱ {formatDuration(elapsed)}</span></div>
     <div className="quiz-progress"><div className="quiz-progress-fill" style={{ width: `${((current + 1) / shuffledQuestions.length) * 100}%` }} /></div>
     <p className="progress">Question {current + 1} / {shuffledQuestions.length}</p>
     <div className="question-body" key={question.id}>
