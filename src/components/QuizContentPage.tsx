@@ -19,11 +19,12 @@ interface QuizContentPageProps {
   onJsonChange: (file?: File) => void
   onCsvChange: (file?: File) => void
   onGenerate: (schema: GenSchema, seed: string) => void
+  onRegenerate: () => void
   fileError: string
   genError: string
 }
 
-export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, fileError, genError }: QuizContentPageProps) {
+export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, onRegenerate, fileError, genError }: QuizContentPageProps) {
   const byTheme = quiz.themes
     .map((theme, index) => ({
       label: theme.label,
@@ -46,6 +47,7 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
       <button type="button" className="secondary" onClick={onBack}>Retour</button>
     </div>
     {quiz.metadata.description && <p className="quiz-description">{quiz.metadata.description}</p>}
+    {dataset && <button type="button" className="secondary regenerate-btn" onClick={onRegenerate}>🎲 Régénérer les questions</button>}
     <div className="quiz-import">
       <label className="file-input">Importer un CSV<input type="file" accept="text/csv,.csv,.tsv,text/plain" onChange={(event) => onCsvChange(event.target.files?.[0])} /></label>
       <label className="file-input">Importer un quiz (JSON)<input type="file" accept="application/json,.json" onChange={(event) => onJsonChange(event.target.files?.[0])} /></label>
