@@ -93,6 +93,22 @@ describe('generateQuiz', () => {
     expect(quiz.categories.find((c) => c.id === 'pib_mds_usd')?.label).toBe('Pib')
   })
 
+  it('assigns a unique id to every question', () => {
+    expect(new Set(quiz.questions.map((q) => q.id)).size).toBe(quiz.questions.length)
+  })
+
+  it('derives a content-stable id that survives a regeneration with a new seed', () => {
+    const a = generateQuiz(caribbeanRows, schema, { seed: 'seed-a' })
+    const b = generateQuiz(caribbeanRows, schema, { seed: 'seed-b' })
+    // question mono-sujet, énoncé indépendant du tirage (pas de distracteurs dedans)
+    const qa = a.questions.find((q) => q.question === 'Capitale de Cuba : ___')
+    const qb = b.questions.find((q) => q.question === 'Capitale de Cuba : ___')
+    expect(qa?.id).toBeDefined()
+    expect(qb?.id).toBe(qa?.id)
+    // le tirage change quand même l'ordre global
+    expect(a.questions.map((q) => q.id)).not.toEqual(b.questions.map((q) => q.id))
+  })
+
   it('is deterministic for a given seed', () => {
     expect(generateQuiz(caribbeanRows, schema, { seed: 'test' })).toEqual(quiz)
     expect(generateQuiz(caribbeanRows, schema, { seed: 'other' })).not.toEqual(quiz)

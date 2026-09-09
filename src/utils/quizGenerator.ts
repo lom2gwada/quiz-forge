@@ -242,8 +242,20 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
   const de = (row: Row): string => dePhrase(nameOf(row), artOf(row))
 
   const questions: Question[] = []
-  let counter = 0
-  const nextId = (): string => `q-${String((counter += 1)).padStart(3, '0')}`
+  const usedIds = new Set<string>()
+  // Identité STABLE d'une question : dérivée de son contenu (catégorie + variante + sujet·s),
+  // pas de l'ordre de génération. Une même question garde donc son id d'une régénération à
+  // l'autre — c'est ce qui permet à l'historique « questions à retravailler » de la retrouver.
+  // Séparateur + sel = octets de contrôle (0x01 / 0x02) : absents des données réelles.
+  // Deux hachages 32 bits ≈ digest 64 bits, collision quasi impossible sur un vrai jeu.
+  const qid = (parts: string[]): string => {
+    const key = parts.join('')
+    const base = `q${hashStr(key).toString(36)}${hashStr(key + '').toString(36)}`
+    let id = base
+    for (let n = 2; usedIds.has(id); n += 1) id = `${base}-${n}`
+    usedIds.add(id)
+    return id
+  }
 
   for (const [col, spec] of Object.entries(schema.columns)) {
     if (!spec.include) continue
@@ -266,7 +278,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
         const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.image.choices - 1)
         if (distractors.length < CFG.image.choices - 1) continue
         questions.push({
-          id: nextId(), type: 'qcm', category: categoryId, difficulty: CFG.image.difficulty, points: CFG.image.points, tags: [col],
+          id: qid([col, 'image', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.image.difficulty, points: CFG.image.points, tags: [col],
           question: `Quel ${noun} ce ${spec.label} représente-t-il ?`,
           explanation: `Ce ${spec.label} est celui ${de(row)}.`,
           imageUrl: row[col],
@@ -292,7 +304,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           if (nDist >= 1) {
             const options = shuffle([...corrects, ...sample(pool, nDist)])
             questions.push({
-              id: nextId(), type: 'qcm', category: categoryId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
+              id: qid([col, 'qcm-multi', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
               question: `${Label} ${de(row)} ? (plusieurs réponses)`,
               explanation: fact,
               content: {
@@ -306,7 +318,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           const distractors = sample(domain.filter((v) => v !== correct), CFG.qcm.choices - 1)
           if (distractors.length >= CFG.qcm.choices - 1) {
             questions.push({
-              id: nextId(), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
+              id: qid([col, 'qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
               question: `${Label} ${de(row)} ?`,
               explanation: `${Label} ${de(row)} : ${correct}.`,
               content: {
@@ -324,7 +336,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           : sample(domain.filter((v) => !corrects.includes(v)), 1)[0]
         if (shown) {
           questions.push({
-            id: nextId(), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
+            id: qid([col, 'boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
             question: `${Label} ${de(row)} : ${shown}.`,
             explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
             content: { isTrue: showTrue },
@@ -333,7 +345,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
 
         // Texte à trous : on masque la valeur
         questions.push({
-          id: nextId(), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
+          id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
           question: `${Label} ${de(row)} : ___`,
           explanation: fact,
           content: { expectedAnswers: corrects, caseSensitive: false },
@@ -347,7 +359,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
         const correct = nameOf(row)
         const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.qcmBackward.choices - 1)
         questions.push({
-          id: nextId(), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
+          id: qid([col, 'qcm-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
           question: `Quel ${noun} a pour ${spec.label} « ${row[col]} » ?`,
           explanation: `${Label} ${de(row)} : ${row[col]}.`,
           content: {
@@ -372,7 +384,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           tolerance = Math.max(step, roundTo(target * 0.12, step))
         }
         questions.push({
-          id: nextId(), type: 'numeric', category: categoryId, difficulty: CFG.estimate.difficulty, points: CFG.estimate.points, tags: [col],
+          id: qid([col, 'numeric', nameOf(row)]), type: 'numeric', category: categoryId, difficulty: CFG.estimate.difficulty, points: CFG.estimate.points, tags: [col],
           question: spec.isYear
             ? `En quelle année : ${spec.label} ${de(row)} ?`
             : `Estimez : ${spec.label} ${de(row)}${spec.unit ? ` (en ${spec.unit})` : ''}.`,
@@ -392,7 +404,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
         const sorted = [...group].sort((a, b) =>
           direction === 'asc' ? asNumber(a[col]) - asNumber(b[col]) : asNumber(b[col]) - asNumber(a[col]))
         questions.push({
-          id: nextId(), type: 'ordering', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
+          id: qid([col, 'ordering', ...[...group].map(nameOf).sort()]), type: 'ordering', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
           question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
           explanation: sorted
             .map((r) => `${nameOf(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
@@ -411,7 +423,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       const rightId = (r: Row): string => `r-${hashStr(r[col])}`
       for (const group of overlapGroups(rowsWith, CFG.matching.groupSize)) {
         questions.push({
-          id: nextId(), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
+          id: qid([col, 'matching', ...[...group].map(nameOf).sort()]), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
           question: `Associez chaque ${noun} à : ${spec.label}.`,
           explanation: group.map((r) => `${nameOf(r)} → ${r[col]}`).join(' · '),
           content: {
