@@ -1,14 +1,14 @@
 {
   "dataset": "caraibes.csv",
   "delimiter": ";",
-  "theme": { "id": "caraibes", "label": "Pays des Caraïbes" },
+  "theme": { "id": "caraibes", "label": "Pays et territoires des Caraïbes" },
   "metadata": {
-    "title": "Pays des Caraïbes",
+    "title": "Pays et territoires des Caraïbes",
     "author": "Quiz Forge",
-    "description": "Quiz généré automatiquement à partir d'un tableau de 13 États souverains des Caraïbes (capitale, population, superficie, point culminant, monnaie, indépendance). Chaque partie tire un sous-ensemble de questions au hasard."
+    "description": "Quiz généré automatiquement à partir d'un tableau de 20 pays et territoires des Caraïbes — 13 États souverains et 7 territoires non souverains (Guadeloupe, Martinique, Aruba, Porto Rico…). Colonnes : capitale, population, superficie, point culminant, monnaie, langues, indépendance. Les cases sans valeur (ex. l'année d'indépendance pour les territoires) ne génèrent aucune question. Chaque partie tire un sous-ensemble de questions au hasard."
   },
 
-  "subject": { "column": "pays", "articleColumn": "article" },
+  "subject": { "column": "pays", "articleColumn": "article", "noun": "territoire" },
 
   "columns": {
     "capitale": {
@@ -18,7 +18,7 @@
       "matchingLabel": "sa capitale",
       "templates": {
         "forward": "Quelle est la capitale {de_sujet} ?",
-        "backward": "Quel pays a pour capitale {valeur} ?"
+        "backward": "Quel territoire a pour capitale {valeur} ?"
       },
       "explanation": "La capitale {de_sujet} est {valeur}.",
       "ask": ["qcm", "qcm_backward", "matching"]
@@ -63,7 +63,7 @@
       "estimateTemplate": "Estimez la population {de_sujet}.",
       "explanation": "{nom_sujet} compte environ {valeur} habitants.",
       "ask": ["estimate", "order"],
-      "order": { "question": "Classez ces pays du plus peuplé au moins peuplé.", "direction": "desc" }
+      "order": { "question": "Classez ces territoires du plus peuplé au moins peuplé.", "direction": "desc" }
     },
     "superficie_km2": {
       "kind": "number",
@@ -72,7 +72,7 @@
       "estimateTemplate": "Estimez la superficie {de_sujet} (en km²).",
       "explanation": "{nom_sujet} couvre environ {valeur} km².",
       "ask": ["estimate", "order"],
-      "order": { "question": "Classez ces pays du plus vaste au plus petit.", "direction": "desc" }
+      "order": { "question": "Classez ces territoires du plus vaste au plus petit.", "direction": "desc" }
     },
     "altitude_m": {
       "kind": "number",

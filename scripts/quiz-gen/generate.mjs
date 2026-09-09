@@ -74,6 +74,7 @@ function nomPhrase(name, article) {
 // --- placeholders des gabarits -----------------------------------------
 const fmtMaybe = (v) => (v != null && /^\d+$/.test(String(v)) ? fmtNumber(Number(v)) : String(v ?? ''))
 const humanList = (items) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`)
+const hasValue = (v) => v != null && String(v).trim() !== ''
 function fill(tpl, { subject, article, value, row }) {
   return tpl
     .replaceAll('{de_sujet}', dePhrase(subject ?? '', article))
@@ -101,16 +102,22 @@ const base = (difficulty, points, tags) => ({ theme: schema.theme.id, difficulty
 for (const [col, def] of Object.entries(schema.columns)) {
   const ask = new Set(def.ask ?? [])
   const sep = def.multivalue
-  const atomsOf = (row) => (sep ? String(row[col]).split(sep).map((s) => s.trim()) : [row[col]])
+  // Une cellule vide n'alimente aucune question : atomsOf renvoie [] et la ligne est écartée du tirage.
+  const atomsOf = (row) => {
+    if (!hasValue(row[col])) return []
+    return sep ? String(row[col]).split(sep).map((s) => s.trim()).filter(Boolean) : [String(row[col])]
+  }
   const domain = [...new Set(rows.flatMap(atomsOf))]
+  const rowsWith = rows.filter((row) => atomsOf(row).length > 0)
+  const numRowsWith = def.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(Number(row[col]))) : rowsWith
 
   // ---- QCM direct (mono ou multi-réponses selon la cardinalité de la cellule) ----
   if (ask.has('qcm') && def.templates?.forward) {
     const cfg = gen.qcm
     const mcfg = gen.qcm_multi ?? cfg
     // priorise les lignes multivaluées pour qu'elles apparaissent dans le tirage
-    const forced = sep ? rows.filter((r) => atomsOf(r).length > 1).slice(0, mcfg.perColumn ?? 3) : []
-    const picks = shuffle([...forced, ...sample(rows.filter((r) => !forced.includes(r)), cfg.perColumn)])
+    const forced = sep ? rowsWith.filter((r) => atomsOf(r).length > 1).slice(0, mcfg.perColumn ?? 3) : []
+    const picks = shuffle([...forced, ...sample(rowsWith.filter((r) => !forced.includes(r)), cfg.perColumn)])
     for (const row of picks) {
       const key = `qcm:${col}:${row[subjectCol]}`
       if (seen.has(key)) continue; seen.add(key)
@@ -147,7 +154,7 @@ for (const [col, def] of Object.entries(schema.columns)) {
   // ---- QCM inversé (colonnes uniques seulement) ----
   if (ask.has('qcm_backward') && def.templates?.backward && def.unique) {
     const cfg = gen.qcm_backward
-    for (const row of sample(rows, cfg.perColumn)) {
+    for (const row of sample(rowsWith, cfg.perColumn)) {
       const correct = row[subjectCol]
       const distractors = sample(rows.filter((r) => r !== row).map((r) => r[subjectCol]), cfg.choices - 1)
       const answers = shuffle([correct, ...distractors]).map((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct }))
@@ -163,7 +170,7 @@ for (const [col, def] of Object.entries(schema.columns)) {
   // ---- Estimation (numeric) ----
   if (ask.has('estimate') && def.kind === 'number') {
     const cfg = gen.estimate
-    for (const row of sample(rows, cfg.perColumn)) {
+    for (const row of sample(numRowsWith, cfg.perColumn)) {
       const target = Number(row[col])
       let min, max, step, tolerance
       if (def.isYear) {
@@ -185,10 +192,11 @@ for (const [col, def] of Object.entries(schema.columns)) {
   }
 
   // ---- Classement (ordering) ----
-  if (ask.has('order') && def.order) {
+  if (ask.has('order') && def.order && numRowsWith.length >= 3) {
     const cfg = gen.order
+    const n = Math.min(cfg.items, numRowsWith.length)
     for (let k = 0; k < cfg.perColumn; k++) {
-      const chosen = sample(rows, cfg.items)
+      const chosen = sample(numRowsWith, n)
       const sorted = [...chosen].sort((a, b) =>
         def.order.direction === 'asc' ? Number(a[col]) - Number(b[col]) : Number(b[col]) - Number(a[col]))
       const itemCol = def.order.itemFrom ?? subjectCol
@@ -204,15 +212,15 @@ for (const [col, def] of Object.entries(schema.columns)) {
   }
 
   // ---- Association (matching) ----
-  if (ask.has('matching') && def.unique) {
+  if (ask.has('matching') && def.unique && rowsWith.length >= 3) {
     const cfg = gen.matching
-    const chosen = sample(rows, cfg.items)
+    const chosen = sample(rowsWith, Math.min(cfg.items, rowsWith.length))
     const left = chosen.map((r) => ({ id: `l-${hashStr(r[subjectCol])}`, label: r[subjectCol] }))
     const right = shuffle(chosen.map((r) => ({ id: `r-${hashStr(r[col])}`, label: r[col] })))
     const correctPairs = Object.fromEntries(chosen.map((r) => [`l-${hashStr(r[subjectCol])}`, `r-${hashStr(r[col])}`]))
     questions.push({
       id: nextId(), type: 'matching', ...base(cfg.difficulty, cfg.points, [col]),
-      question: `Associez chaque pays à ${def.matchingLabel ?? def.label}.`,
+      question: `Associez chaque ${schema.subject.noun ?? 'élément'} à ${def.matchingLabel ?? def.label}.`,
       explanation: chosen.map((r) => `${r[subjectCol]} → ${r[col]}`).join(' · '),
       content: { left, right, correctPairs },
     })

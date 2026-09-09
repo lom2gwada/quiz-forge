@@ -1,141 +1,112 @@
 {
   "version": "1.0",
   "metadata": {
-    "title": "Pays des Caraïbes",
+    "title": "Pays et territoires des Caraïbes",
     "author": "Quiz Forge",
-    "description": "Quiz généré automatiquement à partir d'un tableau de 13 États souverains des Caraïbes (capitale, population, superficie, point culminant, monnaie, indépendance). Chaque partie tire un sous-ensemble de questions au hasard.",
+    "description": "Quiz généré automatiquement à partir d'un tableau de 20 pays et territoires des Caraïbes — 13 États souverains et 7 territoires non souverains (Guadeloupe, Martinique, Aruba, Porto Rico…). Colonnes : capitale, population, superficie, point culminant, monnaie, langues, indépendance. Les cases sans valeur (ex. l'année d'indépendance pour les territoires) ne génèrent aucune question. Chaque partie tire un sous-ensemble de questions au hasard.",
     "createdAt": "2026-09-09",
     "seed": "caraibes"
   },
   "themes": [
     {
       "id": "caraibes",
-      "label": "Pays des Caraïbes"
+      "label": "Pays et territoires des Caraïbes"
     }
   ],
   "questions": [
     {
-      "id": "car-09",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "point_culminant"
-      ],
-      "question": "Quel est le point culminant de la Dominique ?",
-      "explanation": "Le point culminant de la Dominique est Morne Diablotins (1 447 m).",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Morne Diablotins",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "Pico Duarte",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Blue Mountain Peak",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-13",
-      "type": "matching",
+      "id": "car-40",
+      "type": "numeric",
       "theme": "caraibes",
       "difficulty": "medium",
       "points": 2,
       "tags": [
-        "point_culminant"
+        "independance"
       ],
-      "question": "Associez chaque pays à son point culminant.",
-      "explanation": "Grenade → Mont Sainte-Catherine · Bahamas → Mount Alvernia · Antigua-et-Barbuda → Mont Obama · Trinité-et-Tobago → El Cerro del Aripo",
+      "question": "En quelle année a eu lieu l'indépendance de la Jamaïque ?",
+      "explanation": "L'indépendance de la Jamaïque a été proclamée en 1962.",
       "content": {
-        "left": [
-          {
-            "id": "l-913360285",
-            "label": "Grenade"
-          },
-          {
-            "id": "l-2862899594",
-            "label": "Bahamas"
-          },
-          {
-            "id": "l-141072396",
-            "label": "Antigua-et-Barbuda"
-          },
-          {
-            "id": "l-1303235527",
-            "label": "Trinité-et-Tobago"
-          }
-        ],
-        "right": [
-          {
-            "id": "r-1895139339",
-            "label": "El Cerro del Aripo"
-          },
-          {
-            "id": "r-2213299740",
-            "label": "Mount Alvernia"
-          },
-          {
-            "id": "r-2135227383",
-            "label": "Mont Sainte-Catherine"
-          },
-          {
-            "id": "r-662358413",
-            "label": "Mont Obama"
-          }
-        ],
-        "correctPairs": {
-          "l-913360285": "r-2135227383",
-          "l-2862899594": "r-2213299740",
-          "l-141072396": "r-662358413",
-          "l-1303235527": "r-1895139339"
-        }
+        "min": 1922,
+        "max": 2000,
+        "step": 1,
+        "target": 1962,
+        "tolerance": 4
       }
     },
     {
-      "id": "car-12",
+      "id": "car-27",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "population"
+      ],
+      "question": "Estimez la population de Saint-Christophe-et-Niévès.",
+      "explanation": "Saint-Christophe-et-Niévès compte environ 48 000 habitants.",
+      "content": {
+        "min": 15000,
+        "max": 105000,
+        "step": 5000,
+        "target": 48000,
+        "tolerance": 5000,
+        "unit": "habitants"
+      }
+    },
+    {
+      "id": "car-21",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
       "points": 1,
       "tags": [
-        "point_culminant"
+        "langues"
       ],
-      "question": "Quel est le point culminant d'Antigua-et-Barbuda ?",
-      "explanation": "Le point culminant d'Antigua-et-Barbuda est Mont Obama (402 m).",
+      "question": "Quelle est la langue officielle de la Jamaïque ?",
+      "explanation": "La langue officielle de la Jamaïque est anglais.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Mont Gimie",
+            "label": "créole antillais",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "Mont Obama",
+            "label": "anglais",
             "isCorrect": true
           },
           {
             "id": "c",
-            "label": "Morne Diablotins",
+            "label": "créole haïtien",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-07",
+      "id": "car-35",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "À quelle altitude culmine Pico Turquino (en m) ?",
+      "explanation": "Pico Turquino, point culminant de Cuba, atteint 1 974 m.",
+      "content": {
+        "min": 600,
+        "max": 4300,
+        "step": 100,
+        "target": 1974,
+        "tolerance": 200,
+        "unit": "m"
+      }
+    },
+    {
+      "id": "car-05",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -143,24 +114,219 @@
       "tags": [
         "capitale"
       ],
-      "question": "Quel pays a pour capitale Basseterre ?",
+      "question": "Quel territoire a pour capitale Fort-de-France ?",
+      "explanation": "La capitale de la Martinique est Fort-de-France.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Curaçao",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Martinique",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "Sainte-Lucie",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-11",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "point_culminant"
+      ],
+      "question": "Quel est le point culminant de la Barbade ?",
+      "explanation": "Le point culminant de la Barbade est Mont Hillaby (340 m).",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Pico Turquino",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Mont Hillaby",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "Jamanota",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-22",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "langues"
+      ],
+      "question": "Quelle est la langue officielle de Saint-Christophe-et-Niévès ?",
+      "explanation": "La langue officielle de Saint-Christophe-et-Niévès est anglais.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "créole antillais",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "français",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "anglais",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-42",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "independance"
+      ],
+      "question": "En quelle année a eu lieu l'indépendance de Trinité-et-Tobago ?",
+      "explanation": "L'indépendance de Trinité-et-Tobago a été proclamée en 1962.",
+      "content": {
+        "min": 1922,
+        "max": 2000,
+        "step": 1,
+        "target": 1962,
+        "tolerance": 4
+      }
+    },
+    {
+      "id": "car-43",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "independance"
+      ],
+      "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
+      "explanation": "République dominicaine (1 844) › Trinité-et-Tobago (1 962) › Sainte-Lucie (1 979) › Antigua-et-Barbuda (1 981)",
+      "content": {
+        "items": [
+          {
+            "id": "o-1410852126",
+            "label": "Antigua-et-Barbuda"
+          },
+          {
+            "id": "o-1569151740",
+            "label": "Sainte-Lucie"
+          },
+          {
+            "id": "o-1166913421",
+            "label": "Trinité-et-Tobago"
+          },
+          {
+            "id": "o-2745356527",
+            "label": "République dominicaine"
+          }
+        ],
+        "correctOrder": [
+          "o-2745356527",
+          "o-1166913421",
+          "o-1569151740",
+          "o-1410852126"
+        ]
+      }
+    },
+    {
+      "id": "car-01",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quelle est la capitale de Saint-Christophe-et-Niévès ?",
       "explanation": "La capitale de Saint-Christophe-et-Niévès est Basseterre.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Sainte-Lucie",
+            "label": "Fort-de-France",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "Cuba",
+            "label": "Saint-Domingue",
             "isCorrect": false
           },
           {
             "id": "c",
-            "label": "Saint-Christophe-et-Niévès",
+            "label": "Basseterre",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-24",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "langues"
+      ],
+      "question": "Quelles sont les langues officielles de Saint-Martin ? (plusieurs réponses)",
+      "explanation": "Les langues officielles de Saint-Martin sont : français et anglais.",
+      "content": {
+        "multiple": true,
+        "answers": [
+          {
+            "id": "a",
+            "label": "créole antillais",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "français",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "néerlandais",
+            "isCorrect": false
+          },
+          {
+            "id": "d",
+            "label": "créole saint-lucien",
+            "isCorrect": false
+          },
+          {
+            "id": "e",
+            "label": "anglais",
             "isCorrect": true
           }
         ]
@@ -182,18 +348,18 @@
         "answers": [
           {
             "id": "a",
-            "label": "Saint-Domingue",
-            "isCorrect": false
+            "label": "Saint-Georges",
+            "isCorrect": true
           },
           {
             "id": "b",
-            "label": "Basseterre",
+            "label": "Marigot",
             "isCorrect": false
           },
           {
             "id": "c",
-            "label": "Saint-Georges",
-            "isCorrect": true
+            "label": "Kingstown",
+            "isCorrect": false
           }
         ]
       }
@@ -207,91 +373,93 @@
       "tags": [
         "altitude_m"
       ],
-      "question": "À quelle altitude culmine Mount Alvernia (en m) ?",
-      "explanation": "Mount Alvernia, point culminant des Bahamas, atteint 64 m.",
+      "question": "À quelle altitude culmine La Grande Soufrière (en m) ?",
+      "explanation": "La Grande Soufrière, point culminant de la Guadeloupe, atteint 1 467 m.",
       "content": {
-        "min": 20,
-        "max": 140,
-        "step": 5,
-        "target": 64,
-        "tolerance": 10,
+        "min": 400,
+        "max": 3200,
+        "step": 100,
+        "target": 1467,
+        "tolerance": 200,
         "unit": "m"
       }
     },
     {
-      "id": "car-05",
+      "id": "car-12",
       "type": "qcm",
       "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
+      "difficulty": "easy",
+      "points": 1,
       "tags": [
-        "capitale"
+        "point_culminant"
       ],
-      "question": "Quel pays a pour capitale Port-au-Prince ?",
-      "explanation": "La capitale d'Haïti est Port-au-Prince.",
+      "question": "Quel est le point culminant de Porto Rico ?",
+      "explanation": "Le point culminant de Porto Rico est Cerro de Punta (1 338 m).",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Jamaïque",
+            "label": "La Grande Soufrière",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "Haïti",
+            "label": "Cerro de Punta",
             "isCorrect": true
           },
           {
             "id": "c",
-            "label": "Bahamas",
+            "label": "La Soufrière",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-32",
-      "type": "numeric",
+      "id": "car-23",
+      "type": "qcm",
       "theme": "caraibes",
       "difficulty": "medium",
       "points": 2,
       "tags": [
-        "superficie_km2"
+        "langues"
       ],
-      "question": "Estimez la superficie de la Dominique (en km²).",
-      "explanation": "La Dominique couvre environ 751 km².",
+      "question": "Quelles sont les langues officielles de la Dominique ? (plusieurs réponses)",
+      "explanation": "Les langues officielles de la Dominique sont : anglais et créole antillais.",
       "content": {
-        "min": 250,
-        "max": 1650,
-        "step": 50,
-        "target": 751,
-        "tolerance": 100,
-        "unit": "km²"
+        "multiple": true,
+        "answers": [
+          {
+            "id": "a",
+            "label": "français",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "créole guadeloupéen",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "créole antillais",
+            "isCorrect": true
+          },
+          {
+            "id": "d",
+            "label": "créole haïtien",
+            "isCorrect": false
+          },
+          {
+            "id": "e",
+            "label": "anglais",
+            "isCorrect": true
+          }
+        ]
       }
     },
     {
-      "id": "car-30",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Estimez la superficie des Bahamas (en km²).",
-      "explanation": "Les Bahamas couvre environ 13 878 km².",
-      "content": {
-        "min": 4000,
-        "max": 31000,
-        "step": 1000,
-        "target": 13878,
-        "tolerance": 2000,
-        "unit": "km²"
-      }
-    },
-    {
-      "id": "car-17",
+      "id": "car-14",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -299,51 +467,101 @@
       "tags": [
         "monnaie"
       ],
-      "question": "Quelle est la monnaie de Cuba ?",
-      "explanation": "La monnaie de Cuba est le peso cubain. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
+      "question": "Quelle est la monnaie de la Dominique ?",
+      "explanation": "La monnaie de la Dominique est le dollar des Caraïbes orientales. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "le peso dominicain",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "le peso cubain",
+            "label": "le dollar des Caraïbes orientales",
             "isCorrect": true
           },
           {
+            "id": "b",
+            "label": "le dollar des îles Caïmans",
+            "isCorrect": false
+          },
+          {
             "id": "c",
-            "label": "le dollar jamaïcain",
+            "label": "le peso dominicain",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-25",
-      "type": "numeric",
+      "id": "car-03",
+      "type": "qcm",
       "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
+      "difficulty": "easy",
+      "points": 1,
       "tags": [
-        "population"
+        "capitale"
       ],
-      "question": "Estimez la population de la Jamaïque.",
-      "explanation": "La Jamaïque compte environ 2 825 000 habitants.",
+      "question": "Quelle est la capitale de Porto Rico ?",
+      "explanation": "La capitale de Porto Rico est San Juan.",
       "content": {
-        "min": 800000,
-        "max": 6200000,
-        "step": 200000,
-        "target": 2825000,
-        "tolerance": 400000,
-        "unit": "habitants"
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "San Juan",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "Kingston",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Basse-Terre",
+            "isCorrect": false
+          }
+        ]
       }
     },
     {
-      "id": "car-21",
+      "id": "car-39",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "Classez ces sommets du plus haut au plus bas.",
+      "explanation": "Pico Turquino (1 974 m) › Pic Paradis (424 m) › Jamanota (188 m) › Mount Alvernia (64 m)",
+      "content": {
+        "items": [
+          {
+            "id": "o-1637024020",
+            "label": "Pic Paradis"
+          },
+          {
+            "id": "o-1645259518",
+            "label": "Pico Turquino"
+          },
+          {
+            "id": "o-4229957960",
+            "label": "Mount Alvernia"
+          },
+          {
+            "id": "o-1574754870",
+            "label": "Jamanota"
+          }
+        ],
+        "correctOrder": [
+          "o-1645259518",
+          "o-1637024020",
+          "o-1574754870",
+          "o-4229957960"
+        ]
+      }
+    },
+    {
+      "id": "car-18",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -358,17 +576,203 @@
         "answers": [
           {
             "id": "a",
-            "label": "espagnol",
-            "isCorrect": false
+            "label": "anglais",
+            "isCorrect": true
           },
           {
             "id": "b",
+            "label": "créole saint-lucien",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "néerlandais",
+            "isCorrect": false
+          },
+          {
+            "id": "d",
             "label": "français",
             "isCorrect": false
           },
           {
+            "id": "e",
+            "label": "créole martiniquais",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-32",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Estimez la superficie d'Aruba (en km²).",
+      "explanation": "Aruba couvre environ 180 km².",
+      "content": {
+        "min": 50,
+        "max": 400,
+        "step": 10,
+        "target": 180,
+        "tolerance": 20,
+        "unit": "km²"
+      }
+    },
+    {
+      "id": "car-37",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "À quelle altitude culmine Pic Paradis (en m) ?",
+      "explanation": "Pic Paradis, point culminant de Saint-Martin, atteint 424 m.",
+      "content": {
+        "min": 150,
+        "max": 950,
+        "step": 50,
+        "target": 424,
+        "tolerance": 50,
+        "unit": "m"
+      }
+    },
+    {
+      "id": "car-10",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "point_culminant"
+      ],
+      "question": "Quel est le point culminant de la Dominique ?",
+      "explanation": "Le point culminant de la Dominique est Morne Diablotins (1 447 m).",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Pico Duarte",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Morne Diablotins",
+            "isCorrect": true
+          },
+          {
             "id": "c",
-            "label": "anglais",
+            "label": "El Cerro del Aripo",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-15",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "monnaie"
+      ],
+      "question": "Quelle est la monnaie de Curaçao ?",
+      "explanation": "La monnaie de Curaçao est le florin des Antilles néerlandaises. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "le florin des Antilles néerlandaises",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "le peso cubain",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "la gourde",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-31",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Estimez la superficie de Saint-Martin (en km²).",
+      "explanation": "Saint-Martin couvre environ 53 km².",
+      "content": {
+        "min": 15,
+        "max": 115,
+        "step": 5,
+        "target": 53,
+        "tolerance": 5,
+        "unit": "km²"
+      }
+    },
+    {
+      "id": "car-25",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "population"
+      ],
+      "question": "Estimez la population de Cuba.",
+      "explanation": "Cuba compte environ 11 190 000 habitants.",
+      "content": {
+        "min": 3000000,
+        "max": 25000000,
+        "step": 1000000,
+        "target": 11190000,
+        "tolerance": 1000000,
+        "unit": "habitants"
+      }
+    },
+    {
+      "id": "car-20",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "langues"
+      ],
+      "question": "Quelles sont les langues officielles d'Haïti ? (plusieurs réponses)",
+      "explanation": "Les langues officielles d'Haïti sont : français et créole haïtien.",
+      "content": {
+        "multiple": true,
+        "answers": [
+          {
+            "id": "a",
+            "label": "papiamento",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "créole guadeloupéen",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "français",
             "isCorrect": true
           },
           {
@@ -378,10 +782,30 @@
           },
           {
             "id": "e",
-            "label": "créole saint-lucien",
+            "label": "créole haïtien",
             "isCorrect": true
           }
         ]
+      }
+    },
+    {
+      "id": "car-26",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "population"
+      ],
+      "question": "Estimez la population des Îles Caïmans.",
+      "explanation": "Les Îles Caïmans compte environ 69 000 habitants.",
+      "content": {
+        "min": 20000,
+        "max": 150000,
+        "step": 5000,
+        "target": 69000,
+        "tolerance": 10000,
+        "unit": "habitants"
       }
     },
     {
@@ -393,8 +817,331 @@
       "tags": [
         "population"
       ],
-      "question": "Classez ces pays du plus peuplé au moins peuplé.",
-      "explanation": "Jamaïque (2 825 000 habitants) › Trinité-et-Tobago (1 530 000 habitants) › Barbade (282 000 habitants) › Grenade (117 000 habitants)",
+      "question": "Classez ces territoires du plus peuplé au moins peuplé.",
+      "explanation": "Curaçao (153 000 habitants) › Grenade (117 000 habitants) › Antigua-et-Barbuda (94 000 habitants) › Dominique (73 000 habitants)",
+      "content": {
+        "items": [
+          {
+            "id": "o-2088523898",
+            "label": "Grenade"
+          },
+          {
+            "id": "o-1639715907",
+            "label": "Dominique"
+          },
+          {
+            "id": "o-3579063450",
+            "label": "Curaçao"
+          },
+          {
+            "id": "o-740548731",
+            "label": "Antigua-et-Barbuda"
+          }
+        ],
+        "correctOrder": [
+          "o-3579063450",
+          "o-2088523898",
+          "o-740548731",
+          "o-1639715907"
+        ]
+      }
+    },
+    {
+      "id": "car-08",
+      "type": "matching",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Associez chaque territoire à sa capitale.",
+      "explanation": "Saint-Vincent-et-les-Grenadines → Kingstown · Guadeloupe → Basse-Terre · Bahamas → Nassau · Haïti → Port-au-Prince",
+      "content": {
+        "left": [
+          {
+            "id": "l-3079757530",
+            "label": "Saint-Vincent-et-les-Grenadines"
+          },
+          {
+            "id": "l-587499882",
+            "label": "Guadeloupe"
+          },
+          {
+            "id": "l-2862899594",
+            "label": "Bahamas"
+          },
+          {
+            "id": "l-2683048624",
+            "label": "Haïti"
+          }
+        ],
+        "right": [
+          {
+            "id": "r-3160046792",
+            "label": "Nassau"
+          },
+          {
+            "id": "r-2656848323",
+            "label": "Port-au-Prince"
+          },
+          {
+            "id": "r-3652071771",
+            "label": "Kingstown"
+          },
+          {
+            "id": "r-4156017210",
+            "label": "Basse-Terre"
+          }
+        ],
+        "correctPairs": {
+          "l-3079757530": "r-3652071771",
+          "l-587499882": "r-4156017210",
+          "l-2862899594": "r-3160046792",
+          "l-2683048624": "r-2656848323"
+        }
+      }
+    },
+    {
+      "id": "car-41",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "independance"
+      ],
+      "question": "En quelle année a eu lieu l'indépendance de Cuba ?",
+      "explanation": "L'indépendance de Cuba a été proclamée en 1902.",
+      "content": {
+        "min": 1862,
+        "max": 1942,
+        "step": 1,
+        "target": 1902,
+        "tolerance": 4
+      }
+    },
+    {
+      "id": "car-07",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quel territoire a pour capitale Castries ?",
+      "explanation": "La capitale de Sainte-Lucie est Castries.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Antigua-et-Barbuda",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Guadeloupe",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Sainte-Lucie",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-13",
+      "type": "matching",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "point_culminant"
+      ],
+      "question": "Associez chaque territoire à son point culminant.",
+      "explanation": "Trinité-et-Tobago → El Cerro del Aripo · Saint-Christophe-et-Niévès → Mont Liamuiga · Guadeloupe → La Grande Soufrière · Jamaïque → Blue Mountain Peak",
+      "content": {
+        "left": [
+          {
+            "id": "l-1303235527",
+            "label": "Trinité-et-Tobago"
+          },
+          {
+            "id": "l-260978542",
+            "label": "Saint-Christophe-et-Niévès"
+          },
+          {
+            "id": "l-587499882",
+            "label": "Guadeloupe"
+          },
+          {
+            "id": "l-431199204",
+            "label": "Jamaïque"
+          }
+        ],
+        "right": [
+          {
+            "id": "r-1418222966",
+            "label": "La Grande Soufrière"
+          },
+          {
+            "id": "r-1987968467",
+            "label": "Blue Mountain Peak"
+          },
+          {
+            "id": "r-1895139339",
+            "label": "El Cerro del Aripo"
+          },
+          {
+            "id": "r-2487671754",
+            "label": "Mont Liamuiga"
+          }
+        ],
+        "correctPairs": {
+          "l-1303235527": "r-1895139339",
+          "l-260978542": "r-2487671754",
+          "l-587499882": "r-1418222966",
+          "l-431199204": "r-1987968467"
+        }
+      }
+    },
+    {
+      "id": "car-17",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "monnaie"
+      ],
+      "question": "Quelle est la monnaie des Îles Caïmans ?",
+      "explanation": "La monnaie des Îles Caïmans est le dollar des îles Caïmans. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "le dollar des îles Caïmans",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "le dollar bahaméen",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "le dollar jamaïcain",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-06",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quel territoire a pour capitale Basse-Terre ?",
+      "explanation": "La capitale de la Guadeloupe est Basse-Terre.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Guadeloupe",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "Jamaïque",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Haïti",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-30",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Estimez la superficie de la Jamaïque (en km²).",
+      "explanation": "La Jamaïque couvre environ 10 991 km².",
+      "content": {
+        "min": 3000,
+        "max": 24000,
+        "step": 1000,
+        "target": 10991,
+        "tolerance": 1000,
+        "unit": "km²"
+      }
+    },
+    {
+      "id": "car-33",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Classez ces territoires du plus vaste au plus petit.",
+      "explanation": "Porto Rico (8 868 km²) › Sainte-Lucie (617 km²) › Curaçao (444 km²) › Antigua-et-Barbuda (442 km²)",
+      "content": {
+        "items": [
+          {
+            "id": "o-2818850201",
+            "label": "Curaçao"
+          },
+          {
+            "id": "o-1275609814",
+            "label": "Porto Rico"
+          },
+          {
+            "id": "o-3781866990",
+            "label": "Sainte-Lucie"
+          },
+          {
+            "id": "o-3753142652",
+            "label": "Antigua-et-Barbuda"
+          }
+        ],
+        "correctOrder": [
+          "o-1275609814",
+          "o-3781866990",
+          "o-2818850201",
+          "o-3753142652"
+        ]
+      }
+    },
+    {
+      "id": "car-28",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "population"
+      ],
+      "question": "Classez ces territoires du plus peuplé au moins peuplé.",
+      "explanation": "Jamaïque (2 825 000 habitants) › Grenade (117 000 habitants) › Saint-Vincent-et-les-Grenadines (104 000 habitants) › Îles Caïmans (69 000 habitants)",
       "content": {
         "items": [
           {
@@ -402,12 +1149,12 @@
             "label": "Jamaïque"
           },
           {
-            "id": "o-4172337464",
-            "label": "Trinité-et-Tobago"
+            "id": "o-3843073525",
+            "label": "Saint-Vincent-et-les-Grenadines"
           },
           {
-            "id": "o-672984791",
-            "label": "Barbade"
+            "id": "o-4058798576",
+            "label": "Îles Caïmans"
           },
           {
             "id": "o-2088523898",
@@ -416,60 +1163,88 @@
         ],
         "correctOrder": [
           "o-1164320771",
-          "o-4172337464",
-          "o-672984791",
-          "o-2088523898"
+          "o-2088523898",
+          "o-3843073525",
+          "o-4058798576"
         ]
       }
     },
     {
-      "id": "car-27",
-      "type": "numeric",
+      "id": "car-34",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Classez ces territoires du plus vaste au plus petit.",
+      "explanation": "Haïti (27 750 km²) › Trinité-et-Tobago (5 130 km²) › Curaçao (444 km²) › Saint-Vincent-et-les-Grenadines (389 km²)",
+      "content": {
+        "items": [
+          {
+            "id": "o-822226663",
+            "label": "Trinité-et-Tobago"
+          },
+          {
+            "id": "o-2818850201",
+            "label": "Curaçao"
+          },
+          {
+            "id": "o-1466947150",
+            "label": "Saint-Vincent-et-les-Grenadines"
+          },
+          {
+            "id": "o-684820864",
+            "label": "Haïti"
+          }
+        ],
+        "correctOrder": [
+          "o-684820864",
+          "o-822226663",
+          "o-2818850201",
+          "o-1466947150"
+        ]
+      }
+    },
+    {
+      "id": "car-19",
+      "type": "qcm",
       "theme": "caraibes",
       "difficulty": "medium",
       "points": 2,
       "tags": [
-        "population"
+        "langues"
       ],
-      "question": "Estimez la population de Saint-Vincent-et-les-Grenadines.",
-      "explanation": "Saint-Vincent-et-les-Grenadines compte environ 104 000 habitants.",
+      "question": "Quelles sont les langues officielles de la Martinique ? (plusieurs réponses)",
+      "explanation": "Les langues officielles de la Martinique sont : français et créole martiniquais.",
       "content": {
-        "min": 30000,
-        "max": 230000,
-        "step": 10000,
-        "target": 104000,
-        "tolerance": 10000,
-        "unit": "habitants"
-      }
-    },
-    {
-      "id": "car-04",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quelle est la capitale de la Barbade ?",
-      "explanation": "La capitale de la Barbade est Bridgetown.",
-      "content": {
-        "multiple": false,
+        "multiple": true,
         "answers": [
           {
             "id": "a",
-            "label": "Port-d'Espagne",
+            "label": "créole antillais",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "Bridgetown",
-            "isCorrect": true
+            "label": "créole guadeloupéen",
+            "isCorrect": false
           },
           {
             "id": "c",
-            "label": "Nassau",
+            "label": "créole martiniquais",
+            "isCorrect": true
+          },
+          {
+            "id": "d",
+            "label": "espagnol",
             "isCorrect": false
+          },
+          {
+            "id": "e",
+            "label": "français",
+            "isCorrect": true
           }
         ]
       }
@@ -484,187 +1259,36 @@
         "independance"
       ],
       "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
-      "explanation": "République dominicaine (1 844) › Barbade (1 966) › Grenade (1 974) › Dominique (1 978)",
+      "explanation": "Haïti (1 804) › République dominicaine (1 844) › Dominique (1 978) › Sainte-Lucie (1 979)",
       "content": {
         "items": [
           {
-            "id": "o-3781169482",
-            "label": "Barbade"
+            "id": "o-2745356527",
+            "label": "République dominicaine"
           },
           {
             "id": "o-2865196374",
             "label": "Dominique"
           },
           {
-            "id": "o-3168834659",
-            "label": "Grenade"
-          },
-          {
-            "id": "o-2745356527",
-            "label": "République dominicaine"
-          }
-        ],
-        "correctOrder": [
-          "o-2745356527",
-          "o-3781169482",
-          "o-3168834659",
-          "o-2865196374"
-        ]
-      }
-    },
-    {
-      "id": "car-33",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Classez ces pays du plus vaste au plus petit.",
-      "explanation": "Jamaïque (10 991 km²) › Dominique (751 km²) › Sainte-Lucie (617 km²) › Grenade (344 km²)",
-      "content": {
-        "items": [
-          {
-            "id": "o-3300810916",
-            "label": "Jamaïque"
-          },
-          {
-            "id": "o-3702220345",
-            "label": "Grenade"
-          },
-          {
-            "id": "o-3341783908",
-            "label": "Dominique"
-          },
-          {
-            "id": "o-3781866990",
+            "id": "o-1569151740",
             "label": "Sainte-Lucie"
-          }
-        ],
-        "correctOrder": [
-          "o-3300810916",
-          "o-3341783908",
-          "o-3781866990",
-          "o-3702220345"
-        ]
-      }
-    },
-    {
-      "id": "car-41",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "independance"
-      ],
-      "question": "En quelle année a eu lieu l'indépendance de la Grenade ?",
-      "explanation": "L'indépendance de la Grenade a été proclamée en 1974.",
-      "content": {
-        "min": 1934,
-        "max": 2000,
-        "step": 1,
-        "target": 1974,
-        "tolerance": 4
-      }
-    },
-    {
-      "id": "car-08",
-      "type": "matching",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Associez chaque pays à sa capitale.",
-      "explanation": "Saint-Christophe-et-Niévès → Basseterre · Jamaïque → Kingston · Haïti → Port-au-Prince · Antigua-et-Barbuda → Saint John's",
-      "content": {
-        "left": [
-          {
-            "id": "l-260978542",
-            "label": "Saint-Christophe-et-Niévès"
           },
           {
-            "id": "l-431199204",
-            "label": "Jamaïque"
-          },
-          {
-            "id": "l-2683048624",
+            "id": "o-1081766386",
             "label": "Haïti"
-          },
-          {
-            "id": "l-141072396",
-            "label": "Antigua-et-Barbuda"
-          }
-        ],
-        "right": [
-          {
-            "id": "r-50862460",
-            "label": "Kingston"
-          },
-          {
-            "id": "r-3214659201",
-            "label": "Basseterre"
-          },
-          {
-            "id": "r-2656848323",
-            "label": "Port-au-Prince"
-          },
-          {
-            "id": "r-2985930985",
-            "label": "Saint John's"
-          }
-        ],
-        "correctPairs": {
-          "l-260978542": "r-3214659201",
-          "l-431199204": "r-50862460",
-          "l-2683048624": "r-2656848323",
-          "l-141072396": "r-2985930985"
-        }
-      }
-    },
-    {
-      "id": "car-34",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Classez ces pays du plus vaste au plus petit.",
-      "explanation": "Cuba (109 884 km²) › Jamaïque (10 991 km²) › Barbade (430 km²) › Saint-Vincent-et-les-Grenadines (389 km²)",
-      "content": {
-        "items": [
-          {
-            "id": "o-3300810916",
-            "label": "Jamaïque"
-          },
-          {
-            "id": "o-931366408",
-            "label": "Barbade"
-          },
-          {
-            "id": "o-3863628284",
-            "label": "Cuba"
-          },
-          {
-            "id": "o-1466947150",
-            "label": "Saint-Vincent-et-les-Grenadines"
           }
         ],
         "correctOrder": [
-          "o-3863628284",
-          "o-3300810916",
-          "o-931366408",
-          "o-1466947150"
+          "o-1081766386",
+          "o-2745356527",
+          "o-2865196374",
+          "o-1569151740"
         ]
       }
     },
     {
-      "id": "car-01",
+      "id": "car-04",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -672,24 +1296,56 @@
       "tags": [
         "capitale"
       ],
-      "question": "Quelle est la capitale de Cuba ?",
-      "explanation": "La capitale de Cuba est La Havane.",
+      "question": "Quelle est la capitale de Trinité-et-Tobago ?",
+      "explanation": "La capitale de Trinité-et-Tobago est Port-d'Espagne.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Roseau",
-            "isCorrect": false
+            "label": "Port-d'Espagne",
+            "isCorrect": true
           },
           {
             "id": "b",
-            "label": "Kingston",
+            "label": "La Havane",
             "isCorrect": false
           },
           {
             "id": "c",
-            "label": "La Havane",
+            "label": "Saint-Georges",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-16",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "monnaie"
+      ],
+      "question": "Quelle est la monnaie de la Guadeloupe ?",
+      "explanation": "La monnaie de la Guadeloupe est l'euro. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "le dollar américain",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "le dollar bahaméen",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "l'euro",
             "isCorrect": true
           }
         ]
@@ -705,222 +1361,36 @@
         "altitude_m"
       ],
       "question": "Classez ces sommets du plus haut au plus bas.",
-      "explanation": "Pic la Selle (2 680 m) › Mont Sainte-Catherine (840 m) › Mont Obama (402 m) › Mont Hillaby (340 m)",
+      "explanation": "Pico Turquino (1 974 m) › Montagne Pelée (1 397 m) › Cerro de Punta (1 338 m) › Mont Liamuiga (1 156 m)",
       "content": {
         "items": [
           {
-            "id": "o-3868537986",
-            "label": "Pic la Selle"
+            "id": "o-4180270480",
+            "label": "Montagne Pelée"
           },
           {
-            "id": "o-1889892039",
-            "label": "Mont Sainte-Catherine"
+            "id": "o-1654454556",
+            "label": "Mont Liamuiga"
           },
           {
-            "id": "o-4207923838",
-            "label": "Mont Obama"
+            "id": "o-1645259518",
+            "label": "Pico Turquino"
           },
           {
-            "id": "o-2871199450",
-            "label": "Mont Hillaby"
+            "id": "o-2289742768",
+            "label": "Cerro de Punta"
           }
         ],
         "correctOrder": [
-          "o-3868537986",
-          "o-1889892039",
-          "o-4207923838",
-          "o-2871199450"
+          "o-1645259518",
+          "o-4180270480",
+          "o-2289742768",
+          "o-1654454556"
         ]
       }
     },
     {
-      "id": "car-16",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "monnaie"
-      ],
-      "question": "Quelle est la monnaie de Saint-Christophe-et-Niévès ?",
-      "explanation": "La monnaie de Saint-Christophe-et-Niévès est le dollar des Caraïbes orientales. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "le peso dominicain",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "le dollar des Caraïbes orientales",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "la gourde",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-43",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "independance"
-      ],
-      "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
-      "explanation": "Haïti (1 804) › République dominicaine (1 844) › Dominique (1 978) › Sainte-Lucie (1 979)",
-      "content": {
-        "items": [
-          {
-            "id": "o-2865196374",
-            "label": "Dominique"
-          },
-          {
-            "id": "o-2745356527",
-            "label": "République dominicaine"
-          },
-          {
-            "id": "o-1081766386",
-            "label": "Haïti"
-          },
-          {
-            "id": "o-1569151740",
-            "label": "Sainte-Lucie"
-          }
-        ],
-        "correctOrder": [
-          "o-1081766386",
-          "o-2745356527",
-          "o-2865196374",
-          "o-1569151740"
-        ]
-      }
-    },
-    {
-      "id": "car-22",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelle est la langue officielle d'Antigua-et-Barbuda ?",
-      "explanation": "La langue officielle d'Antigua-et-Barbuda est anglais.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "créole saint-lucien",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "créole antillais",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "anglais",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-03",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quelle est la capitale de Sainte-Lucie ?",
-      "explanation": "La capitale de Sainte-Lucie est Castries.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "La Havane",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "Port-d'Espagne",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Castries",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-37",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "altitude_m"
-      ],
-      "question": "À quelle altitude culmine Mont Gimie (en m) ?",
-      "explanation": "Mont Gimie, point culminant de Sainte-Lucie, atteint 950 m.",
-      "content": {
-        "min": 300,
-        "max": 2100,
-        "step": 50,
-        "target": 950,
-        "tolerance": 100,
-        "unit": "m"
-      }
-    },
-    {
-      "id": "car-20",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelle est la langue officielle de Saint-Christophe-et-Niévès ?",
-      "explanation": "La langue officielle de Saint-Christophe-et-Niévès est anglais.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "espagnol",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "créole haïtien",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "anglais",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-10",
+      "id": "car-09",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -928,15 +1398,15 @@
       "tags": [
         "point_culminant"
       ],
-      "question": "Quel est le point culminant de la Grenade ?",
-      "explanation": "Le point culminant de la Grenade est Mont Sainte-Catherine (840 m).",
+      "question": "Quel est le point culminant des Îles Caïmans ?",
+      "explanation": "Le point culminant des Îles Caïmans est The Bluff (43 m).",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Mont Sainte-Catherine",
-            "isCorrect": true
+            "label": "Jamanota",
+            "isCorrect": false
           },
           {
             "id": "b",
@@ -945,458 +1415,8 @@
           },
           {
             "id": "c",
-            "label": "Mont Liamuiga",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-19",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelles sont les langues officielles d'Haïti ? (plusieurs réponses)",
-      "explanation": "Les langues officielles d'Haïti sont : français et créole haïtien.",
-      "content": {
-        "multiple": true,
-        "answers": [
-          {
-            "id": "a",
-            "label": "créole haïtien",
+            "label": "The Bluff",
             "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "créole antillais",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "français",
-            "isCorrect": true
-          },
-          {
-            "id": "d",
-            "label": "anglais",
-            "isCorrect": false
-          },
-          {
-            "id": "e",
-            "label": "espagnol",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-24",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelles sont les langues officielles de la Dominique ? (plusieurs réponses)",
-      "explanation": "Les langues officielles de la Dominique sont : anglais et créole antillais.",
-      "content": {
-        "multiple": true,
-        "answers": [
-          {
-            "id": "a",
-            "label": "anglais",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "créole antillais",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "créole saint-lucien",
-            "isCorrect": false
-          },
-          {
-            "id": "d",
-            "label": "français",
-            "isCorrect": false
-          },
-          {
-            "id": "e",
-            "label": "créole haïtien",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-18",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelle est la langue officielle de la République dominicaine ?",
-      "explanation": "La langue officielle de la République dominicaine est espagnol.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "anglais",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "créole antillais",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "espagnol",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-14",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "monnaie"
-      ],
-      "question": "Quelle est la monnaie des Bahamas ?",
-      "explanation": "La monnaie des Bahamas est le dollar bahaméen. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "le dollar bahaméen",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "le dollar de Trinité-et-Tobago",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "le dollar barbadien",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-15",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "monnaie"
-      ],
-      "question": "Quelle est la monnaie de Sainte-Lucie ?",
-      "explanation": "La monnaie de Sainte-Lucie est le dollar des Caraïbes orientales. Six petits États de l'est des Caraïbes partagent le dollar des Caraïbes orientales.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "le peso cubain",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "le dollar jamaïcain",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "le dollar des Caraïbes orientales",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-06",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quel pays a pour capitale Port-d'Espagne ?",
-      "explanation": "La capitale de Trinité-et-Tobago est Port-d'Espagne.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Grenade",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "Trinité-et-Tobago",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "Saint-Vincent-et-les-Grenadines",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-26",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "population"
-      ],
-      "question": "Estimez la population d'Haïti.",
-      "explanation": "Haïti compte environ 11 700 000 habitants.",
-      "content": {
-        "min": 4000000,
-        "max": 26000000,
-        "step": 1000000,
-        "target": 11700000,
-        "tolerance": 1000000,
-        "unit": "habitants"
-      }
-    },
-    {
-      "id": "car-42",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "independance"
-      ],
-      "question": "En quelle année a eu lieu l'indépendance de la Jamaïque ?",
-      "explanation": "L'indépendance de la Jamaïque a été proclamée en 1962.",
-      "content": {
-        "min": 1922,
-        "max": 2000,
-        "step": 1,
-        "target": 1962,
-        "tolerance": 4
-      }
-    },
-    {
-      "id": "car-31",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Estimez la superficie de la Grenade (en km²).",
-      "explanation": "La Grenade couvre environ 344 km².",
-      "content": {
-        "min": 100,
-        "max": 760,
-        "step": 20,
-        "target": 344,
-        "tolerance": 40,
-        "unit": "km²"
-      }
-    },
-    {
-      "id": "car-40",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "independance"
-      ],
-      "question": "En quelle année a eu lieu l'indépendance de Saint-Christophe-et-Niévès ?",
-      "explanation": "L'indépendance de Saint-Christophe-et-Niévès a été proclamée en 1983.",
-      "content": {
-        "min": 1943,
-        "max": 2000,
-        "step": 1,
-        "target": 1983,
-        "tolerance": 4
-      }
-    },
-    {
-      "id": "car-11",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "point_culminant"
-      ],
-      "question": "Quel est le point culminant de la République dominicaine ?",
-      "explanation": "Le point culminant de la République dominicaine est Pico Duarte (3 098 m).",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Pico Turquino",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "Morne Diablotins",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Pico Duarte",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-35",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "altitude_m"
-      ],
-      "question": "À quelle altitude culmine Pico Duarte (en m) ?",
-      "explanation": "Pico Duarte, point culminant de la République dominicaine, atteint 3 098 m.",
-      "content": {
-        "min": 1000,
-        "max": 6800,
-        "step": 200,
-        "target": 3098,
-        "tolerance": 400,
-        "unit": "m"
-      }
-    },
-    {
-      "id": "car-39",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "altitude_m"
-      ],
-      "question": "Classez ces sommets du plus haut au plus bas.",
-      "explanation": "Pico Duarte (3 098 m) › Pico Turquino (1 974 m) › Morne Diablotins (1 447 m) › Mont Gimie (950 m)",
-      "content": {
-        "items": [
-          {
-            "id": "o-1326031382",
-            "label": "Morne Diablotins"
-          },
-          {
-            "id": "o-1645259518",
-            "label": "Pico Turquino"
-          },
-          {
-            "id": "o-436909139",
-            "label": "Pico Duarte"
-          },
-          {
-            "id": "o-1777424376",
-            "label": "Mont Gimie"
-          }
-        ],
-        "correctOrder": [
-          "o-436909139",
-          "o-1645259518",
-          "o-1326031382",
-          "o-1777424376"
-        ]
-      }
-    },
-    {
-      "id": "car-28",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "population"
-      ],
-      "question": "Classez ces pays du plus peuplé au moins peuplé.",
-      "explanation": "République dominicaine (11 330 000 habitants) › Cuba (11 190 000 habitants) › Antigua-et-Barbuda (94 000 habitants) › Dominique (73 000 habitants)",
-      "content": {
-        "items": [
-          {
-            "id": "o-1639715907",
-            "label": "Dominique"
-          },
-          {
-            "id": "o-655406902",
-            "label": "République dominicaine"
-          },
-          {
-            "id": "o-740548731",
-            "label": "Antigua-et-Barbuda"
-          },
-          {
-            "id": "o-2472851707",
-            "label": "Cuba"
-          }
-        ],
-        "correctOrder": [
-          "o-655406902",
-          "o-2472851707",
-          "o-740548731",
-          "o-1639715907"
-        ]
-      }
-    },
-    {
-      "id": "car-23",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelle est la langue officielle de la Barbade ?",
-      "explanation": "La langue officielle de la Barbade est anglais.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "anglais",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "créole saint-lucien",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "espagnol",
-            "isCorrect": false
           }
         ]
       }
