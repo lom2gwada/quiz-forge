@@ -48,3 +48,7 @@ Une cellule vide n'alimente aucune question ; les classements ne tirent qu'une l
 ## Format d'un quiz JSON
 
 Un fichier de quiz importé doit respecter le contrat de [`src/types/quiz.ts`](src/types/quiz.ts), validé par [`parseQuiz`](src/utils/quizValidation.ts) — c'est aussi la sortie de `generateQuiz`.
+
+## Perspectives
+
+[`docs/architecture-packs.md`](docs/architecture-packs.md) — réflexion sur l'ouverture de quiz-forge à d'autres sujets (« packs ») : un moteur générique, un sujet = du contenu (données + schéma + config de génération + thème), avec ou sans base de données. Proposition, non implémentée.
