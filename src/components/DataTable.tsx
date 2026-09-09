@@ -4,15 +4,15 @@ interface DataTableProps {
   rows: Row[]
 }
 
-// Affiche les données source du quiz. Lecture seule pour l'instant ; l'édition
-// par l'admin (cellules éditables + remontée des changements) viendra ici.
+// Affiche les données source du quiz (le CSV). Lecture seule pour l'instant ;
+// l'édition par l'admin (cellules éditables + remontée des changements) viendra ici.
 export function DataTable({ rows }: DataTableProps) {
   const headers = rows.length ? Object.keys(rows[0]) : []
   if (!headers.length) return null
 
   return (
-    <details className="question-list-group data-table-details">
-      <summary>Données source ({rows.length} lignes × {headers.length} colonnes)</summary>
+    <section className="data-table-section">
+      <h3 className="stats-group-title">Données source — {rows.length} lignes × {headers.length} colonnes</h3>
       <div className="data-table-wrap">
         <table className="data-table">
           <thead>
@@ -34,6 +34,6 @@ export function DataTable({ rows }: DataTableProps) {
           </tbody>
         </table>
       </div>
-    </details>
+    </section>
   )
 }

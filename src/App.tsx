@@ -184,7 +184,7 @@ export default function App() {
       saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, quiz.metadata.title))
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} themes={quiz.themes} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} />}
-    {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} fileError={fileError} genError={genError} isAdmin={true} />}
+    {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} fileError={fileError} genError={genError} />}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); setProfile((current) => ({ ...current, ...next })) }} onViewHistory={() => viewHistory('profile')} />}
   </main>

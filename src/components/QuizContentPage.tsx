@@ -3,9 +3,7 @@ import type { GenSchema, Row } from '../utils/quizGenerator'
 import { DataTable } from './DataTable'
 import { GeneratorPanel } from './GeneratorPanel'
 import { PieChart } from './PieChart'
-import { QuestionImage } from './QuestionImage'
-import { TYPE_ICONS, TYPE_LABELS } from './QuizPage'
-import { correctAnswer } from './ResultPage'
+import { TYPE_LABELS } from './QuizPage'
 
 const THEME_COLORS = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#fb7185', '#22d3ee', '#f472b6', '#94a3b8']
 const QUESTION_TYPES = Object.keys(TYPE_LABELS) as Question['type'][]
@@ -22,10 +20,9 @@ interface QuizContentPageProps {
   onGenerate: (schema: GenSchema, seed: string) => void
   fileError: string
   genError: string
-  isAdmin: boolean
 }
 
-export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, fileError, genError, isAdmin }: QuizContentPageProps) {
+export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, fileError, genError }: QuizContentPageProps) {
   const byTheme = quiz.themes
     .map((theme, index) => ({
       label: theme.label,
@@ -54,7 +51,6 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
       {fileError && <p className="alert" role="alert">{fileError}</p>}
     </div>
     {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} onGenerate={onGenerate} error={genError} />}
-    {dataset && <DataTable rows={dataset.rows} />}
     <h3 className="stats-group-title">Répartition des questions</h3>
     <div className="stats-grid">
       <PieChart title={`Thèmes — ${quiz.questions.length} questions`} data={byTheme} />
@@ -72,24 +68,6 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
         return <PieChart key={theme.id} title={`${theme.label} — ${themeQuestions.length} questions`} data={byDifficulty} />
       })}
     </div>
-    {isAdmin && <>
-      <h3 className="stats-group-title profile-section-title">Toutes les questions ({quiz.questions.length})</h3>
-      {quiz.themes.map((theme) => {
-        const themeQuestions = quiz.questions.filter((question) => question.theme === theme.id)
-        if (!themeQuestions.length) return null
-        return <details key={theme.id} className="question-list-group">
-          <summary>{theme.label} ({themeQuestions.length})</summary>
-          <div className="question-list">
-            {themeQuestions.map((question) => <article key={question.id} className="question-list-item">
-              <div className="question-meta"><span>{TYPE_ICONS[question.type]} {TYPE_LABELS[question.type]}</span><span>{DIFFICULTY_LABELS[question.difficulty]}</span><span>{question.points} pts</span></div>
-              <p className="question-list-prompt">{question.question}</p>
-              {question.imageUrl && <QuestionImage src={question.imageUrl} alt={question.imageAlt} />}
-              <p><strong>Réponse :</strong> {correctAnswer(question)}</p>
-              <p className="question-list-explanation">{question.explanation}</p>
-            </article>)}
-          </div>
-        </details>
-      })}
-    </>}
+    {dataset && <DataTable rows={dataset.rows} />}
   </section>
 }
