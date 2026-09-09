@@ -196,13 +196,6 @@ const CFG = {
   matching: { groupSize: 4, points: 2, difficulty: 'medium' as const },
 }
 
-// Découpe une liste en groupes consécutifs de `size`, en jetant un reliquat de moins de 3.
-function chunk<T>(items: T[], size: number): T[][] {
-  const groups: T[][] = []
-  for (let i = 0; i + 3 <= items.length; i += size) groups.push(items.slice(i, i + size))
-  return groups
-}
-
 export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: string }): Quiz {
   const rand = mulberry32(hashStr(opts.seed))
   const shuffle = <T>(arr: T[]): T[] => {
@@ -217,6 +210,23 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
 
   const { subjectColumn, articleColumn, noun } = schema
   const nameOf = (row: Row): string => row[subjectColumn] ?? ''
+
+  // Groupes aléatoires de `size` lignes, qui peuvent se recouvrir d'une question à l'autre.
+  // ~une question par ligne du pool ; les doublons exacts (petits jeux de données) sont écartés.
+  const overlapGroups = (pool: Row[], size: number): Row[][] => {
+    const n = Math.min(size, pool.length)
+    if (n < 3) return []
+    const groups: Row[][] = []
+    const seen = new Set<string>()
+    for (let i = 0; i < pool.length; i += 1) {
+      const group = sample(pool, n)
+      const key = group.map(nameOf).sort().join('|')
+      if (seen.has(key)) continue
+      seen.add(key)
+      groups.push(group)
+    }
+    return groups
+  }
   const artOf = (row: Row): string => (articleColumn ? row[articleColumn] ?? '' : '')
   const de = (row: Row): string => dePhrase(nameOf(row), artOf(row))
 
@@ -340,15 +350,15 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       }
     }
 
-    // ---- Classement (ordering) : autant de groupes que les données le permettent ----
-    // Une seule ligne par valeur distincte (deux ex æquo rendraient l'ordre ambigu), puis découpe en groupes.
+    // ---- Classement (ordering) : groupes aléatoires qui se recouvrent ----
+    // Une seule ligne par valeur distincte au départ (deux ex æquo rendraient l'ordre attendu ambigu).
     if (spec.kind === 'number') {
       const distinct = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
       const direction: 'asc' | 'desc' = spec.isYear ? 'asc' : 'desc'
-      for (const group of chunk(distinct, CFG.order.groupSize)) {
+      const idOf = (r: Row): string => `o-${hashStr(nameOf(r) + col)}`
+      for (const group of overlapGroups(distinct, CFG.order.groupSize)) {
         const sorted = [...group].sort((a, b) =>
           direction === 'asc' ? asNumber(a[col]) - asNumber(b[col]) : asNumber(b[col]) - asNumber(a[col]))
-        const idOf = (r: Row): string => `o-${hashStr(nameOf(r) + col)}`
         questions.push({
           id: nextId(), type: 'ordering', theme: themeId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
           question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
@@ -363,11 +373,11 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       }
     }
 
-    // ---- Association (matching) : autant de groupes que les données le permettent ----
+    // ---- Association (matching) : groupes aléatoires qui se recouvrent ----
     if (spec.kind === 'string' && spec.unique) {
       const leftId = (r: Row): string => `l-${hashStr(nameOf(r))}`
       const rightId = (r: Row): string => `r-${hashStr(r[col])}`
-      for (const group of chunk(shuffle(rowsWith), CFG.matching.groupSize)) {
+      for (const group of overlapGroups(rowsWith, CFG.matching.groupSize)) {
         questions.push({
           id: nextId(), type: 'matching', theme: themeId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
           question: `Associez chaque ${noun} à : ${spec.label}.`,
