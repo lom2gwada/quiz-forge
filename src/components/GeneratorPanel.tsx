@@ -11,6 +11,7 @@ interface GeneratorPanelProps {
 }
 
 function typeBadges(spec: GenSchema['columns'][string]): string[] {
+  if (spec.isImage) return ['image', ...(spec.unique ? ['unique'] : [])]
   const badges = [spec.kind === 'number' ? 'nombre' : 'texte']
   if (spec.isYear) badges.push('année')
   if (spec.multivalueSeparator) badges.push('multi')
@@ -59,7 +60,7 @@ export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPan
               <span className="generator-column-name">{col}</span>
             </label>
             <span className="generator-column-badges">{typeBadges(spec).map((b) => <span key={b} className="generator-badge">{b}</span>)}</span>
-            {spec.kind === 'string' && spec.include && (
+            {spec.kind === 'string' && !spec.isImage && spec.include && (
               <label className="generator-sep">séparateur multivaleur
                 <input
                   value={spec.multivalueSeparator ?? ''}

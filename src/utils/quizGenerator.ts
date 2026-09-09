@@ -11,6 +11,8 @@ export interface ColumnSpec {
   kind: 'string' | 'number'
   unique: boolean
   isYear: boolean
+  /** La colonne contient des URLs d'images (ex. drapeaux) → questions « quelle entité ? » sur l'image. */
+  isImage?: boolean
   multivalueSeparator?: string
   label: string
   unit?: string
@@ -94,6 +96,8 @@ const hasValue = (v: string | undefined): boolean => v != null && String(v).trim
 const asNumber = (v: string): number => Number(String(v).replace(/[\s ]/g, '').replace(',', '.'))
 const isNumeric = (v: string): boolean => hasValue(v) && Number.isFinite(asNumber(v))
 const isUrl = (v: string): boolean => /^https?:\/\//i.test(v.trim())
+const looksLikeImage = (v: string): boolean => /\.(svg|png|jpe?g|webp|gif|avif)(\?|$)/i.test(v) || /filepath/i.test(v)
+const IMAGE_HEADER = /drapeau|flag|image|photo|logo|blason|armoiries|embl/i
 
 const ARTICLE_VALUES = new Set(['', 'le', 'la', 'les', "l'"])
 const SUBJECT_HINTS = ['nom', 'name', 'pays', 'sujet', 'titre', 'title', 'ville', 'city', 'entité', 'entite']
@@ -122,7 +126,7 @@ export function inferSchema(rows: Row[], opts?: { subjectColumn?: string }): Gen
 
   const isStringCol = (h: string): boolean => {
     const filled = rows.map((r) => r[h] ?? '').filter(hasValue)
-    return filled.length > 0 && !filled.every(isNumeric)
+    return filled.length > 0 && !filled.every(isNumeric) && !filled.every(isUrl)
   }
   const subjectColumn =
     (opts?.subjectColumn && headers.includes(opts.subjectColumn) ? opts.subjectColumn : undefined) ??
@@ -147,8 +151,10 @@ export function inferSchema(rows: Row[], opts?: { subjectColumn?: string }): Gen
       multivalueSeparator ? v.split(multivalueSeparator).map((s) => s.trim()).filter(Boolean) : [v],
     )
     const unique = kind === 'string' && !multivalueSeparator && new Set(atoms).size === atoms.length && atoms.length > 0
-    const include = filled.length > 0 && !filled.every(isUrl)
-    columns[header] = { include, kind, unique, isYear, multivalueSeparator, label, unit }
+    const allUrls = filled.length > 0 && filled.every(isUrl)
+    const isImage = allUrls && (filled.some(looksLikeImage) || IMAGE_HEADER.test(header))
+    const include = filled.length > 0 && (!allUrls || isImage)
+    columns[header] = { include, kind, unique, isYear, isImage, multivalueSeparator, label, unit }
   }
 
   return {
@@ -189,6 +195,7 @@ const CFG = {
   qcm: { choices: 3, points: 1, difficulty: 'easy' as const },
   qcmMulti: { options: 5, points: 2, difficulty: 'medium' as const },
   qcmBackward: { choices: 3, points: 2, difficulty: 'medium' as const },
+  image: { choices: 3, points: 2, difficulty: 'medium' as const },
   boolean: { points: 1, difficulty: 'easy' as const },
   cloze: { points: 2, difficulty: 'medium' as const },
   estimate: { points: 2, difficulty: 'medium' as const },
@@ -247,8 +254,28 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     const numRowsWith = spec.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(asNumber(row[col]))) : rowsWith
     const Label = capitalize(spec.label)
 
+    // ---- Colonne image (ex. drapeaux) : identifier l'entité d'après l'image ----
+    if (spec.isImage && spec.unique) {
+      for (const row of rowsWith) {
+        const correct = nameOf(row)
+        const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.image.choices - 1)
+        if (distractors.length < CFG.image.choices - 1) continue
+        questions.push({
+          id: nextId(), type: 'qcm', theme: themeId, difficulty: CFG.image.difficulty, points: CFG.image.points, tags: [col],
+          question: `Quel ${noun} ce ${spec.label} représente-t-il ?`,
+          explanation: `Ce ${spec.label} est celui ${de(row)}.`,
+          imageUrl: row[col],
+          imageAlt: `Un ${spec.label}.`,
+          content: {
+            multiple: false,
+            answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
+          },
+        })
+      }
+    }
+
     // ---- Colonne texte : QCM + Vrai/Faux + texte à trous, une série par ligne ----
-    if (spec.kind === 'string') {
+    if (spec.kind === 'string' && !spec.isImage) {
       for (const row of rowsWith) {
         const corrects = atomsOf(row)
         if (!corrects.length) continue
@@ -310,7 +337,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     }
 
     // ---- QCM inversé (colonnes uniques) : une question par ligne ----
-    if (spec.kind === 'string' && spec.unique && rows.length > CFG.qcmBackward.choices) {
+    if (spec.kind === 'string' && !spec.isImage && spec.unique && rows.length > CFG.qcmBackward.choices) {
       for (const row of rowsWith) {
         const correct = nameOf(row)
         const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.qcmBackward.choices - 1)
@@ -374,7 +401,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     }
 
     // ---- Association (matching) : groupes aléatoires qui se recouvrent ----
-    if (spec.kind === 'string' && spec.unique) {
+    if (spec.kind === 'string' && !spec.isImage && spec.unique) {
       const leftId = (r: Row): string => `l-${hashStr(nameOf(r))}`
       const rightId = (r: Row): string => `r-${hashStr(r[col])}`
       for (const group of overlapGroups(rowsWith, CFG.matching.groupSize)) {

@@ -47,10 +47,11 @@ describe('inferSchema', () => {
     expect(schema.columns.capitale.unique).toBe(true)
   })
 
-  it('extracts unit suffixes and excludes URL columns', () => {
+  it('extracts unit suffixes and detects the flag column as an image', () => {
     expect(schema.columns.superficie_km2.unit).toBe('km²')
     expect(schema.columns.superficie_km2.label).toBe('superficie')
-    expect(schema.columns.drapeau.include).toBe(false)
+    expect(schema.columns.drapeau.isImage).toBe(true)
+    expect(schema.columns.drapeau.include).toBe(true)
   })
 
   it('honours a subject column override', () => {
@@ -89,6 +90,20 @@ describe('generateQuiz', () => {
       const values = q.explanation.match(/\(([^)]+)\)/g) ?? []
       expect(values.length).toBeGreaterThanOrEqual(3)
       expect(new Set(values).size).toBe(values.length)
+    }
+  })
+
+  it('produces flag questions with an imageUrl', () => {
+    const flagQs = quiz.questions.filter((q) => q.tags.includes('drapeau'))
+    expect(flagQs.length).toBeGreaterThan(10)
+    for (const q of flagQs) {
+      expect(q.type).toBe('qcm')
+      expect(q.imageUrl).toMatch(/^https?:\/\//)
+      expect(q.question).toContain('drapeau')
+      if (q.type === 'qcm') {
+        expect(q.content.answers.filter((a) => a.isCorrect)).toHaveLength(1)
+        expect(q.content.answers.every((a) => !a.label.startsWith('http'))).toBe(true)
+      }
     }
   })
 
