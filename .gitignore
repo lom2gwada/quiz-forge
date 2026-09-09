@@ -7,9 +7,6 @@ coverage/
 *.bak
 .claude/settings.local.json
 
-# sortie par défaut du générateur de quiz (généré, non versionné)
-scripts/quiz-gen/caribbean-quiz.json
-
 .vscode/*
 !.vscode/extensions.json
 .idea

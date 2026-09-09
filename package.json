@@ -9,9 +9,7 @@
     "preview": "node node_modules/vite/bin/vite.js preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "check-images": "node scripts/check-image-links.mjs",
-    "gen": "node scripts/quiz-gen/generate.mjs"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@vitejs/plugin-react": "4.3.4",

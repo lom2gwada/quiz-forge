@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import sampleQuiz from './data/sample-quiz.json'
+import caribbeanCsv from './data/caribbean.csv?raw'
 import { FilterPanel } from './components/FilterPanel'
 import { HistoryPage } from './components/HistoryPage'
 import { ProfilePage } from './components/ProfilePage'
@@ -12,13 +12,38 @@ import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResult
 import { fetchProfile, saveProfile } from './utils/profile'
 import { applyTheme } from './utils/theme'
 import { parseQuiz } from './utils/quizValidation'
+import { generateQuiz, inferSchema, parseCsv, randomSeed } from './utils/quizGenerator'
+import type { GenSchema, Row } from './utils/quizGenerator'
 import { isSoundMuted, playClick, setSoundMuted } from './utils/sound'
 import { shuffle } from './utils/shuffle'
 
 type View = 'start' | 'quiz' | 'results' | 'content' | 'history' | 'profile'
+type Dataset = { rows: Row[]; schema: GenSchema }
 
-const initialQuiz = parseQuiz(sampleQuiz)
 const questionCounts = [5, 10, 20, 30, 50]
+
+const FALLBACK_QUIZ: Quiz = {
+  version: '1.0',
+  metadata: { title: 'Quiz Forge', author: 'Quiz Forge', createdAt: '2026-09-09', description: 'Importe un CSV pour générer un quiz.' },
+  themes: [{ id: 'dataset', label: 'Quiz Forge' }],
+  questions: [],
+}
+
+function safeGenerate(dataset: Dataset, seed: string): { quiz: Quiz; error: string } {
+  try {
+    return { quiz: parseQuiz(generateQuiz(dataset.rows, dataset.schema, { seed })), error: '' }
+  } catch (error) {
+    return { quiz: FALLBACK_QUIZ, error: error instanceof Error ? error.message : 'Génération impossible.' }
+  }
+}
+
+const bundledRows = (() => {
+  try { return parseCsv(caribbeanCsv) } catch { return [] as Row[] }
+})()
+const initialDataset: Dataset | null = bundledRows.length
+  ? { rows: bundledRows, schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' } }
+  : null
+const initialQuiz = initialDataset ? safeGenerate(initialDataset, 'caribbean').quiz : FALLBACK_QUIZ
 
 function pickRandomQuestions<T>(questions: T[], count: number): T[] {
   return shuffle(questions).slice(0, Math.min(count, questions.length))
@@ -26,6 +51,8 @@ function pickRandomQuestions<T>(questions: T[], count: number): T[] {
 
 export default function App() {
   const [quiz, setQuiz] = useState<Quiz>(initialQuiz)
+  const [dataset, setDataset] = useState<Dataset | null>(initialDataset)
+  const [genError, setGenError] = useState('')
   const [selectedThemes, setSelectedThemes] = useState<string[]>([])
   const [difficulty, setDifficulty] = useState<Difficulty | ''>('')
   const [view, setView] = useState<View>('start')
@@ -71,14 +98,54 @@ export default function App() {
   const toggleTheme = (themeId: string) => setSelectedThemes((previous) =>
     previous.includes(themeId) ? previous.filter((id) => id !== themeId) : [...previous, themeId])
 
-  const loadFile = async (file?: File) => {
+  const applyQuiz = (next: Quiz) => {
+    setQuiz(next)
+    setSelectedThemes([]); setDifficulty(''); setSessionQuestions([])
+  }
+
+  const applyGenerated = (nextDataset: Dataset, seed: string) => {
+    const { quiz: next, error } = safeGenerate(nextDataset, seed)
+    setGenError(error)
+    if (!error) applyQuiz(next)
+  }
+
+  const loadJson = async (file?: File) => {
     if (!file) return
     try {
-      setQuiz(parseQuiz(JSON.parse(await file.text())))
-      setSelectedThemes([]); setDifficulty(''); setSessionQuestions([]); setFileError('')
+      applyQuiz(parseQuiz(JSON.parse(await file.text())))
+      setFileError('')
     } catch (error) {
       setFileError(error instanceof Error ? error.message : 'Fichier JSON invalide.')
     }
+  }
+
+  const loadCsv = async (file?: File) => {
+    if (!file) return
+    try {
+      const rows = parseCsv(await file.text())
+      if (!rows.length) throw new Error('CSV vide ou illisible.')
+      const nextDataset: Dataset = { rows, schema: inferSchema(rows) }
+      setDataset(nextDataset)
+      setFileError('')
+      setGenError('')
+      applyGenerated(nextDataset, randomSeed())
+    } catch (error) {
+      setFileError(error instanceof Error ? error.message : 'CSV invalide.')
+    }
+  }
+
+  const generateFromPanel = (schema: GenSchema, seed: string) => {
+    if (!dataset) return
+    const nextDataset: Dataset = { rows: dataset.rows, schema }
+    setDataset(nextDataset)
+    applyGenerated(nextDataset, seed)
+    navigate('start')
+  }
+
+  const newDraw = () => {
+    if (!dataset) return
+    playClick()
+    applyGenerated(dataset, randomSeed())
   }
 
   const startQuiz = () => {
@@ -109,14 +176,14 @@ export default function App() {
 
   return <main className="app-shell">
     <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>par {quiz.metadata.author}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? 'Activer le son' : 'Couper le son'}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : '👤 Profil'}</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ Quiz</button>}</div></header>
-    {view === 'start' && <section className="start-page"><FilterPanel themes={quiz.themes} selectedThemes={selectedThemes} difficulty={difficulty} onThemeToggle={toggleTheme} onDifficultyChange={setDifficulty} /><label className="question-count">Nombre de questions<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{count} {count === 1 ? 'question' : 'questions'}{count > filteredQuestions.length ? ' (indisponible)' : ''}</option>)}<option value={filteredQuestions.length}>Toutes les questions ({filteredQuestions.length})</option></select></label><p>{filteredQuestions.length} question{filteredQuestions.length > 1 ? 's' : ''} disponible{filteredQuestions.length > 1 ? 's' : ''} — {Math.min(questionCount, filteredQuestions.length)} seront tirées aléatoirement.</p><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>Démarrer le quiz</button></section>}
+    {view === 'start' && <section className="start-page"><FilterPanel themes={quiz.themes} selectedThemes={selectedThemes} difficulty={difficulty} onThemeToggle={toggleTheme} onDifficultyChange={setDifficulty} /><label className="question-count">Nombre de questions<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{count} {count === 1 ? 'question' : 'questions'}{count > filteredQuestions.length ? ' (indisponible)' : ''}</option>)}<option value={filteredQuestions.length}>Toutes les questions ({filteredQuestions.length})</option></select></label><p>{filteredQuestions.length} question{filteredQuestions.length > 1 ? 's' : ''} disponible{filteredQuestions.length > 1 ? 's' : ''} — {Math.min(questionCount, filteredQuestions.length)} seront tirées aléatoirement.</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>Démarrer le quiz</button>{dataset && <button type="button" className="secondary" onClick={newDraw}>🎲 Nouveau tirage</button>}</div></section>}
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} onFinish={(nextAnswers, duration) => {
       setAnswers(nextAnswers); setElapsedSeconds(duration); replace('results')
       saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.themes, duration, quiz.metadata.title))
       saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, quiz.metadata.title))
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} themes={quiz.themes} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} />}
-    {view === 'content' && <QuizContentPage quiz={quiz} onBack={() => navigate('start')} onFileChange={loadFile} fileError={fileError} isAdmin={true} />}
+    {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} fileError={fileError} genError={genError} isAdmin={true} />}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); setProfile((current) => ({ ...current, ...next })) }} onViewHistory={() => viewHistory('profile')} />}
   </main>

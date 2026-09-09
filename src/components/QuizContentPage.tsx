@@ -1,4 +1,6 @@
 import type { Difficulty, Question, Quiz } from '../types/quiz'
+import type { GenSchema, Row } from '../utils/quizGenerator'
+import { GeneratorPanel } from './GeneratorPanel'
 import { PieChart } from './PieChart'
 import { QuestionImage } from './QuestionImage'
 import { TYPE_ICONS, TYPE_LABELS } from './QuizPage'
@@ -12,13 +14,17 @@ const DIFFICULTY_LABELS: Record<Difficulty, string> = { easy: 'Facile', medium: 
 
 interface QuizContentPageProps {
   quiz: Quiz
+  dataset: { rows: Row[]; schema: GenSchema } | null
   onBack: () => void
-  onFileChange: (file?: File) => void
+  onJsonChange: (file?: File) => void
+  onCsvChange: (file?: File) => void
+  onGenerate: (schema: GenSchema, seed: string) => void
   fileError: string
+  genError: string
   isAdmin: boolean
 }
 
-export function QuizContentPage({ quiz, onBack, onFileChange, fileError, isAdmin }: QuizContentPageProps) {
+export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, fileError, genError, isAdmin }: QuizContentPageProps) {
   const byTheme = quiz.themes
     .map((theme, index) => ({
       label: theme.label,
@@ -42,9 +48,11 @@ export function QuizContentPage({ quiz, onBack, onFileChange, fileError, isAdmin
     </div>
     {quiz.metadata.description && <p className="quiz-description">{quiz.metadata.description}</p>}
     <div className="quiz-import">
-      <label className="file-input">Importer un autre quiz (JSON)<input type="file" accept="application/json,.json" onChange={(event) => onFileChange(event.target.files?.[0])} /></label>
+      <label className="file-input">Importer un CSV<input type="file" accept="text/csv,.csv,.tsv,text/plain" onChange={(event) => onCsvChange(event.target.files?.[0])} /></label>
+      <label className="file-input">Importer un quiz (JSON)<input type="file" accept="application/json,.json" onChange={(event) => onJsonChange(event.target.files?.[0])} /></label>
       {fileError && <p className="alert" role="alert">{fileError}</p>}
     </div>
+    {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} onGenerate={onGenerate} error={genError} />}
     <h3 className="stats-group-title">Répartition des questions</h3>
     <div className="stats-grid">
       <PieChart title={`Thèmes — ${quiz.questions.length} questions`} data={byTheme} />

@@ -8,7 +8,7 @@ export default defineConfig({
     environment: 'node',
     coverage: {
       provider: 'v8',
-      include: ['src/utils/quizValidation.ts', 'src/utils/shuffle.ts', 'src/utils/time.ts', 'src/utils/sound.ts', 'src/components/ResultPage.tsx'],
+      include: ['src/utils/quizValidation.ts', 'src/utils/quizGenerator.ts', 'src/utils/shuffle.ts', 'src/utils/time.ts', 'src/utils/sound.ts', 'src/components/ResultPage.tsx'],
     },
   },
 })
