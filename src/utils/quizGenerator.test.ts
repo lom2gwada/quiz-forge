@@ -109,6 +109,17 @@ describe('generateQuiz', () => {
     expect(a.questions.map((q) => q.id)).not.toEqual(b.questions.map((q) => q.id))
   })
 
+  it('gives every question a neutral topic label distinct from the played prompt', () => {
+    const cloze = quiz.questions.find((q) => q.type === 'cloze' && q.question === 'Capitale de la Jamaïque : ___')
+    expect(cloze?.topic).toBe('Capitale de la Jamaïque')
+    const flag = quiz.questions.find((q) => q.tags.includes('drapeau'))
+    expect(flag?.topic).toMatch(/^Drapeau (de|du|des|d')/)
+    expect(flag?.topic).not.toBe(flag?.question)
+    const grp = quiz.questions.find((q) => q.type === 'ordering')
+    expect(grp?.topic).toMatch(/ : .+,/) // libellé + liste des membres
+    for (const q of quiz.questions) expect(typeof q.topic).toBe('string')
+  })
+
   it('is deterministic for a given seed', () => {
     expect(generateQuiz(caribbeanRows, schema, { seed: 'test' })).toEqual(quiz)
     expect(generateQuiz(caribbeanRows, schema, { seed: 'other' })).not.toEqual(quiz)

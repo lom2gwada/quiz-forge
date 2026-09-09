@@ -49,6 +49,13 @@ describe('parseQuiz — root schema', () => {
     expect(result.questions[0].category).toBe('general')
   })
 
+  it('passes an optional topic through and rejects a non-string one', () => {
+    const ok = parseQuiz(quiz([{ ...base, type: 'boolean', question: 'V/F ?', content: { isTrue: true }, topic: 'Capitale de Cuba' }]))
+    expect(ok.questions[0].topic).toBe('Capitale de Cuba')
+    const bad = quiz([{ ...base, type: 'boolean', question: 'V/F ?', content: { isTrue: true }, topic: 42 }])
+    expect(() => parseQuiz(bad)).toThrow()
+  })
+
   it('parses an optional metadata description', () => {
     const withDescription = { ...quiz([]), metadata: { ...quiz([]).metadata, description: 'Un quiz de test.' } }
     const result = parseQuiz(withDescription)

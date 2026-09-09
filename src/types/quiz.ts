@@ -72,6 +72,10 @@ export interface BaseQuestion {
   category: string
   difficulty: Difficulty
   question: string
+  /** Libellé neutre de la « chose testée » (« Capitale de la Jamaïque »), pour les listes de
+   *  révision où l'énoncé joué (marqueur `___`, image générique, affirmation V/F) est inadapté.
+   *  Optionnel : les quiz importés sans ce champ retombent sur `question`. */
+  topic?: string
   tags: string[]
   explanation: string
   points: number

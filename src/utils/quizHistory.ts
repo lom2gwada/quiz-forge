@@ -80,7 +80,9 @@ export function buildQuestionResultPayloads(questions: Question[], answers: Answ
   return questions.map((question) => ({
     quiz_title: quizTitle,
     question_id: question.id,
-    question_text: question.question,
+    // `topic` (libellé neutre) plutôt que l'énoncé joué : la liste « à retravailler » reste lisible
+    // (pas de marqueur `___`, pas d'affirmation V/F, pas d'énoncé image générique).
+    question_text: question.topic ?? question.question,
     correct: isCorrect(question, answers[question.id]),
   }))
 }

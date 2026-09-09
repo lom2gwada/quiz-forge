@@ -36,18 +36,20 @@ export function parseQuiz(value: unknown): Quiz {
 
 function parseQuestion(value: unknown): Question {
   if (!isRecord(value) || !isRecord(value.content)) throw new Error('Question ou contenu invalide.')
-  const { id, type, difficulty, question, tags, explanation, points, content, imageUrl, imageAlt } = value
+  const { id, type, difficulty, question, topic, tags, explanation, points, content, imageUrl, imageAlt } = value
   const category = value.category ?? value.theme // `theme` : ancien nom accepté à l'import
   if (
     typeof id !== 'string' || typeof category !== 'string' || typeof question !== 'string' ||
     typeof explanation !== 'string' || typeof points !== 'number' || points < 0 || !hasStrings(tags) ||
     !['easy', 'medium', 'hard'].includes(String(difficulty)) ||
+    (topic !== undefined && typeof topic !== 'string') ||
     (imageUrl !== undefined && (typeof imageUrl !== 'string' || !imageUrl)) ||
     (imageAlt !== undefined && typeof imageAlt !== 'string')
   ) throw new Error(`Question « ${String(id ?? '?')} » invalide.`)
 
   const base = {
     id, category, difficulty: difficulty as Question['difficulty'], question, tags, explanation, points,
+    topic: topic as string | undefined,
     imageUrl: imageUrl as string | undefined, imageAlt: imageAlt as string | undefined,
   }
   if (type === 'qcm' && typeof content.multiple === 'boolean' && validAnswers(content.answers)) {

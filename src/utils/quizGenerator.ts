@@ -280,6 +280,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
         questions.push({
           id: qid([col, 'image', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.image.difficulty, points: CFG.image.points, tags: [col],
           question: `Quel ${noun} ce ${spec.label} représente-t-il ?`,
+          topic: `${Label} ${de(row)}`,
           explanation: `Ce ${spec.label} est celui ${de(row)}.`,
           imageUrl: row[col],
           imageAlt: `Un ${spec.label}.`,
@@ -296,7 +297,8 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       for (const row of rowsWith) {
         const corrects = atomsOf(row)
         if (!corrects.length) continue
-        const fact = `${Label} ${de(row)} : ${humanList(corrects)}.`
+        const about = `${Label} ${de(row)}`
+        const fact = `${about} : ${humanList(corrects)}.`
 
         if (corrects.length > 1) {
           const pool = domain.filter((v) => !corrects.includes(v))
@@ -306,6 +308,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
             questions.push({
               id: qid([col, 'qcm-multi', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
               question: `${Label} ${de(row)} ? (plusieurs réponses)`,
+              topic: about,
               explanation: fact,
               content: {
                 multiple: true,
@@ -320,7 +323,8 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
             questions.push({
               id: qid([col, 'qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
               question: `${Label} ${de(row)} ?`,
-              explanation: `${Label} ${de(row)} : ${correct}.`,
+              topic: about,
+              explanation: `${about} : ${correct}.`,
               content: {
                 multiple: false,
                 answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
@@ -338,6 +342,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           questions.push({
             id: qid([col, 'boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
             question: `${Label} ${de(row)} : ${shown}.`,
+            topic: about,
             explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
             content: { isTrue: showTrue },
           })
@@ -347,6 +352,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
         questions.push({
           id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
           question: `${Label} ${de(row)} : ___`,
+          topic: about,
           explanation: fact,
           content: { expectedAnswers: corrects, caseSensitive: false },
         })
@@ -361,6 +367,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
         questions.push({
           id: qid([col, 'qcm-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
           question: `Quel ${noun} a pour ${spec.label} « ${row[col]} » ?`,
+          topic: `${Label} ${de(row)}`,
           explanation: `${Label} ${de(row)} : ${row[col]}.`,
           content: {
             multiple: false,
@@ -388,6 +395,7 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           question: spec.isYear
             ? `En quelle année : ${spec.label} ${de(row)} ?`
             : `Estimez : ${spec.label} ${de(row)}${spec.unit ? ` (en ${spec.unit})` : ''}.`,
+          topic: `${Label} ${de(row)}`,
           explanation: `${Label} ${de(row)} : ${formatNumericValue(target, spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}.`,
           content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(spec.unit && !spec.isYear ? { unit: spec.unit } : {}) },
         })
@@ -401,11 +409,13 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       const direction: 'asc' | 'desc' = spec.isYear ? 'asc' : 'desc'
       const idOf = (r: Row): string => `o-${hashStr(nameOf(r) + col)}`
       for (const group of overlapGroups(distinct, CFG.order.groupSize)) {
+        const members = [...group].map(nameOf).sort()
         const sorted = [...group].sort((a, b) =>
           direction === 'asc' ? asNumber(a[col]) - asNumber(b[col]) : asNumber(b[col]) - asNumber(a[col]))
         questions.push({
-          id: qid([col, 'ordering', ...[...group].map(nameOf).sort()]), type: 'ordering', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
+          id: qid([col, 'ordering', ...members]), type: 'ordering', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
           question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
+          topic: `${Label} : ${members.join(', ')}`,
           explanation: sorted
             .map((r) => `${nameOf(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
             .join(' › '),
@@ -422,9 +432,11 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       const leftId = (r: Row): string => `l-${hashStr(nameOf(r))}`
       const rightId = (r: Row): string => `r-${hashStr(r[col])}`
       for (const group of overlapGroups(rowsWith, CFG.matching.groupSize)) {
+        const members = [...group].map(nameOf).sort()
         questions.push({
-          id: qid([col, 'matching', ...[...group].map(nameOf).sort()]), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
+          id: qid([col, 'matching', ...members]), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
           question: `Associez chaque ${noun} à : ${spec.label}.`,
+          topic: `${Label} : ${members.join(', ')}`,
           explanation: group.map((r) => `${nameOf(r)} → ${r[col]}`).join(' · '),
           content: {
             left: group.map<MatchingItem>((r) => ({ id: leftId(r), label: nameOf(r) })),

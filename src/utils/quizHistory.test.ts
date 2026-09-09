@@ -150,6 +150,14 @@ describe('buildQuestionResultPayloads', () => {
     expect(payload.correct).toBe(false)
   })
 
+  it('prefers the neutral topic label over the played prompt when present', () => {
+    const withTopic: QCMQuestion = { ...qcm, topic: 'Capitale de la Jamaïque' }
+    const [payload] = buildQuestionResultPayloads([withTopic], {}, 'Culture générale')
+    expect(payload.question_text).toBe('Capitale de la Jamaïque')
+    // sans topic : on retombe sur l'énoncé
+    expect(buildQuestionResultPayloads([qcm], {}, 'Culture générale')[0].question_text).toBe('Q ?')
+  })
+
   it('returns an empty array for no questions', () => {
     expect(buildQuestionResultPayloads([], {}, 'Culture générale')).toEqual([])
   })
