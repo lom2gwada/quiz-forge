@@ -26,9 +26,9 @@ const hashStr = (s) => { let h = 2166136261; for (const c of s) { h ^= c.charCod
 const args = process.argv.slice(2)
 const flag = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback)
 const seedArg = flag('--seed', 'caraibes')
-const outArg = flag('--out', 'scripts/quiz-gen/caraibes-quiz.json')
+const outArg = flag('--out', 'scripts/quiz-gen/caribbean-quiz.json')
 const positional = args.filter((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'))
-const schemaPath = resolve(positional[0] ?? 'scripts/quiz-gen/caraibes.schema.json')
+const schemaPath = resolve(positional[0] ?? 'scripts/quiz-gen/caribbean.schema.json')
 const rand = mulberry32(hashStr(String(seedArg)))
 
 const pick = (arr) => arr[Math.floor(rand() * arr.length)]

@@ -3,7 +3,7 @@
   "metadata": {
     "title": "Autour de la mer des Caraïbes",
     "author": "Quiz Forge",
-    "description": "Quiz généré automatiquement à partir d'un tableau de 28 pays et territoires du bassin caribéen : 13 États insulaires souverains, 7 territoires non souverains (Guadeloupe, Martinique, Aruba, Porto Rico…) et 8 pays continentaux riverains (Belize, Colombie, Venezuela, Panama…). Colonnes : capitale, population, superficie, point culminant, monnaie, langues, indépendance. Les cases sans valeur (ex. l'année d'indépendance pour les territoires) ne génèrent aucune question. Chaque partie tire un sous-ensemble de questions au hasard.",
+    "description": "Quiz généré automatiquement à partir d'un tableau de 29 pays et territoires du bassin caribéen : 13 États insulaires souverains, 7 territoires non souverains (Guadeloupe, Martinique, Aruba, Porto Rico…) et 9 pays continentaux riverains (Belize, Colombie, Venezuela, Panama, Mexique…). Colonnes : capitale, population, superficie, point culminant, monnaie, langues, indépendance. Les cases sans valeur (ex. l'année d'indépendance pour les territoires) ne génèrent aucune question. Chaque partie tire un sous-ensemble de questions au hasard.",
     "createdAt": "2026-09-09",
     "seed": "caraibes"
   },
@@ -15,311 +15,7 @@
   ],
   "questions": [
     {
-      "id": "car-34",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Classez ces territoires du plus vaste au plus petit.",
-      "explanation": "République dominicaine (48 671 km²) › Trinité-et-Tobago (5 130 km²) › Dominique (751 km²) › Curaçao (444 km²)",
-      "content": {
-        "items": [
-          {
-            "id": "o-3341783908",
-            "label": "Dominique"
-          },
-          {
-            "id": "o-822226663",
-            "label": "Trinité-et-Tobago"
-          },
-          {
-            "id": "o-2818850201",
-            "label": "Curaçao"
-          },
-          {
-            "id": "o-4094967029",
-            "label": "République dominicaine"
-          }
-        ],
-        "correctOrder": [
-          "o-4094967029",
-          "o-822226663",
-          "o-3341783908",
-          "o-2818850201"
-        ]
-      }
-    },
-    {
-      "id": "car-43",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "independance"
-      ],
-      "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
-      "explanation": "Venezuela (1 811) › République dominicaine (1 844) › Panama (1 903) › Grenade (1 974)",
-      "content": {
-        "items": [
-          {
-            "id": "o-3506878670",
-            "label": "Venezuela"
-          },
-          {
-            "id": "o-4272333187",
-            "label": "Panama"
-          },
-          {
-            "id": "o-3168834659",
-            "label": "Grenade"
-          },
-          {
-            "id": "o-2745356527",
-            "label": "République dominicaine"
-          }
-        ],
-        "correctOrder": [
-          "o-3506878670",
-          "o-2745356527",
-          "o-4272333187",
-          "o-3168834659"
-        ]
-      }
-    },
-    {
-      "id": "car-37",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "altitude_m"
-      ],
-      "question": "À quelle altitude culmine Mogotón (en m) ?",
-      "explanation": "Mogotón, point culminant du Nicaragua, atteint 2 107 m.",
-      "content": {
-        "min": 600,
-        "max": 4600,
-        "step": 200,
-        "target": 2107,
-        "tolerance": 200,
-        "unit": "m"
-      }
-    },
-    {
-      "id": "car-16",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "monnaie"
-      ],
-      "question": "Quelle est la monnaie du Venezuela ?",
-      "explanation": "La monnaie du Venezuela est le bolívar.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "le dollar des Caraïbes orientales",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "l'euro",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "le bolívar",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-13",
-      "type": "matching",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "point_culminant"
-      ],
-      "question": "Associez chaque territoire à son point culminant.",
-      "explanation": "Honduras → Cerro Las Minas · Saint-Martin → Pic Paradis · Jamaïque → Blue Mountain Peak · Belize → Doyle's Delight",
-      "content": {
-        "left": [
-          {
-            "id": "l-1745124781",
-            "label": "Honduras"
-          },
-          {
-            "id": "l-3130038918",
-            "label": "Saint-Martin"
-          },
-          {
-            "id": "l-431199204",
-            "label": "Jamaïque"
-          },
-          {
-            "id": "l-3118479638",
-            "label": "Belize"
-          }
-        ],
-        "right": [
-          {
-            "id": "r-4108859183",
-            "label": "Doyle's Delight"
-          },
-          {
-            "id": "r-851409306",
-            "label": "Cerro Las Minas"
-          },
-          {
-            "id": "r-1987968467",
-            "label": "Blue Mountain Peak"
-          },
-          {
-            "id": "r-2886421073",
-            "label": "Pic Paradis"
-          }
-        ],
-        "correctPairs": {
-          "l-1745124781": "r-851409306",
-          "l-3130038918": "r-2886421073",
-          "l-431199204": "r-1987968467",
-          "l-3118479638": "r-4108859183"
-        }
-      }
-    },
-    {
-      "id": "car-18",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelles sont les langues officielles de Sainte-Lucie ? (plusieurs réponses)",
-      "explanation": "Les langues officielles de Sainte-Lucie sont : anglais et créole saint-lucien.",
-      "content": {
-        "multiple": true,
-        "answers": [
-          {
-            "id": "a",
-            "label": "néerlandais",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "créole saint-lucien",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "anglais",
-            "isCorrect": true
-          },
-          {
-            "id": "d",
-            "label": "créole martiniquais",
-            "isCorrect": false
-          },
-          {
-            "id": "e",
-            "label": "papiamento",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-27",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "population"
-      ],
-      "question": "Estimez la population de la République dominicaine.",
-      "explanation": "La République dominicaine compte environ 11 330 000 habitants.",
-      "content": {
-        "min": 3000000,
-        "max": 25000000,
-        "step": 1000000,
-        "target": 11330000,
-        "tolerance": 1000000,
-        "unit": "habitants"
-      }
-    },
-    {
-      "id": "car-31",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Estimez la superficie de la Grenade (en km²).",
-      "explanation": "La Grenade couvre environ 344 km².",
-      "content": {
-        "min": 100,
-        "max": 760,
-        "step": 20,
-        "target": 344,
-        "tolerance": 40,
-        "unit": "km²"
-      }
-    },
-    {
-      "id": "car-38",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "altitude_m"
-      ],
-      "question": "Classez ces sommets du plus haut au plus bas.",
-      "explanation": "Pico Duarte (3 098 m) › Montagne Pelée (1 397 m) › Doyle's Delight (1 124 m) › Mont Sainte-Catherine (840 m)",
-      "content": {
-        "items": [
-          {
-            "id": "o-4180270480",
-            "label": "Montagne Pelée"
-          },
-          {
-            "id": "o-1889892039",
-            "label": "Mont Sainte-Catherine"
-          },
-          {
-            "id": "o-436909139",
-            "label": "Pico Duarte"
-          },
-          {
-            "id": "o-4286660580",
-            "label": "Doyle's Delight"
-          }
-        ],
-        "correctOrder": [
-          "o-436909139",
-          "o-4180270480",
-          "o-4286660580",
-          "o-1889892039"
-        ]
-      }
-    },
-    {
-      "id": "car-19",
+      "id": "car-23",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -334,189 +30,26 @@
         "answers": [
           {
             "id": "a",
-            "label": "espagnol",
+            "label": "français",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "néerlandais",
-            "isCorrect": false
+            "label": "créole antillais",
+            "isCorrect": true
           },
           {
             "id": "c",
+            "label": "créole martiniquais",
+            "isCorrect": false
+          },
+          {
+            "id": "d",
             "label": "papiamento",
             "isCorrect": false
           },
           {
-            "id": "d",
-            "label": "anglais",
-            "isCorrect": true
-          },
-          {
             "id": "e",
-            "label": "créole antillais",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-42",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "independance"
-      ],
-      "question": "En quelle année a eu lieu l'indépendance des Bahamas ?",
-      "explanation": "L'indépendance des Bahamas a été proclamée en 1973.",
-      "content": {
-        "min": 1933,
-        "max": 2000,
-        "step": 1,
-        "target": 1973,
-        "tolerance": 4
-      }
-    },
-    {
-      "id": "car-15",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "monnaie"
-      ],
-      "question": "Quelle est la monnaie du Guatemala ?",
-      "explanation": "La monnaie du Guatemala est le quetzal.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "le quetzal",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "le dollar américain",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "le florin arubais",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-21",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelles sont les langues officielles d'Haïti ? (plusieurs réponses)",
-      "explanation": "Les langues officielles d'Haïti sont : français et créole haïtien.",
-      "content": {
-        "multiple": true,
-        "answers": [
-          {
-            "id": "a",
-            "label": "créole guadeloupéen",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "français",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "créole saint-lucien",
-            "isCorrect": false
-          },
-          {
-            "id": "d",
-            "label": "créole antillais",
-            "isCorrect": false
-          },
-          {
-            "id": "e",
-            "label": "créole haïtien",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-29",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "population"
-      ],
-      "question": "Classez ces territoires du plus peuplé au moins peuplé.",
-      "explanation": "Guatemala (17 600 000 habitants) › Grenade (117 000 habitants) › Aruba (108 000 habitants) › Antigua-et-Barbuda (94 000 habitants)",
-      "content": {
-        "items": [
-          {
-            "id": "o-740548731",
-            "label": "Antigua-et-Barbuda"
-          },
-          {
-            "id": "o-3279380515",
-            "label": "Aruba"
-          },
-          {
-            "id": "o-2088523898",
-            "label": "Grenade"
-          },
-          {
-            "id": "o-1310967597",
-            "label": "Guatemala"
-          }
-        ],
-        "correctOrder": [
-          "o-1310967597",
-          "o-2088523898",
-          "o-3279380515",
-          "o-740548731"
-        ]
-      }
-    },
-    {
-      "id": "car-23",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "langues"
-      ],
-      "question": "Quelle est la langue officielle de Saint-Vincent-et-les-Grenadines ?",
-      "explanation": "La langue officielle de Saint-Vincent-et-les-Grenadines est anglais.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "créole antillais",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "créole saint-lucien",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
             "label": "anglais",
             "isCorrect": true
           }
@@ -524,59 +57,7 @@
       }
     },
     {
-      "id": "car-25",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "population"
-      ],
-      "question": "Estimez la population de la Jamaïque.",
-      "explanation": "La Jamaïque compte environ 2 825 000 habitants.",
-      "content": {
-        "min": 800000,
-        "max": 6200000,
-        "step": 200000,
-        "target": 2825000,
-        "tolerance": 400000,
-        "unit": "habitants"
-      }
-    },
-    {
-      "id": "car-14",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "monnaie"
-      ],
-      "question": "Quelle est la monnaie de la Barbade ?",
-      "explanation": "La monnaie de la Barbade est le dollar barbadien.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "le dollar de Trinité-et-Tobago",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "le dollar barbadien",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "le peso dominicain",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-24",
+      "id": "car-19",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -596,7 +77,7 @@
           },
           {
             "id": "b",
-            "label": "espagnol",
+            "label": "créole saint-lucien",
             "isCorrect": false
           },
           {
@@ -608,7 +89,63 @@
       }
     },
     {
-      "id": "car-26",
+      "id": "car-13",
+      "type": "matching",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "point_culminant"
+      ],
+      "question": "Associez chaque territoire à son point culminant.",
+      "explanation": "Mexique → Pico de Orizaba · Cuba → Pico Turquino · Martinique → Montagne Pelée · Guadeloupe → La Grande Soufrière",
+      "content": {
+        "left": [
+          {
+            "id": "l-488561961",
+            "label": "Mexique"
+          },
+          {
+            "id": "l-4063792268",
+            "label": "Cuba"
+          },
+          {
+            "id": "l-1848727730",
+            "label": "Martinique"
+          },
+          {
+            "id": "l-587499882",
+            "label": "Guadeloupe"
+          }
+        ],
+        "right": [
+          {
+            "id": "r-3113552923",
+            "label": "Pico Turquino"
+          },
+          {
+            "id": "r-1418222966",
+            "label": "La Grande Soufrière"
+          },
+          {
+            "id": "r-3688785489",
+            "label": "Montagne Pelée"
+          },
+          {
+            "id": "r-1688019891",
+            "label": "Pico de Orizaba"
+          }
+        ],
+        "correctPairs": {
+          "l-488561961": "r-1688019891",
+          "l-4063792268": "r-3113552923",
+          "l-1848727730": "r-3688785489",
+          "l-587499882": "r-1418222966"
+        }
+      }
+    },
+    {
+      "id": "car-25",
       "type": "numeric",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -616,195 +153,34 @@
       "tags": [
         "population"
       ],
-      "question": "Estimez la population de la Grenade.",
-      "explanation": "La Grenade compte environ 117 000 habitants.",
+      "question": "Estimez la population du Mexique.",
+      "explanation": "Le Mexique compte environ 129 000 000 habitants.",
       "content": {
-        "min": 40000,
-        "max": 260000,
-        "step": 10000,
-        "target": 117000,
-        "tolerance": 10000,
+        "min": 40000000,
+        "max": 280000000,
+        "step": 10000000,
+        "target": 129000000,
+        "tolerance": 20000000,
         "unit": "habitants"
       }
     },
     {
-      "id": "car-07",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quel territoire a pour capitale Saint-Georges ?",
-      "explanation": "La capitale de la Grenade est Saint-Georges.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Grenade",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "Sainte-Lucie",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Trinité-et-Tobago",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-04",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quelle est la capitale du Panama ?",
-      "explanation": "La capitale du Panama est Panama City.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Panama City",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "Oranjestad",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Tegucigalpa",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-36",
+      "id": "car-40",
       "type": "numeric",
       "theme": "caraibes",
       "difficulty": "medium",
       "points": 2,
       "tags": [
-        "altitude_m"
+        "independance"
       ],
-      "question": "À quelle altitude culmine Pic la Selle (en m) ?",
-      "explanation": "Pic la Selle, point culminant d'Haïti, atteint 2 680 m.",
+      "question": "En quelle année a eu lieu l'indépendance du Venezuela ?",
+      "explanation": "L'indépendance du Venezuela a été proclamée en 1811.",
       "content": {
-        "min": 800,
-        "max": 5800,
-        "step": 200,
-        "target": 2680,
-        "tolerance": 400,
-        "unit": "m"
-      }
-    },
-    {
-      "id": "car-06",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quel territoire a pour capitale Guatemala City ?",
-      "explanation": "La capitale du Guatemala est Guatemala City.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Saint-Vincent-et-les-Grenadines",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "Guatemala",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "Belize",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-05",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quel territoire a pour capitale Saint-Domingue ?",
-      "explanation": "La capitale de la République dominicaine est Saint-Domingue.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "République dominicaine",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "Costa Rica",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Saint-Christophe-et-Niévès",
-            "isCorrect": false
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-10",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "point_culminant"
-      ],
-      "question": "Quel est le point culminant de Saint-Martin ?",
-      "explanation": "Le point culminant de Saint-Martin est Pic Paradis (424 m).",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Mont Sainte-Catherine",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "Pico Bolívar",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Pic Paradis",
-            "isCorrect": true
-          }
-        ]
+        "min": 1771,
+        "max": 1851,
+        "step": 1,
+        "target": 1811,
+        "tolerance": 4
       }
     },
     {
@@ -817,32 +193,160 @@
         "population"
       ],
       "question": "Classez ces territoires du plus peuplé au moins peuplé.",
-      "explanation": "Trinité-et-Tobago (1 530 000 habitants) › Sainte-Lucie (180 000 habitants) › Aruba (108 000 habitants) › Saint-Vincent-et-les-Grenadines (104 000 habitants)",
+      "explanation": "Honduras (10 600 000 habitants) › Panama (4 400 000 habitants) › Curaçao (153 000 habitants) › Dominique (73 000 habitants)",
       "content": {
         "items": [
           {
-            "id": "o-3464736725",
-            "label": "Sainte-Lucie"
+            "id": "o-4029016138",
+            "label": "Honduras"
           },
           {
-            "id": "o-4172337464",
-            "label": "Trinité-et-Tobago"
+            "id": "o-3579063450",
+            "label": "Curaçao"
           },
           {
-            "id": "o-3843073525",
-            "label": "Saint-Vincent-et-les-Grenadines"
+            "id": "o-1639715907",
+            "label": "Dominique"
           },
           {
-            "id": "o-3279380515",
-            "label": "Aruba"
+            "id": "o-2915438234",
+            "label": "Panama"
           }
         ],
         "correctOrder": [
-          "o-4172337464",
-          "o-3464736725",
-          "o-3279380515",
-          "o-3843073525"
+          "o-4029016138",
+          "o-2915438234",
+          "o-3579063450",
+          "o-1639715907"
         ]
+      }
+    },
+    {
+      "id": "car-02",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quelle est la capitale de la Colombie ?",
+      "explanation": "La capitale de la Colombie est Bogota.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Castries",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Caracas",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Bogota",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-08",
+      "type": "matching",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Associez chaque territoire à sa capitale.",
+      "explanation": "Nicaragua → Managua · Barbade → Bridgetown · Porto Rico → San Juan · Grenade → Saint-Georges",
+      "content": {
+        "left": [
+          {
+            "id": "l-109265816",
+            "label": "Nicaragua"
+          },
+          {
+            "id": "l-1673556040",
+            "label": "Barbade"
+          },
+          {
+            "id": "l-3658255122",
+            "label": "Porto Rico"
+          },
+          {
+            "id": "l-913360285",
+            "label": "Grenade"
+          }
+        ],
+        "right": [
+          {
+            "id": "r-2597270905",
+            "label": "San Juan"
+          },
+          {
+            "id": "r-3387572505",
+            "label": "Saint-Georges"
+          },
+          {
+            "id": "r-2122379724",
+            "label": "Bridgetown"
+          },
+          {
+            "id": "r-3771746693",
+            "label": "Managua"
+          }
+        ],
+        "correctPairs": {
+          "l-109265816": "r-3771746693",
+          "l-1673556040": "r-2122379724",
+          "l-3658255122": "r-2597270905",
+          "l-913360285": "r-3387572505"
+        }
+      }
+    },
+    {
+      "id": "car-26",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "population"
+      ],
+      "question": "Estimez la population de la Jamaïque.",
+      "explanation": "La Jamaïque compte environ 2 825 000 habitants.",
+      "content": {
+        "min": 800000,
+        "max": 6200000,
+        "step": 200000,
+        "target": 2825000,
+        "tolerance": 400000,
+        "unit": "habitants"
+      }
+    },
+    {
+      "id": "car-37",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "À quelle altitude culmine Morne Diablotins (en m) ?",
+      "explanation": "Morne Diablotins, point culminant de la Dominique, atteint 1 447 m.",
+      "content": {
+        "min": 400,
+        "max": 3200,
+        "step": 100,
+        "target": 1447,
+        "tolerance": 200,
+        "unit": "m"
       }
     },
     {
@@ -854,102 +358,133 @@
       "tags": [
         "point_culminant"
       ],
-      "question": "Quel est le point culminant de la Jamaïque ?",
-      "explanation": "Le point culminant de la Jamaïque est Blue Mountain Peak (2 256 m).",
+      "question": "Quel est le point culminant de la Dominique ?",
+      "explanation": "Le point culminant de la Dominique est Morne Diablotins (1 447 m).",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Blue Mountain Peak",
-            "isCorrect": true
+            "label": "Christoffelberg",
+            "isCorrect": false
           },
           {
             "id": "b",
-            "label": "The Bluff",
+            "label": "Volcán Tajumulco",
             "isCorrect": false
           },
           {
             "id": "c",
-            "label": "Mont Sainte-Catherine",
+            "label": "Morne Diablotins",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-07",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quel territoire a pour capitale Fort-de-France ?",
+      "explanation": "La capitale de la Martinique est Fort-de-France.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Saint-Vincent-et-les-Grenadines",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Martinique",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "Porto Rico",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-09",
+      "id": "car-34",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Classez ces territoires du plus vaste au plus petit.",
+      "explanation": "Mexique (1 964 375 km²) › Haïti (27 750 km²) › Guadeloupe (1 628 km²) › Aruba (180 km²)",
+      "content": {
+        "items": [
+          {
+            "id": "o-4258618142",
+            "label": "Guadeloupe"
+          },
+          {
+            "id": "o-1110232580",
+            "label": "Aruba"
+          },
+          {
+            "id": "o-684820864",
+            "label": "Haïti"
+          },
+          {
+            "id": "o-1590254757",
+            "label": "Mexique"
+          }
+        ],
+        "correctOrder": [
+          "o-1590254757",
+          "o-684820864",
+          "o-4258618142",
+          "o-1110232580"
+        ]
+      }
+    },
+    {
+      "id": "car-17",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
       "points": 1,
       "tags": [
-        "point_culminant"
+        "monnaie"
       ],
-      "question": "Quel est le point culminant de la Barbade ?",
-      "explanation": "Le point culminant de la Barbade est Mont Hillaby (340 m).",
+      "question": "Quelle est la monnaie du Panama ?",
+      "explanation": "La monnaie du Panama est le balboa.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Mont Hillaby",
-            "isCorrect": true
-          },
-          {
-            "id": "b",
-            "label": "Morne Diablotins",
+            "label": "le dollar jamaïcain",
             "isCorrect": false
           },
           {
+            "id": "b",
+            "label": "le balboa",
+            "isCorrect": true
+          },
+          {
             "id": "c",
-            "label": "Doyle's Delight",
+            "label": "le peso cubain",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-30",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "superficie_km2"
-      ],
-      "question": "Estimez la superficie du Nicaragua (en km²).",
-      "explanation": "Le Nicaragua couvre environ 130 373 km².",
-      "content": {
-        "min": 40000,
-        "max": 290000,
-        "step": 10000,
-        "target": 130373,
-        "tolerance": 20000,
-        "unit": "km²"
-      }
-    },
-    {
-      "id": "car-41",
-      "type": "numeric",
-      "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
-      "tags": [
-        "independance"
-      ],
-      "question": "En quelle année a eu lieu l'indépendance de Saint-Vincent-et-les-Grenadines ?",
-      "explanation": "L'indépendance de Saint-Vincent-et-les-Grenadines a été proclamée en 1979.",
-      "content": {
-        "min": 1939,
-        "max": 2000,
-        "step": 1,
-        "target": 1979,
-        "tolerance": 4
-      }
-    },
-    {
-      "id": "car-22",
+      "id": "car-21",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -957,24 +492,328 @@
       "tags": [
         "langues"
       ],
-      "question": "Quelle est la langue officielle du Honduras ?",
-      "explanation": "La langue officielle du Honduras est espagnol.",
+      "question": "Quelle est la langue officielle de Trinité-et-Tobago ?",
+      "explanation": "La langue officielle de Trinité-et-Tobago est anglais.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "espagnol",
-            "isCorrect": true
+            "label": "créole antillais",
+            "isCorrect": false
           },
           {
             "id": "b",
-            "label": "créole martiniquais",
+            "label": "créole saint-lucien",
             "isCorrect": false
           },
           {
             "id": "c",
+            "label": "anglais",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-39",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "Classez ces sommets du plus haut au plus bas.",
+      "explanation": "Pico de Orizaba (5 636 m) › Blue Mountain Peak (2 256 m) › La Soufrière (1 234 m) › Doyle's Delight (1 124 m)",
+      "content": {
+        "items": [
+          {
+            "id": "o-3798255064",
+            "label": "La Soufrière"
+          },
+          {
+            "id": "o-2748739523",
+            "label": "Pico de Orizaba"
+          },
+          {
+            "id": "o-638402006",
+            "label": "Blue Mountain Peak"
+          },
+          {
+            "id": "o-4286660580",
+            "label": "Doyle's Delight"
+          }
+        ],
+        "correctOrder": [
+          "o-2748739523",
+          "o-638402006",
+          "o-3798255064",
+          "o-4286660580"
+        ]
+      }
+    },
+    {
+      "id": "car-35",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "À quelle altitude culmine La Soufrière (en m) ?",
+      "explanation": "La Soufrière, point culminant de Saint-Vincent-et-les-Grenadines, atteint 1 234 m.",
+      "content": {
+        "min": 400,
+        "max": 2700,
+        "step": 100,
+        "target": 1234,
+        "tolerance": 100,
+        "unit": "m"
+      }
+    },
+    {
+      "id": "car-12",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "point_culminant"
+      ],
+      "question": "Quel est le point culminant de la Colombie ?",
+      "explanation": "Le point culminant de la Colombie est Pico Cristóbal Colón (5 730 m).",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Jamanota",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Mount Alvernia",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Pico Cristóbal Colón",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-38",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "altitude_m"
+      ],
+      "question": "Classez ces sommets du plus haut au plus bas.",
+      "explanation": "Volcán Tajumulco (4 220 m) › Mont Liamuiga (1 156 m) › El Cerro del Aripo (940 m) › Mount Alvernia (64 m)",
+      "content": {
+        "items": [
+          {
+            "id": "o-4171415277",
+            "label": "El Cerro del Aripo"
+          },
+          {
+            "id": "o-1654454556",
+            "label": "Mont Liamuiga"
+          },
+          {
+            "id": "o-2600757216",
+            "label": "Volcán Tajumulco"
+          },
+          {
+            "id": "o-4229957960",
+            "label": "Mount Alvernia"
+          }
+        ],
+        "correctOrder": [
+          "o-2600757216",
+          "o-1654454556",
+          "o-4171415277",
+          "o-4229957960"
+        ]
+      }
+    },
+    {
+      "id": "car-44",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "independance"
+      ],
+      "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
+      "explanation": "Colombie (1 810) › Cuba (1 902) › Jamaïque (1 962) › Sainte-Lucie (1 979)",
+      "content": {
+        "items": [
+          {
+            "id": "o-1172156830",
+            "label": "Cuba"
+          },
+          {
+            "id": "o-1569151740",
+            "label": "Sainte-Lucie"
+          },
+          {
+            "id": "o-1368258326",
+            "label": "Jamaïque"
+          },
+          {
+            "id": "o-2096789177",
+            "label": "Colombie"
+          }
+        ],
+        "correctOrder": [
+          "o-2096789177",
+          "o-1172156830",
+          "o-1368258326",
+          "o-1569151740"
+        ]
+      }
+    },
+    {
+      "id": "car-14",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "monnaie"
+      ],
+      "question": "Quelle est la monnaie d'Aruba ?",
+      "explanation": "La monnaie d'Aruba est le florin arubais.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "le quetzal",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "le dollar de Trinité-et-Tobago",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "le florin arubais",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-06",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quel territoire a pour capitale Oranjestad ?",
+      "explanation": "La capitale d'Aruba est Oranjestad.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Aruba",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "Saint-Christophe-et-Niévès",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Barbade",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-20",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "langues"
+      ],
+      "question": "Quelles sont les langues officielles de Sainte-Lucie ? (plusieurs réponses)",
+      "explanation": "Les langues officielles de Sainte-Lucie sont : anglais et créole saint-lucien.",
+      "content": {
+        "multiple": true,
+        "answers": [
+          {
+            "id": "a",
             "label": "créole haïtien",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "français",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "créole saint-lucien",
+            "isCorrect": true
+          },
+          {
+            "id": "d",
+            "label": "anglais",
+            "isCorrect": true
+          },
+          {
+            "id": "e",
+            "label": "créole guadeloupéen",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-01",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quelle est la capitale de Saint-Martin ?",
+      "explanation": "La capitale de Saint-Martin est Marigot.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Fort-de-France",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Marigot",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "Bogota",
             "isCorrect": false
           }
         ]
@@ -990,144 +829,36 @@
         "superficie_km2"
       ],
       "question": "Classez ces territoires du plus vaste au plus petit.",
-      "explanation": "Guadeloupe (1 628 km²) › Curaçao (444 km²) › Barbade (430 km²) › Saint-Christophe-et-Niévès (261 km²)",
+      "explanation": "Colombie (1 141 748 km²) › Cuba (109 884 km²) › Guadeloupe (1 628 km²) › Saint-Vincent-et-les-Grenadines (389 km²)",
       "content": {
         "items": [
           {
-            "id": "o-2203179058",
-            "label": "Saint-Christophe-et-Niévès"
+            "id": "o-3863628284",
+            "label": "Cuba"
           },
           {
             "id": "o-4258618142",
             "label": "Guadeloupe"
           },
           {
-            "id": "o-2818850201",
-            "label": "Curaçao"
+            "id": "o-4023085651",
+            "label": "Colombie"
           },
           {
-            "id": "o-931366408",
-            "label": "Barbade"
+            "id": "o-1466947150",
+            "label": "Saint-Vincent-et-les-Grenadines"
           }
         ],
         "correctOrder": [
+          "o-4023085651",
+          "o-3863628284",
           "o-4258618142",
-          "o-2818850201",
-          "o-931366408",
-          "o-2203179058"
+          "o-1466947150"
         ]
       }
     },
     {
-      "id": "car-01",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quelle est la capitale de la Martinique ?",
-      "explanation": "La capitale de la Martinique est Fort-de-France.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Port-d'Espagne",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "Panama City",
-            "isCorrect": false
-          },
-          {
-            "id": "c",
-            "label": "Fort-de-France",
-            "isCorrect": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "car-44",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "independance"
-      ],
-      "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
-      "explanation": "République dominicaine (1 844) › Panama (1 903) › Jamaïque (1 962) › Saint-Christophe-et-Niévès (1 983)",
-      "content": {
-        "items": [
-          {
-            "id": "o-3835884544",
-            "label": "Saint-Christophe-et-Niévès"
-          },
-          {
-            "id": "o-1368258326",
-            "label": "Jamaïque"
-          },
-          {
-            "id": "o-2745356527",
-            "label": "République dominicaine"
-          },
-          {
-            "id": "o-4272333187",
-            "label": "Panama"
-          }
-        ],
-        "correctOrder": [
-          "o-2745356527",
-          "o-4272333187",
-          "o-1368258326",
-          "o-3835884544"
-        ]
-      }
-    },
-    {
-      "id": "car-39",
-      "type": "ordering",
-      "theme": "caraibes",
-      "difficulty": "hard",
-      "points": 3,
-      "tags": [
-        "altitude_m"
-      ],
-      "question": "Classez ces sommets du plus haut au plus bas.",
-      "explanation": "Pico Cristóbal Colón (5 730 m) › El Cerro del Aripo (940 m) › Jamanota (188 m) › The Bluff (43 m)",
-      "content": {
-        "items": [
-          {
-            "id": "o-1574754870",
-            "label": "Jamanota"
-          },
-          {
-            "id": "o-3591543225",
-            "label": "Pico Cristóbal Colón"
-          },
-          {
-            "id": "o-2796820533",
-            "label": "The Bluff"
-          },
-          {
-            "id": "o-4171415277",
-            "label": "El Cerro del Aripo"
-          }
-        ],
-        "correctOrder": [
-          "o-3591543225",
-          "o-4171415277",
-          "o-1574754870",
-          "o-2796820533"
-        ]
-      }
-    },
-    {
-      "id": "car-17",
+      "id": "car-15",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -1135,31 +866,31 @@
       "tags": [
         "monnaie"
       ],
-      "question": "Quelle est la monnaie de Saint-Christophe-et-Niévès ?",
-      "explanation": "La monnaie de Saint-Christophe-et-Niévès est le dollar des Caraïbes orientales.",
+      "question": "Quelle est la monnaie de la Guadeloupe ?",
+      "explanation": "La monnaie de la Guadeloupe est l'euro.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "le peso cubain",
+            "label": "le dollar des Caraïbes orientales",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "le dollar des Caraïbes orientales",
+            "label": "l'euro",
             "isCorrect": true
           },
           {
             "id": "c",
-            "label": "le quetzal",
+            "label": "le peso colombien",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-40",
+      "id": "car-42",
       "type": "numeric",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -1167,38 +898,50 @@
       "tags": [
         "independance"
       ],
-      "question": "En quelle année a eu lieu l'indépendance d'Antigua-et-Barbuda ?",
-      "explanation": "L'indépendance d'Antigua-et-Barbuda a été proclamée en 1981.",
+      "question": "En quelle année a eu lieu l'indépendance de Sainte-Lucie ?",
+      "explanation": "L'indépendance de Sainte-Lucie a été proclamée en 1979.",
       "content": {
-        "min": 1941,
+        "min": 1939,
         "max": 2000,
         "step": 1,
-        "target": 1981,
+        "target": 1979,
         "tolerance": 4
       }
     },
     {
-      "id": "car-32",
-      "type": "numeric",
+      "id": "car-16",
+      "type": "qcm",
       "theme": "caraibes",
-      "difficulty": "medium",
-      "points": 2,
+      "difficulty": "easy",
+      "points": 1,
       "tags": [
-        "superficie_km2"
+        "monnaie"
       ],
-      "question": "Estimez la superficie de Sainte-Lucie (en km²).",
-      "explanation": "Sainte-Lucie couvre environ 617 km².",
+      "question": "Quelle est la monnaie de la Dominique ?",
+      "explanation": "La monnaie de la Dominique est le dollar des Caraïbes orientales.",
       "content": {
-        "min": 200,
-        "max": 1350,
-        "step": 50,
-        "target": 617,
-        "tolerance": 50,
-        "unit": "km²"
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "le dollar des Caraïbes orientales",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "le peso dominicain",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "le dollar bélizien",
+            "isCorrect": false
+          }
+        ]
       }
     },
     {
-      "id": "car-20",
+      "id": "car-22",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -1206,41 +949,105 @@
       "tags": [
         "langues"
       ],
-      "question": "Quelles sont les langues officielles de Saint-Martin ? (plusieurs réponses)",
-      "explanation": "Les langues officielles de Saint-Martin sont : français et anglais.",
+      "question": "Quelles sont les langues officielles d'Haïti ? (plusieurs réponses)",
+      "explanation": "Les langues officielles d'Haïti sont : français et créole haïtien.",
       "content": {
         "multiple": true,
         "answers": [
           {
             "id": "a",
-            "label": "créole saint-lucien",
+            "label": "néerlandais",
             "isCorrect": false
           },
           {
             "id": "b",
+            "label": "papiamento",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "créole haïtien",
+            "isCorrect": true
+          },
+          {
+            "id": "d",
             "label": "français",
             "isCorrect": true
           },
           {
-            "id": "c",
-            "label": "créole martiniquais",
-            "isCorrect": false
-          },
-          {
-            "id": "d",
-            "label": "anglais",
-            "isCorrect": true
-          },
-          {
             "id": "e",
-            "label": "papiamento",
+            "label": "créole guadeloupéen",
             "isCorrect": false
           }
         ]
       }
     },
     {
-      "id": "car-35",
+      "id": "car-24",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "langues"
+      ],
+      "question": "Quelle est la langue officielle de Cuba ?",
+      "explanation": "La langue officielle de Cuba est espagnol.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "espagnol",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "créole martiniquais",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "français",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-10",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "point_culminant"
+      ],
+      "question": "Quel est le point culminant du Nicaragua ?",
+      "explanation": "Le point culminant du Nicaragua est Mogotón (2 107 m).",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Mogotón",
+            "isCorrect": true
+          },
+          {
+            "id": "b",
+            "label": "Volcán Tajumulco",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Blue Mountain Peak",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-36",
       "type": "numeric",
       "theme": "caraibes",
       "difficulty": "medium",
@@ -1248,47 +1055,15 @@
       "tags": [
         "altitude_m"
       ],
-      "question": "À quelle altitude culmine La Grande Soufrière (en m) ?",
-      "explanation": "La Grande Soufrière, point culminant de la Guadeloupe, atteint 1 467 m.",
+      "question": "À quelle altitude culmine Mont Obama (en m) ?",
+      "explanation": "Mont Obama, point culminant d'Antigua-et-Barbuda, atteint 402 m.",
       "content": {
-        "min": 400,
-        "max": 3200,
-        "step": 100,
-        "target": 1467,
-        "tolerance": 200,
+        "min": 100,
+        "max": 900,
+        "step": 50,
+        "target": 402,
+        "tolerance": 50,
         "unit": "m"
-      }
-    },
-    {
-      "id": "car-02",
-      "type": "qcm",
-      "theme": "caraibes",
-      "difficulty": "easy",
-      "points": 1,
-      "tags": [
-        "capitale"
-      ],
-      "question": "Quelle est la capitale de Cuba ?",
-      "explanation": "La capitale de Cuba est La Havane.",
-      "content": {
-        "multiple": false,
-        "answers": [
-          {
-            "id": "a",
-            "label": "Roseau",
-            "isCorrect": false
-          },
-          {
-            "id": "b",
-            "label": "La Havane",
-            "isCorrect": true
-          },
-          {
-            "id": "c",
-            "label": "San Juan",
-            "isCorrect": false
-          }
-        ]
       }
     },
     {
@@ -1300,19 +1075,218 @@
       "tags": [
         "capitale"
       ],
-      "question": "Quelle est la capitale d'Haïti ?",
-      "explanation": "La capitale d'Haïti est Port-au-Prince.",
+      "question": "Quelle est la capitale d'Aruba ?",
+      "explanation": "La capitale d'Aruba est Oranjestad.",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "San Juan",
+            "label": "Basseterre",
             "isCorrect": false
           },
           {
             "id": "b",
-            "label": "Port-au-Prince",
+            "label": "Caracas",
+            "isCorrect": false
+          },
+          {
+            "id": "c",
+            "label": "Oranjestad",
+            "isCorrect": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-43",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "independance"
+      ],
+      "question": "Classez ces pays du plus anciennement au plus récemment indépendant.",
+      "explanation": "Haïti (1 804) › Bahamas (1 973) › Grenade (1 974) › Belize (1 981)",
+      "content": {
+        "items": [
+          {
+            "id": "o-1081766386",
+            "label": "Haïti"
+          },
+          {
+            "id": "o-3168834659",
+            "label": "Grenade"
+          },
+          {
+            "id": "o-1966715628",
+            "label": "Bahamas"
+          },
+          {
+            "id": "o-2541819400",
+            "label": "Belize"
+          }
+        ],
+        "correctOrder": [
+          "o-1081766386",
+          "o-1966715628",
+          "o-3168834659",
+          "o-2541819400"
+        ]
+      }
+    },
+    {
+      "id": "car-05",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quel territoire a pour capitale Willemstad ?",
+      "explanation": "La capitale de Curaçao est Willemstad.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Saint-Martin",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Curaçao",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "Bahamas",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-41",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "independance"
+      ],
+      "question": "En quelle année a eu lieu l'indépendance du Honduras ?",
+      "explanation": "L'indépendance du Honduras a été proclamée en 1821.",
+      "content": {
+        "min": 1781,
+        "max": 1861,
+        "step": 1,
+        "target": 1821,
+        "tolerance": 4
+      }
+    },
+    {
+      "id": "car-31",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Estimez la superficie d'Haïti (en km²).",
+      "explanation": "Haïti couvre environ 27 750 km².",
+      "content": {
+        "min": 8000,
+        "max": 62000,
+        "step": 2000,
+        "target": 27750,
+        "tolerance": 4000,
+        "unit": "km²"
+      }
+    },
+    {
+      "id": "car-30",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Estimez la superficie des Îles Caïmans (en km²).",
+      "explanation": "Les Îles Caïmans couvre environ 264 km².",
+      "content": {
+        "min": 80,
+        "max": 580,
+        "step": 20,
+        "target": 264,
+        "tolerance": 40,
+        "unit": "km²"
+      }
+    },
+    {
+      "id": "car-29",
+      "type": "ordering",
+      "theme": "caraibes",
+      "difficulty": "hard",
+      "points": 3,
+      "tags": [
+        "population"
+      ],
+      "question": "Classez ces territoires du plus peuplé au moins peuplé.",
+      "explanation": "Mexique (129 000 000 habitants) › Nicaragua (7 000 000 habitants) › Panama (4 400 000 habitants) › Trinité-et-Tobago (1 530 000 habitants)",
+      "content": {
+        "items": [
+          {
+            "id": "o-752872614",
+            "label": "Mexique"
+          },
+          {
+            "id": "o-2915438234",
+            "label": "Panama"
+          },
+          {
+            "id": "o-4172337464",
+            "label": "Trinité-et-Tobago"
+          },
+          {
+            "id": "o-4240714023",
+            "label": "Nicaragua"
+          }
+        ],
+        "correctOrder": [
+          "o-752872614",
+          "o-4240714023",
+          "o-2915438234",
+          "o-4172337464"
+        ]
+      }
+    },
+    {
+      "id": "car-04",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "easy",
+      "points": 1,
+      "tags": [
+        "capitale"
+      ],
+      "question": "Quelle est la capitale du Venezuela ?",
+      "explanation": "La capitale du Venezuela est Caracas.",
+      "content": {
+        "multiple": false,
+        "answers": [
+          {
+            "id": "a",
+            "label": "Saint-Georges",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "Caracas",
             "isCorrect": true
           },
           {
@@ -1324,63 +1298,89 @@
       }
     },
     {
-      "id": "car-08",
-      "type": "matching",
+      "id": "car-27",
+      "type": "numeric",
       "theme": "caraibes",
       "difficulty": "medium",
       "points": 2,
       "tags": [
-        "capitale"
+        "population"
       ],
-      "question": "Associez chaque territoire à sa capitale.",
-      "explanation": "Trinité-et-Tobago → Port-d'Espagne · Costa Rica → San José · Barbade → Bridgetown · Dominique → Roseau",
+      "question": "Estimez la population d'Aruba.",
+      "explanation": "Aruba compte environ 108 000 habitants.",
       "content": {
-        "left": [
-          {
-            "id": "l-1303235527",
-            "label": "Trinité-et-Tobago"
-          },
-          {
-            "id": "l-1244056552",
-            "label": "Costa Rica"
-          },
-          {
-            "id": "l-1673556040",
-            "label": "Barbade"
-          },
-          {
-            "id": "l-1971363364",
-            "label": "Dominique"
-          }
-        ],
-        "right": [
-          {
-            "id": "r-2122379724",
-            "label": "Bridgetown"
-          },
-          {
-            "id": "r-379508240",
-            "label": "Roseau"
-          },
-          {
-            "id": "r-786423957",
-            "label": "Port-d'Espagne"
-          },
-          {
-            "id": "r-3239334992",
-            "label": "San José"
-          }
-        ],
-        "correctPairs": {
-          "l-1303235527": "r-786423957",
-          "l-1244056552": "r-3239334992",
-          "l-1673556040": "r-2122379724",
-          "l-1971363364": "r-379508240"
-        }
+        "min": 30000,
+        "max": 240000,
+        "step": 10000,
+        "target": 108000,
+        "tolerance": 10000,
+        "unit": "habitants"
       }
     },
     {
-      "id": "car-12",
+      "id": "car-32",
+      "type": "numeric",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "superficie_km2"
+      ],
+      "question": "Estimez la superficie du Panama (en km²).",
+      "explanation": "Le Panama couvre environ 75 417 km².",
+      "content": {
+        "min": 25000,
+        "max": 165000,
+        "step": 5000,
+        "target": 75417,
+        "tolerance": 10000,
+        "unit": "km²"
+      }
+    },
+    {
+      "id": "car-18",
+      "type": "qcm",
+      "theme": "caraibes",
+      "difficulty": "medium",
+      "points": 2,
+      "tags": [
+        "langues"
+      ],
+      "question": "Quelles sont les langues officielles d'Aruba ? (plusieurs réponses)",
+      "explanation": "Les langues officielles d'Aruba sont : néerlandais et papiamento.",
+      "content": {
+        "multiple": true,
+        "answers": [
+          {
+            "id": "a",
+            "label": "français",
+            "isCorrect": false
+          },
+          {
+            "id": "b",
+            "label": "néerlandais",
+            "isCorrect": true
+          },
+          {
+            "id": "c",
+            "label": "créole saint-lucien",
+            "isCorrect": false
+          },
+          {
+            "id": "d",
+            "label": "papiamento",
+            "isCorrect": true
+          },
+          {
+            "id": "e",
+            "label": "créole martiniquais",
+            "isCorrect": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "car-09",
       "type": "qcm",
       "theme": "caraibes",
       "difficulty": "easy",
@@ -1388,24 +1388,24 @@
       "tags": [
         "point_culminant"
       ],
-      "question": "Quel est le point culminant de Porto Rico ?",
-      "explanation": "Le point culminant de Porto Rico est Cerro de Punta (1 338 m).",
+      "question": "Quel est le point culminant de la Guadeloupe ?",
+      "explanation": "Le point culminant de la Guadeloupe est La Grande Soufrière (1 467 m).",
       "content": {
         "multiple": false,
         "answers": [
           {
             "id": "a",
-            "label": "Cerro de Punta",
+            "label": "La Grande Soufrière",
             "isCorrect": true
           },
           {
             "id": "b",
-            "label": "Mont Hillaby",
+            "label": "Pico Duarte",
             "isCorrect": false
           },
           {
             "id": "c",
-            "label": "Montagne Pelée",
+            "label": "Mogotón",
             "isCorrect": false
           }
         ]

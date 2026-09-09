@@ -1,11 +1,11 @@
 {
-  "dataset": "caraibes.csv",
+  "dataset": "caribbean.csv",
   "delimiter": ";",
   "theme": { "id": "caraibes", "label": "Autour de la mer des Caraïbes" },
   "metadata": {
     "title": "Autour de la mer des Caraïbes",
     "author": "Quiz Forge",
-    "description": "Quiz généré automatiquement à partir d'un tableau de 28 pays et territoires du bassin caribéen : 13 États insulaires souverains, 7 territoires non souverains (Guadeloupe, Martinique, Aruba, Porto Rico…) et 8 pays continentaux riverains (Belize, Colombie, Venezuela, Panama…). Colonnes : capitale, population, superficie, point culminant, monnaie, langues, indépendance. Les cases sans valeur (ex. l'année d'indépendance pour les territoires) ne génèrent aucune question. Chaque partie tire un sous-ensemble de questions au hasard."
+    "description": "Quiz généré automatiquement à partir d'un tableau de 29 pays et territoires du bassin caribéen : 13 États insulaires souverains, 7 territoires non souverains (Guadeloupe, Martinique, Aruba, Porto Rico…) et 9 pays continentaux riverains (Belize, Colombie, Venezuela, Panama, Mexique…). Colonnes : capitale, population, superficie, point culminant, monnaie, langues, indépendance. Les cases sans valeur (ex. l'année d'indépendance pour les territoires) ne génèrent aucune question. Chaque partie tire un sous-ensemble de questions au hasard."
   },
 
   "subject": { "column": "pays", "articleColumn": "article", "noun": "territoire" },

@@ -12,7 +12,7 @@ L'idée : au lieu d'écrire chaque question à la main, on décrit un jeu de don
 - Tirage aléatoire d'un nombre de questions choisi par l'utilisateur
 - Import d'un quiz au format JSON, validé avant utilisation (`src/utils/quizValidation.ts`)
 - Historique des parties et profil (pseudo / avatar / thème) stockés localement (`localStorage`), sans backend
-- Quiz d'exemple : [`src/data/sample-quiz.json`](src/data/sample-quiz.json), généré depuis [`scripts/quiz-gen/caraibes.csv`](scripts/quiz-gen/caraibes.csv)
+- Quiz d'exemple : [`src/data/sample-quiz.json`](src/data/sample-quiz.json), généré depuis [`scripts/quiz-gen/caribbean.csv`](scripts/quiz-gen/caribbean.csv)
 
 ## Prérequis
 
@@ -29,7 +29,7 @@ Pas de variables d'environnement, pas de service externe : le projet tourne enti
 ## Génération d'un quiz
 
 ```bash
-npm run gen -- scripts/quiz-gen/caraibes.schema.json --seed maPartie --out src/data/sample-quiz.json
+npm run gen -- scripts/quiz-gen/caribbean.schema.json --seed maPartie --out src/data/sample-quiz.json
 ```
 
 - Le **CSV** contient une ligne par entité (pays, élément, film…) et une colonne par attribut. Une cellule peut porter plusieurs valeurs séparées par `|` (→ QCM à réponses multiples).
