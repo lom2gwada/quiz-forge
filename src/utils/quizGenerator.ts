@@ -182,13 +182,23 @@ function dePhrase(name: string, article?: string): string {
 }
 
 // --- Génération --------------------------------------------------------
+// Pas de quota : chaque colonne produit toutes les questions possibles.
+// `choices`/`options` = nombre d'items affichés, `groupSize` = taille d'un
+// classement / d'une association. Le tirage aléatoire se fait à la partie.
 const CFG = {
-  qcm: { perColumn: 4, choices: 3, points: 1, difficulty: 'easy' as const },
-  qcmMulti: { perColumn: 3, options: 5, points: 2, difficulty: 'medium' as const },
-  qcmBackward: { perColumn: 3, choices: 3, points: 2, difficulty: 'medium' as const },
-  estimate: { perColumn: 3, points: 2, difficulty: 'medium' as const },
-  order: { perColumn: 2, items: 4, points: 3, difficulty: 'hard' as const },
-  matching: { perColumn: 1, items: 4, points: 2, difficulty: 'medium' as const },
+  qcm: { choices: 3, points: 1, difficulty: 'easy' as const },
+  qcmMulti: { options: 5, points: 2, difficulty: 'medium' as const },
+  qcmBackward: { choices: 3, points: 2, difficulty: 'medium' as const },
+  estimate: { points: 2, difficulty: 'medium' as const },
+  order: { groupSize: 4, points: 3, difficulty: 'hard' as const },
+  matching: { groupSize: 4, points: 2, difficulty: 'medium' as const },
+}
+
+// Découpe une liste en groupes consécutifs de `size`, en jetant un reliquat de moins de 3.
+function chunk<T>(items: T[], size: number): T[][] {
+  const groups: T[][] = []
+  for (let i = 0; i + 3 <= items.length; i += size) groups.push(items.slice(i, i + size))
+  return groups
 }
 
 export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: string }): Quiz {
@@ -225,11 +235,9 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     const numRowsWith = spec.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(asNumber(row[col]))) : rowsWith
     const Label = capitalize(spec.label)
 
-    // ---- QCM direct / multi ----
+    // ---- QCM direct / multi : une question par ligne ----
     if (spec.kind === 'string') {
-      const forced = sep ? rowsWith.filter((r) => atomsOf(r).length > 1).slice(0, CFG.qcmMulti.perColumn) : []
-      const picks = shuffle([...forced, ...sample(rowsWith.filter((r) => !forced.includes(r)), CFG.qcm.perColumn)])
-      for (const row of picks) {
+      for (const row of rowsWith) {
         const corrects = atomsOf(row)
         if (!corrects.length) continue
 
@@ -265,9 +273,9 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       }
     }
 
-    // ---- QCM inversé (colonnes uniques) ----
+    // ---- QCM inversé (colonnes uniques) : une question par ligne ----
     if (spec.kind === 'string' && spec.unique && rows.length > CFG.qcmBackward.choices) {
-      for (const row of sample(rowsWith, CFG.qcmBackward.perColumn)) {
+      for (const row of rowsWith) {
         const correct = nameOf(row)
         const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.qcmBackward.choices - 1)
         questions.push({
@@ -282,9 +290,9 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       }
     }
 
-    // ---- Estimation (numeric) ----
+    // ---- Estimation (numeric) : une question par ligne ----
     if (spec.kind === 'number') {
-      for (const row of sample(numRowsWith, CFG.estimate.perColumn)) {
+      for (const row of numRowsWith) {
         const target = asNumber(row[col])
         let min: number, max: number, step: number, tolerance: number
         if (spec.isYear) {
@@ -306,47 +314,45 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
       }
     }
 
-    // ---- Classement (ordering) : une seule ligne par valeur distincte ----
+    // ---- Classement (ordering) : autant de groupes que les données le permettent ----
+    // Une seule ligne par valeur distincte (deux ex æquo rendraient l'ordre ambigu), puis découpe en groupes.
     if (spec.kind === 'number') {
-      const pool = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
-      if (pool.length >= 3) {
-        const n = Math.min(CFG.order.items, pool.length)
-        const direction: 'asc' | 'desc' = spec.isYear ? 'asc' : 'desc'
-        for (let k = 0; k < CFG.order.perColumn; k += 1) {
-          const chosen = sample(pool, n)
-          const sorted = [...chosen].sort((a, b) =>
-            direction === 'asc' ? asNumber(a[col]) - asNumber(b[col]) : asNumber(b[col]) - asNumber(a[col]))
-          const idOf = (r: Row): string => `o-${hashStr(nameOf(r) + col)}`
-          questions.push({
-            id: nextId(), type: 'ordering', theme: themeId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
-            question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
-            explanation: sorted
-              .map((r) => `${nameOf(r)} (${fmtNumber(asNumber(r[col]))}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
-              .join(' › '),
-            content: {
-              items: shuffle(chosen).map<OrderingItem>((r) => ({ id: idOf(r), label: nameOf(r) })),
-              correctOrder: sorted.map(idOf),
-            },
-          })
-        }
+      const distinct = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
+      const direction: 'asc' | 'desc' = spec.isYear ? 'asc' : 'desc'
+      for (const group of chunk(distinct, CFG.order.groupSize)) {
+        const sorted = [...group].sort((a, b) =>
+          direction === 'asc' ? asNumber(a[col]) - asNumber(b[col]) : asNumber(b[col]) - asNumber(a[col]))
+        const idOf = (r: Row): string => `o-${hashStr(nameOf(r) + col)}`
+        questions.push({
+          id: nextId(), type: 'ordering', theme: themeId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
+          question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
+          explanation: sorted
+            .map((r) => `${nameOf(r)} (${fmtNumber(asNumber(r[col]))}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
+            .join(' › '),
+          content: {
+            items: shuffle(group).map<OrderingItem>((r) => ({ id: idOf(r), label: nameOf(r) })),
+            correctOrder: sorted.map(idOf),
+          },
+        })
       }
     }
 
-    // ---- Association (matching) ----
-    if (spec.kind === 'string' && spec.unique && rowsWith.length >= 3) {
-      const chosen = sample(rowsWith, Math.min(CFG.matching.items, rowsWith.length))
+    // ---- Association (matching) : autant de groupes que les données le permettent ----
+    if (spec.kind === 'string' && spec.unique) {
       const leftId = (r: Row): string => `l-${hashStr(nameOf(r))}`
       const rightId = (r: Row): string => `r-${hashStr(r[col])}`
-      questions.push({
-        id: nextId(), type: 'matching', theme: themeId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
-        question: `Associez chaque ${noun} à : ${spec.label}.`,
-        explanation: chosen.map((r) => `${nameOf(r)} → ${r[col]}`).join(' · '),
-        content: {
-          left: chosen.map<MatchingItem>((r) => ({ id: leftId(r), label: nameOf(r) })),
-          right: shuffle(chosen).map<MatchingItem>((r) => ({ id: rightId(r), label: r[col] })),
-          correctPairs: Object.fromEntries(chosen.map((r) => [leftId(r), rightId(r)])),
-        },
-      })
+      for (const group of chunk(shuffle(rowsWith), CFG.matching.groupSize)) {
+        questions.push({
+          id: nextId(), type: 'matching', theme: themeId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
+          question: `Associez chaque ${noun} à : ${spec.label}.`,
+          explanation: group.map((r) => `${nameOf(r)} → ${r[col]}`).join(' · '),
+          content: {
+            left: group.map<MatchingItem>((r) => ({ id: leftId(r), label: nameOf(r) })),
+            right: shuffle(group).map<MatchingItem>((r) => ({ id: rightId(r), label: r[col] })),
+            correctPairs: Object.fromEntries(group.map((r) => [leftId(r), rightId(r)])),
+          },
+        })
+      }
     }
   }
 
