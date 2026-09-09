@@ -15,7 +15,7 @@ interface ProfilePageProps {
 export function ProfilePage({ profile, onBack, onSave, onViewHistory }: ProfilePageProps) {
   const [pseudo, setPseudo] = useState(profile?.pseudo ?? '')
   const [avatar, setAvatar] = useState(profile?.avatar ?? AVATAR_OPTIONS[0])
-  const [theme, setTheme] = useState<Theme>(profile?.theme ?? 'dark')
+  const [theme, setTheme] = useState<Theme>(profile?.theme ?? 'lagon')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -60,12 +60,12 @@ export function ProfilePage({ profile, onBack, onSave, onViewHistory }: ProfileP
         <legend>Thème</legend>
         <div className="theme-options">
           <label className="theme-option">
-            <input type="radio" name="theme" checked={theme === 'dark'} onChange={() => previewTheme('dark')} />
-            🌙 Sombre
+            <input type="radio" name="theme" checked={theme === 'lagon'} onChange={() => previewTheme('lagon')} />
+            🌙 Lagon
           </label>
           <label className="theme-option">
-            <input type="radio" name="theme" checked={theme === 'light'} onChange={() => previewTheme('light')} />
-            ☀️ Clair
+            <input type="radio" name="theme" checked={theme === 'carte'} onChange={() => previewTheme('carte')} />
+            🧭 Carte marine
           </label>
         </div>
       </fieldset>

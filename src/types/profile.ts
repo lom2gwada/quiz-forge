@@ -1,4 +1,4 @@
-export type Theme = 'dark' | 'light'
+export type Theme = 'lagon' | 'carte'
 
 export interface Profile {
   pseudo: string
