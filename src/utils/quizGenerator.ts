@@ -189,6 +189,8 @@ const CFG = {
   qcm: { choices: 3, points: 1, difficulty: 'easy' as const },
   qcmMulti: { options: 5, points: 2, difficulty: 'medium' as const },
   qcmBackward: { choices: 3, points: 2, difficulty: 'medium' as const },
+  boolean: { points: 1, difficulty: 'easy' as const },
+  cloze: { points: 2, difficulty: 'medium' as const },
   estimate: { points: 2, difficulty: 'medium' as const },
   order: { groupSize: 4, points: 3, difficulty: 'hard' as const },
   matching: { groupSize: 4, points: 2, difficulty: 'medium' as const },
@@ -235,40 +237,64 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     const numRowsWith = spec.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(asNumber(row[col]))) : rowsWith
     const Label = capitalize(spec.label)
 
-    // ---- QCM direct / multi : une question par ligne ----
+    // ---- Colonne texte : QCM + Vrai/Faux + texte à trous, une série par ligne ----
     if (spec.kind === 'string') {
       for (const row of rowsWith) {
         const corrects = atomsOf(row)
         if (!corrects.length) continue
+        const fact = `${Label} ${de(row)} : ${humanList(corrects)}.`
 
         if (corrects.length > 1) {
           const pool = domain.filter((v) => !corrects.includes(v))
           const nDist = Math.min(CFG.qcmMulti.options - corrects.length, pool.length)
-          if (nDist < 1) continue
-          const options = shuffle([...corrects, ...sample(pool, nDist)])
-          questions.push({
-            id: nextId(), type: 'qcm', theme: themeId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
-            question: `${Label} ${de(row)} ? (plusieurs réponses)`,
-            explanation: `${Label} ${de(row)} : ${humanList(corrects)}.`,
-            content: {
-              multiple: true,
-              answers: options.map<AnswerOption>((label, i) => ({ id: 'abcde'[i], label, isCorrect: corrects.includes(label) })),
-            },
-          })
-          continue
+          if (nDist >= 1) {
+            const options = shuffle([...corrects, ...sample(pool, nDist)])
+            questions.push({
+              id: nextId(), type: 'qcm', theme: themeId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
+              question: `${Label} ${de(row)} ? (plusieurs réponses)`,
+              explanation: fact,
+              content: {
+                multiple: true,
+                answers: options.map<AnswerOption>((label, i) => ({ id: 'abcde'[i], label, isCorrect: corrects.includes(label) })),
+              },
+            })
+          }
+        } else {
+          const correct = corrects[0]
+          const distractors = sample(domain.filter((v) => v !== correct), CFG.qcm.choices - 1)
+          if (distractors.length >= CFG.qcm.choices - 1) {
+            questions.push({
+              id: nextId(), type: 'qcm', theme: themeId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
+              question: `${Label} ${de(row)} ?`,
+              explanation: `${Label} ${de(row)} : ${correct}.`,
+              content: {
+                multiple: false,
+                answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
+              },
+            })
+          }
         }
 
-        const correct = corrects[0]
-        const distractors = sample(domain.filter((v) => v !== correct), CFG.qcm.choices - 1)
-        if (distractors.length < CFG.qcm.choices - 1) continue
+        // Vrai/Faux : la vraie valeur (isTrue) ou une valeur empruntée à une autre ligne
+        const showTrue = rand() < 0.5
+        const shown = showTrue
+          ? corrects[Math.floor(rand() * corrects.length)]
+          : sample(domain.filter((v) => !corrects.includes(v)), 1)[0]
+        if (shown) {
+          questions.push({
+            id: nextId(), type: 'boolean', theme: themeId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
+            question: `${Label} ${de(row)} : ${shown}.`,
+            explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
+            content: { isTrue: showTrue },
+          })
+        }
+
+        // Texte à trous : on masque la valeur
         questions.push({
-          id: nextId(), type: 'qcm', theme: themeId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
-          question: `${Label} ${de(row)} ?`,
-          explanation: `${Label} ${de(row)} : ${correct}.`,
-          content: {
-            multiple: false,
-            answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
-          },
+          id: nextId(), type: 'cloze', theme: themeId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
+          question: `${Label} ${de(row)} : ___`,
+          explanation: fact,
+          content: { expectedAnswers: corrects, caseSensitive: false },
         })
       }
     }

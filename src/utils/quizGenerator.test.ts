@@ -92,6 +92,20 @@ describe('generateQuiz', () => {
     }
   })
 
+  it('produces vrai/faux and texte à trous questions from text columns', () => {
+    const booleans = quiz.questions.filter((q) => q.type === 'boolean')
+    const clozes = quiz.questions.filter((q) => q.type === 'cloze')
+    expect(booleans.length).toBeGreaterThan(0)
+    expect(clozes.length).toBeGreaterThan(0)
+    for (const q of booleans) expect(typeof (q.content as { isTrue: boolean }).isTrue).toBe('boolean')
+    for (const q of clozes) {
+      expect(q.question).toMatch(/_{3,}/)
+      expect((q.content as { expectedAnswers: string[] }).expectedAnswers.length).toBeGreaterThan(0)
+    }
+    // les deux valeurs de vérité apparaissent
+    expect(new Set(booleans.map((q) => (q.content as { isTrue: boolean }).isTrue)).size).toBe(2)
+  })
+
   it('skips empty cells: no independence question about a non-sovereign territory', () => {
     const territories = ['Guadeloupe', 'Martinique', 'Aruba', 'Curaçao', 'Porto Rico', 'Saint-Martin', 'Îles Caïmans']
     const independence = quiz.questions.filter((q) => q.tags.includes('independance'))
