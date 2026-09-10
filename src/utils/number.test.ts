@@ -12,6 +12,10 @@ describe('formatNumber', () => {
     expect(formatNumber(430)).toBe('430')
     expect(formatNumber(0)).toBe('0')
   })
+  it('utilise une espace insécable normale (U+00A0), pas la fine (U+202F) peu lisible', () => {
+    expect(formatNumber(5130)).toContain(' ')
+    expect(formatNumber(5130)).not.toContain(' ')
+  })
   it('renvoie une chaîne pour les valeurs non finies', () => {
     expect(formatNumber(NaN)).toBe('NaN')
   })
