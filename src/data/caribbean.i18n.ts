@@ -103,21 +103,23 @@ const articles: DataI18n['articles'] = {
   'République dominicaine': { en: 'the', es: 'la', nl: 'de' },
 }
 
+// Les libellés FR auto-dérivés des en-têtes CSV (ASCII, tout en minuscules) sont parfois faux :
+// on les corrige ici pour `fr` aussi (accents, acronymes).
 const columnLabels: DataI18n['columnLabels'] = {
   capitale: { en: 'capital', es: 'capital', nl: 'hoofdstad', ht: 'kapital' },
   population: { en: 'population', es: 'población', nl: 'bevolking', ht: 'popilasyon' },
   superficie: { en: 'area', es: 'superficie', nl: 'oppervlakte', ht: 'sipèfisi' },
-  densite: { en: 'density', es: 'densidad', nl: 'dichtheid', ht: 'dansite' },
-  pib: { en: 'GDP', es: 'PIB', nl: 'bbp', ht: 'PIB' },
+  densite: { fr: 'densité', en: 'density', es: 'densidad', nl: 'dichtheid', ht: 'dansite' },
+  pib: { fr: 'PIB', en: 'GDP', es: 'PIB', nl: 'bbp', ht: 'PIB' },
   'point culminant': { en: 'highest point', es: 'punto más alto', nl: 'hoogste punt', ht: 'pwen ki pi wo' },
   altitude: { en: 'elevation', es: 'altitud', nl: 'hoogte', ht: 'altitid' },
   monnaie: { en: 'currency', es: 'moneda', nl: 'munt', ht: 'lajan' },
   langues: { en: 'languages', es: 'idiomas', nl: 'talen', ht: 'lang' },
-  'indicatif telephonique': { en: 'dialing code', es: 'prefijo telefónico', nl: 'landnummer', ht: 'endikatif telefòn' },
+  'indicatif telephonique': { fr: 'indicatif téléphonique', en: 'dialing code', es: 'prefijo telefónico', nl: 'landnummer', ht: 'endikatif telefòn' },
   'domaine internet': { en: 'internet domain', es: 'dominio de internet', nl: 'internetdomein', ht: 'domèn entènèt' },
-  president: { en: 'president', es: 'presidente', nl: 'president', ht: 'prezidan' },
+  president: { fr: 'président', en: 'president', es: 'presidente', nl: 'president', ht: 'prezidan' },
   'premier ministre': { en: 'prime minister', es: 'primer ministro', nl: 'premier', ht: 'premye minis' },
-  independance: { en: 'independence', es: 'independencia', nl: 'onafhankelijkheid', ht: 'endepandans' },
+  independance: { fr: 'indépendance', en: 'independence', es: 'independencia', nl: 'onafhankelijkheid', ht: 'endepandans' },
   drapeau: { en: 'flag', es: 'bandera', nl: 'vlag', ht: 'drapo' },
 }
 

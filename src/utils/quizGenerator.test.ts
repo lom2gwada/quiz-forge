@@ -329,10 +329,20 @@ describe('generateQuiz', () => {
     expect(en.questions.find((q) => q.subject === 'Cuba')?.subjectLabel).toBeUndefined()
   })
 
-  it('keeps FR output unchanged when i18n is supplied but locale stays "fr"', () => {
+  it('in FR, the sidecar only fixes wrong auto-derived labels (accents, acronyms)', () => {
     const plain = generateQuiz(caribbeanRows, schema, { seed: 'test' })
-    const withSidecar = generateQuiz(caribbeanRows, schema, { seed: 'test', i18n: caribbeanI18n })
-    expect(withSidecar).toEqual(plain)
+    const fixed = generateQuiz(caribbeanRows, schema, { seed: 'test', i18n: caribbeanI18n })
+    const label = (quiz: typeof plain, id: string) => quiz.categories.find((category) => category.id === id)?.label
+
+    expect(label(plain, 'pib_mds_usd')).toBe('Pib')
+    expect(label(fixed, 'pib_mds_usd')).toBe('PIB')
+    expect(label(fixed, 'densite_hab_km2')).toBe('Densité')
+    expect(label(fixed, 'independance')).toBe('Indépendance')
+    // rien d'autre ne bouge : mêmes questions, mêmes ids, même ordre
+    expect(fixed.questions.map((q) => q.id)).toEqual(plain.questions.map((q) => q.id))
+    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident/i
+    const untouched = (quiz: typeof plain) => quiz.questions.map((q) => q.question).filter((q) => !corrected.test(q))
+    expect(untouched(fixed)).toEqual(untouched(plain))
   })
 
   it('is deterministic per (seed, locale, i18n)', () => {
