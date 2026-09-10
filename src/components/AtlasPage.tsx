@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { ColumnSpec, GenSchema, Row } from '../utils/quizGenerator'
 import { formatNumericValue } from '../utils/number'
+import { HoverPreview } from './HoverPreview'
 import { QuestionShape } from './QuestionShape'
 
 interface AtlasPageProps {
@@ -60,9 +61,24 @@ export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
           return (
             <article className="fiche" key={name}>
               <header className="fiche-head">
-                {shape && <QuestionShape svg={shape} alt={`Silhouette : ${name}`} className="fiche-shape" />}
+                {shape && (
+                  <HoverPreview
+                    className="fiche-shape-wrap"
+                    label={`Silhouette : ${name} (survoler pour agrandir)`}
+                    trigger={<QuestionShape svg={shape} className="fiche-shape" />}
+                    preview={<QuestionShape svg={shape} />}
+                  />
+                )}
                 <h3>{article && <span className="fiche-article">{article} </span>}{name}</h3>
-                {flag && <img className="fiche-flag" src={flag} alt="" loading="lazy" />}
+                {flag && (
+                  <HoverPreview
+                    href={flag}
+                    className="fiche-flag-wrap"
+                    label={`Image de ${name} — survoler pour agrandir, cliquer pour ouvrir`}
+                    trigger={<img className="fiche-flag" src={flag} alt="" loading="lazy" />}
+                    preview={<img src={flag} alt="" />}
+                  />
+                )}
               </header>
               <dl className="fiche-facts">
                 {factCols.map(([col, spec]) => {
