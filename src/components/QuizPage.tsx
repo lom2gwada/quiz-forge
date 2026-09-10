@@ -4,6 +4,7 @@ import { formatDuration } from '../utils/time'
 import { shuffle } from '../utils/shuffle'
 import { QuestionImage } from './QuestionImage'
 import { QuestionRenderer } from './QuestionRenderer'
+import { QuestionShape } from './QuestionShape'
 
 export const TYPE_ICONS: Record<Question['type'], string> = { qcm: '🧩', code: '💻', text: '✍️', ordering: '🔀', boolean: '⚖️', cloze: '📝', matching: '🔗', numeric: '🎚️' }
 export const TYPE_LABELS: Record<Question['type'], string> = { qcm: 'QCM', code: 'Code', text: 'Texte', ordering: 'Ordre', boolean: 'Vrai/Faux', cloze: 'Texte à trous', matching: 'Association', numeric: 'Estimation' }
@@ -44,6 +45,7 @@ export function QuizPage({ quiz, questions, onFinish, onCancel }: QuizPageProps)
     <p className="progress">Question {current + 1} / {shuffledQuestions.length}</p>
     <div className="question-body" key={question.id}>
       {question.imageUrl && <QuestionImage src={question.imageUrl} alt={question.imageAlt} />}
+      {question.shapeSvg && <QuestionShape svg={question.shapeSvg} alt={question.imageAlt} />}
       {question.type !== 'cloze' && <h2>{question.question}</h2>}
       <QuestionRenderer question={question} answer={answers[question.id]} onChange={updateAnswer} />
     </div>

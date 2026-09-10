@@ -13,6 +13,7 @@ L'idée : au lieu d'écrire chaque question à la main, on charge un CSV (une li
 - Import d'un quiz au format JSON, validé avant utilisation (`src/utils/quizValidation.ts`)
 - Historique des parties et profil (pseudo / avatar / thème) stockés localement (`localStorage`), sans backend
 - Jeu de données embarqué : [`src/data/caribbean.csv`](src/data/caribbean.csv) (29 pays et territoires du bassin caribéen), généré à l'ouverture
+- Questions visuelles : drapeaux (URLs Wikimedia) et **silhouettes** de territoires ([`src/data/shapes.ts`](src/data/shapes.ts), contours Natural Earth générés par [`scripts/build-shapes.mjs`](scripts/build-shapes.mjs))
 
 ## Prérequis
 

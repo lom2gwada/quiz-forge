@@ -56,6 +56,15 @@ describe('parseQuiz — root schema', () => {
     expect(() => parseQuiz(bad)).toThrow()
   })
 
+  it('passes an inline shapeSvg through and rejects a non-SVG string', () => {
+    const svg = '<svg viewBox="0 0 100 100"><path d="M0,0L10,0L5,10Z"/></svg>'
+    const answers = [{ id: 'a', label: 'A', isCorrect: true }, { id: 'b', label: 'B', isCorrect: false }]
+    const ok = parseQuiz(quiz([{ ...base, type: 'qcm', question: 'Quel territoire ?', content: { multiple: false, answers }, shapeSvg: svg }]))
+    expect(ok.questions[0].shapeSvg).toBe(svg)
+    const bad = quiz([{ ...base, type: 'qcm', question: 'Q ?', content: { multiple: false, answers }, shapeSvg: 'not svg' }])
+    expect(() => parseQuiz(bad)).toThrow()
+  })
+
   it('parses an optional metadata description', () => {
     const withDescription = { ...quiz([]), metadata: { ...quiz([]).metadata, description: 'Un quiz de test.' } }
     const result = parseQuiz(withDescription)

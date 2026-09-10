@@ -207,7 +207,7 @@ const CFG = {
   matching: { groupSize: 4, points: 2, difficulty: 'medium' as const },
 }
 
-export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: string }): Quiz {
+export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: string; shapes?: Record<string, string> }): Quiz {
   const rand = mulberry32(hashStr(opts.seed))
   const shuffle = <T>(arr: T[]): T[] => {
     const a = [...arr]
@@ -581,12 +581,35 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     }
   }
 
-  // Les catégories proposées au joueur = les colonnes qui ont effectivement produit des questions,
-  // dans l'ordre du tableau source.
+  // ---- Silhouette : reconnaître un territoire à son contour (indépendant des colonnes) ----
+  if (opts.shapes) {
+    const withShape = rows.filter((r) => opts.shapes![nameOf(r)])
+    for (const row of withShape) {
+      const correct = nameOf(row)
+      const distractors = sample(withShape.filter((r) => r !== row).map(nameOf), CFG.image.choices - 1)
+      if (distractors.length < CFG.image.choices - 1) continue
+      questions.push({
+        id: qid(['silhouette', correct]), type: 'qcm', category: 'silhouette', difficulty: CFG.image.difficulty, points: CFG.image.points, tags: ['silhouette'],
+        question: `Quel ${noun} a cette silhouette ?`,
+        topic: `Silhouette ${de(row)}`,
+        explanation: `Cette silhouette est celle ${de(row)}.`,
+        shapeSvg: opts.shapes[correct],
+        imageAlt: `Silhouette d’un ${noun}.`,
+        content: {
+          multiple: false,
+          answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
+        },
+      })
+    }
+  }
+
+  // Les catégories proposées au joueur = les colonnes qui ont effectivement produit des questions
+  // (dans l'ordre du tableau source), plus « Silhouette » si des contours ont été fournis.
   const used = new Set(questions.map((q) => q.category))
-  const categories = Object.entries(schema.columns)
-    .filter(([col]) => used.has(col))
-    .map(([col, spec]) => ({ id: col, label: capitalize(spec.label) }))
+  const categories = [
+    ...Object.entries(schema.columns).filter(([col]) => used.has(col)).map(([col, spec]) => ({ id: col, label: capitalize(spec.label) })),
+    ...(used.has('silhouette') ? [{ id: 'silhouette', label: 'Silhouette' }] : []),
+  ]
 
   return {
     version: '1.0',

@@ -6,6 +6,7 @@ import { playFinish, playVictory } from '../utils/sound'
 import { Confetti } from './Confetti'
 import { PieChart } from './PieChart'
 import { QuestionImage } from './QuestionImage'
+import { QuestionShape } from './QuestionShape'
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = { easy: 'Facile', medium: 'Intermédiaire', hard: 'Difficile' }
 
@@ -125,6 +126,7 @@ export function ResultPage({ questions, answers, categories, elapsedSeconds, onR
       return <article className={`correction ${correct ? 'correct' : 'incorrect'}`} key={question.id}>
         <h3>{correct ? '✓ Bonne réponse' : '✗ Réponse incorrecte'} — {question.question}</h3>
         {question.imageUrl && <QuestionImage src={question.imageUrl} alt={question.imageAlt} />}
+        {question.shapeSvg && <QuestionShape svg={question.shapeSvg} alt={question.imageAlt} />}
         {!correct && <p><strong>Votre réponse :</strong> {userAnswer(question, answers[question.id])}</p>}
         {!correct && <p><strong>Bonne réponse :</strong> {correctAnswer(question)}</p>}
         <p>{question.explanation}</p>

@@ -191,6 +191,26 @@ describe('generateQuiz', () => {
     }
   })
 
+  it('produces silhouette questions when shapes are supplied', () => {
+    const shaped = generateQuiz(caribbeanRows, schema, {
+      seed: 'test',
+      shapes: { Cuba: '<svg viewBox="0 0 100 100"><path d="M0,0L10,0L5,10Z"/></svg>', Jamaïque: '<svg viewBox="0 0 100 100"><path d="M0,0L9,1L4,9Z"/></svg>', Haïti: '<svg viewBox="0 0 100 100"><path d="M1,1L8,2L3,8Z"/></svg>', Belize: '<svg viewBox="0 0 100 100"><path d="M2,2L7,3L2,7Z"/></svg>' },
+    })
+    expect(() => parseQuiz(shaped)).not.toThrow()
+    const sil = shaped.questions.filter((q) => q.category === 'silhouette')
+    expect(sil.length).toBe(4)
+    expect(shaped.categories.find((c) => c.id === 'silhouette')?.label).toBe('Silhouette')
+    for (const q of sil) {
+      expect(q.type).toBe('qcm')
+      expect(q.shapeSvg).toMatch(/^<svg/)
+      expect(q.imageUrl).toBeUndefined()
+      expect(q.topic).toMatch(/^Silhouette /)
+      if (q.type === 'qcm') expect(q.content.answers.filter((a) => a.isCorrect)).toHaveLength(1)
+    }
+    // sans shapes : aucune question silhouette, aucune catégorie silhouette
+    expect(quiz.questions.some((q) => q.category === 'silhouette')).toBe(false)
+  })
+
   it('produces flag + year questions when an image column and a year column coexist', () => {
     const iy = quiz.questions.filter((q) => q.imageUrl && /En quelle année/.test(q.question))
     expect(iy.length).toBeGreaterThan(5)

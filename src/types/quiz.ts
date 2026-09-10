@@ -82,6 +82,8 @@ export interface BaseQuestion {
   /** Optionnel, sur n'importe quel type de question — pas un type dédié : évite de dupliquer la logique QCM/texte libre. */
   imageUrl?: string
   imageAlt?: string
+  /** SVG inline d'une silhouette (contour de territoire) — affiché comme une image, recoloré via `currentColor`. */
+  shapeSvg?: string
 }
 
 export interface QCMQuestion extends BaseQuestion {
