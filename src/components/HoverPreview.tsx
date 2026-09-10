@@ -52,6 +52,6 @@ export function HoverPreview({ trigger, preview, href, label, className }: Hover
   )
 
   return href
-    ? <a {...handlers} href={href} target="_blank" rel="noreferrer" aria-label={label}>{trigger}{pop}</a>
+    ? <a {...handlers} href={href} target="_blank" rel="noreferrer" aria-label={label} onClick={(event) => event.stopPropagation()}>{trigger}{pop}</a>
     : <span {...handlers} tabIndex={0} role="img" aria-label={label}>{trigger}{pop}</span>
 }
