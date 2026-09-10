@@ -17,6 +17,8 @@ const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s)
  * rendu générique depuis le schéma (marche pour n'importe quel pack, sans code par sujet). */
 export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
   const [query, setQuery] = useState('')
+  const [sortKey, setSortKey] = useState('') // '' = ordre du CSV, 'name', ou une colonne nombre
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const { subjectColumn, articleColumn, columns } = schema
 
   const imageCol = useMemo(
@@ -27,9 +29,38 @@ export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
     () => Object.entries(columns).filter(([c, s]) => s.include && !s.isImage && c !== subjectColumn && c !== articleColumn),
     [columns, subjectColumn, articleColumn],
   )
+  const numCols = useMemo(
+    () => Object.entries(columns).filter(([c, s]) => s.include && s.kind === 'number' && c !== subjectColumn),
+    [columns, subjectColumn],
+  )
+
+  const changeSort = (key: string) => {
+    setSortKey(key)
+    setSortDir(key === 'name' || columns[key]?.isYear ? 'asc' : 'desc')
+  }
+  const numOf = (row: Row, col: string): number | null => {
+    const raw = (row[col] ?? '').trim()
+    if (!raw) return null // Number('') === 0 : à écarter explicitement
+    const n = Number(raw.replace(/\s/g, '').replace(',', '.'))
+    return Number.isFinite(n) ? n : null
+  }
 
   const q = query.trim().toLowerCase()
   const filtered = q ? rows.filter((r) => (r[subjectColumn] ?? '').toLowerCase().includes(q)) : rows
+  const sorted = useMemo(() => {
+    if (!sortKey) return filtered
+    return [...filtered].sort((a, b) => {
+      if (sortKey === 'name') {
+        const cmp = (a[subjectColumn] ?? '').localeCompare(b[subjectColumn] ?? '', 'fr')
+        return sortDir === 'asc' ? cmp : -cmp
+      }
+      const na = numOf(a, sortKey), nb = numOf(b, sortKey)
+      if (na === null && nb === null) return 0
+      if (na === null) return 1 // valeurs manquantes toujours en fin
+      if (nb === null) return -1
+      return sortDir === 'asc' ? na - nb : nb - na
+    })
+  }, [filtered, sortKey, sortDir, subjectColumn])
 
   const format = (raw: string, spec: ColumnSpec): string => {
     if (spec.kind !== 'number') return raw
@@ -44,16 +75,36 @@ export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
         <h2>Fiches</h2>
         <button type="button" className="secondary" onClick={onBack}>Retour</button>
       </div>
-      <input
-        className="atlas-search"
-        type="search"
-        placeholder="Filtrer par nom…"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        aria-label="Filtrer les fiches par nom"
-      />
+      <div className="atlas-controls">
+        <input
+          className="atlas-search"
+          type="search"
+          placeholder="Filtrer par nom…"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          aria-label="Filtrer les fiches par nom"
+        />
+        <label className="atlas-sort">
+          Trier par
+          <select value={sortKey} onChange={(event) => changeSort(event.target.value)}>
+            <option value="">ordre du tableau</option>
+            <option value="name">nom</option>
+            {numCols.map(([col, spec]) => <option key={col} value={col}>{spec.label}</option>)}
+          </select>
+        </label>
+        {sortKey && (
+          <button
+            type="button"
+            className="secondary atlas-dir"
+            onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+            aria-label={sortDir === 'asc' ? 'Ordre croissant, cliquer pour décroissant' : 'Ordre décroissant, cliquer pour croissant'}
+          >
+            {sortDir === 'asc' ? '↑' : '↓'}
+          </button>
+        )}
+      </div>
       <div className="atlas-grid">
-        {filtered.map((row) => {
+        {sorted.map((row) => {
           const name = row[subjectColumn] ?? ''
           const article = articleColumn ? (row[articleColumn] ?? '').trim() : ''
           const flag = imageCol && /^https?:\/\//.test((row[imageCol] ?? '').trim()) ? row[imageCol].trim() : null
@@ -99,7 +150,7 @@ export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
           )
         })}
       </div>
-      {!filtered.length && <p className="atlas-empty">Aucune fiche pour « {query} ».</p>}
+      {!sorted.length && <p className="atlas-empty">Aucune fiche pour « {query} ».</p>}
     </section>
   )
 }
