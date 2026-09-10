@@ -128,6 +128,13 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .data-table thead .row-num, .data-table thead .sticky-col { z-index: 3; }
 .data-table tbody .sticky-col { box-shadow: inset -1px 0 0 var(--border); }
 .data-table tbody tr:hover .row-num, .data-table tbody tr:hover .sticky-col { background: var(--surface-selected); }
+/* Cellule de colonne image : miniature + aperçu au survol / focus. */
+.cell-img { display: inline-flex; border-radius: 3px; }
+.cell-img img { height: 22px; width: auto; display: block; border: 1px solid var(--border); border-radius: 3px; background: #fff; }
+.cell-img:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cell-img-fallback { font-size: .72rem; color: var(--text-muted); text-decoration: underline; }
+.cell-img-preview { position: fixed; z-index: 50; padding: 6px; background: var(--surface-solid); border: 1px solid var(--border); border-radius: .5rem; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); pointer-events: none; }
+.cell-img-preview img { max-height: 140px; max-width: 224px; width: auto; height: auto; display: block; background: #fff; border-radius: 2px; }
 .pie-chart { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; display: grid; justify-items: center; gap: .8rem; }
 .pie-chart svg { width: 140px; height: 140px; }
 .pie-chart h3 { text-align: center; margin: 0 0 .6rem; }

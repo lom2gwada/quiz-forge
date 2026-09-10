@@ -1,5 +1,6 @@
 import type { GenSchema, Row } from '../utils/quizGenerator'
 import { formatNumber } from '../utils/number'
+import { CellImagePreview } from './CellImagePreview'
 
 interface DataTableProps {
   rows: Row[]
@@ -42,8 +43,13 @@ export function DataTable({ rows, schema }: DataTableProps) {
                 <td className="row-num">{index + 1}</td>
                 {headers.map((header) => {
                   const raw = row[header] ?? ''
-                  const className = [header === subject ? 'sticky-col' : '', raw.trim() ? '' : 'is-empty'].filter(Boolean).join(' ')
-                  return <td key={header} className={className || undefined}>{display(header, raw)}</td>
+                  const isImageCell = schema.columns[header]?.isImage && /^https?:\/\//.test(raw)
+                  const className = [header === subject ? 'sticky-col' : '', !isImageCell && !raw.trim() ? 'is-empty' : ''].filter(Boolean).join(' ')
+                  return (
+                    <td key={header} className={className || undefined}>
+                      {isImageCell ? <CellImagePreview src={raw.trim()} /> : display(header, raw)}
+                    </td>
+                  )
                 })}
               </tr>
             ))}
