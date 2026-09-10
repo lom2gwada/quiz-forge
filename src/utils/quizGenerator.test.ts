@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import caribbeanCsv from '../data/caribbean.csv?raw'
+import { caribbeanI18n } from '../data/caribbean.i18n'
 import { parseQuiz } from './quizValidation'
 import { generateQuiz, inferSchema, parseCsv, type Row } from './quizGenerator'
 
@@ -295,6 +296,47 @@ describe('generateQuiz', () => {
     const frCloze = fr.questions.find((q) => q.type === 'cloze' && q.subject === 'Cuba' && q.tags.includes('capitale'))
     const enCloze = en.questions.find((q) => q.id === frCloze?.id)
     expect(enCloze?.subject).toBe('Cuba')
+  })
+
+  it('translates data (names, values, articles, column labels) with i18n + locale "en"', () => {
+    const en = generateQuiz(caribbeanRows, schema, { seed: 'test', locale: 'en', i18n: caribbeanI18n })
+    expect(() => parseQuiz(en)).not.toThrow()
+    const blob = JSON.stringify(en)
+
+    // libellé de colonne traduit, nom + valeur traduits
+    const cloze = en.questions.find((q) => q.type === 'cloze' && q.subject === 'Cuba' && q.tags.includes('capitale'))
+    expect(cloze?.question).toBe('Capital of Cuba: ___')
+    if (cloze?.type === 'cloze') expect(cloze.content.expectedAnswers).toContain('Havana')
+
+    // article anglais « of the … »
+    const bahamas = en.questions.find((q) => q.subject === 'Bahamas' && q.topic?.startsWith('Capital'))
+    expect(bahamas?.topic).toBe('Capital of the Bahamas')
+
+    // les valeurs de cellules traduites remplacent les formes françaises à l'affichage
+    expect(blob).not.toContain('La Havane')
+    expect(blob).toContain('Havana')
+    expect(blob).toContain('Port of Spain')
+    expect(en.questions.some((q) => q.question.includes('Jamaica'))).toBe(true)
+
+    // mais le champ `subject` (clé d'historique) reste la valeur FR canonique,
+    // doublé d'un `subjectLabel` traduit pour l'affichage
+    const jam = en.questions.find((q) => q.subject === 'Jamaïque')
+    expect(jam).toBeDefined()
+    expect(jam?.subjectLabel).toBe('Jamaica')
+    // pas de subjectLabel quand le nom ne change pas
+    expect(en.questions.find((q) => q.subject === 'Cuba')?.subjectLabel).toBeUndefined()
+  })
+
+  it('keeps FR output unchanged when i18n is supplied but locale stays "fr"', () => {
+    const plain = generateQuiz(caribbeanRows, schema, { seed: 'test' })
+    const withSidecar = generateQuiz(caribbeanRows, schema, { seed: 'test', i18n: caribbeanI18n })
+    expect(withSidecar).toEqual(plain)
+  })
+
+  it('is deterministic per (seed, locale, i18n)', () => {
+    const a = generateQuiz(caribbeanRows, schema, { seed: 'z', locale: 'en', i18n: caribbeanI18n })
+    const b = generateQuiz(caribbeanRows, schema, { seed: 'z', locale: 'en', i18n: caribbeanI18n })
+    expect(a).toEqual(b)
   })
 
   it('picks the first text column as subject when no header hint matches', () => {

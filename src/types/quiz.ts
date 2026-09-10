@@ -77,8 +77,11 @@ export interface BaseQuestion {
    *  Optionnel : les quiz importés sans ce champ retombent sur `question`. */
   topic?: string
   /** Sujet de la question (ex. « Cuba ») quand elle en a un seul — permet un lien « Voir la fiche ».
-   *  Absent pour les questions de groupe (classement, association). */
+   *  **Valeur FR canonique** (clé de fiche + d'historique), même en anglais. Absent pour les
+   *  questions de groupe (classement, association). */
   subject?: string
+  /** Sujet traduit pour l'affichage (« Jamaica ») ; absent s'il est identique à `subject`. */
+  subjectLabel?: string
   tags: string[]
   explanation: string
   points: number

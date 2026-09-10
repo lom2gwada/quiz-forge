@@ -150,7 +150,7 @@ export function ResultPage({ questions, answers, categories, elapsedSeconds, onR
         <p>{question.explanation}</p>
         {question.subject && onViewFiche && (
           <button type="button" className="link-button" onClick={() => onViewFiche(question.subject!)}>
-            {t('result.viewFiche', { name: question.subject })}
+            {t('result.viewFiche', { name: question.subjectLabel ?? question.subject })}
           </button>
         )}
       </article>

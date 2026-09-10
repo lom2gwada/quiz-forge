@@ -4,12 +4,9 @@ export type Locale = string
 
 export const DEFAULT_LOCALE: Locale = 'fr'
 
-/** Locales réellement câblées (dictionnaire d'UI + à terme grammaire + données). Alimente le
- * sélecteur de langue. On y ajoute une entrée quand une langue est **complète** (chrome +
- * questions + données) — cf. `docs/i18n-plan.md`. `en` est traduit côté chrome (phase 1) mais
- * pas encore exposé : les questions restent en FR jusqu'aux phases 2–3. Pour prévisualiser EN
- * avant cela, ajouter `'en'` ici temporairement. */
-export const SUPPORTED_LOCALES: Locale[] = ['fr']
+/** Locales réellement câblées (chrome + génération + données). Alimente le sélecteur de langue.
+ * On y ajoute une entrée quand une langue est **complète** — cf. `docs/i18n-plan.md`. */
+export const SUPPORTED_LOCALES: Locale[] = ['fr', 'en']
 
 export const LOCALE_LABELS: Record<string, string> = {
   fr: 'Français',

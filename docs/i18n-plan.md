@@ -1,12 +1,14 @@
 # Plan : internationalisation de quiz-forge
 
-> **Statut** : phases 0–2 faites le 2026-09-10. Phases 0–1 : socle `Locale` + `Profile.locale`,
-> `LocaleProvider`/`useT()`, `messages/{fr,en}.ts`, chrome migré vers `t()`, `formatNumber`
-> locale-aware. Phase 2 : `grammar/{fr,en}` (contraction d'article, énumération, pluriel, sens
-> de tri) + `templates/{fr,en}` + `fill()` ; `generateQuiz(rows, schema, { seed, locale? })`
-> construit tous les énoncés via `fill(templates…)` + grammaire. FR inchangé (verrouillé par
-> les tests). Reste avant d'exposer `en` : phase 3 (traduction des données). Plan rédigé le
-> 2026-09-10.
+> **Statut** : phases 0–3 faites (0–2 le 2026-09-10, 3 le 2026-09-11). **L'anglais est actif**
+> (`SUPPORTED_LOCALES = ['fr', 'en']`). Phases 0–1 : socle `Locale` + chrome. Phase 2 :
+> `grammar/{fr,en}` + `templates/{fr,en}` + `fill()`, génération pluggable. Phase 3 :
+> `src/i18n/data.ts` (`DataI18n` + `trValue`), `src/data/caribbean.i18n.ts` (valeurs, articles,
+> libellés de colonnes EN), `tr()`/`labelFor()`/`subj()` dans le générateur ; `App` régénère
+> le quiz au changement de langue ; `by_category` de l'historique stocke l'**id** (résolu à
+> l'affichage). FR verrouillé par les tests. Restes connus : titre du quiz gardé FR (clé
+> d'historique stable) ; fiches / tableau source / panneau générateur affichent encore les
+> données FR. Plan rédigé le 2026-09-10.
 > Langues visées : français (défaut + source de vérité), puis **anglais**, **espagnol**,
 > **néerlandais** (Aruba / Curaçao / Sint Maarten), **créole**. L'architecture reste
 > **ouverte à n'importe quelle locale** — ajouter une langue ne touche pas le cœur.
@@ -205,7 +207,7 @@ export const i18n: {
 | **0 — socle** ✅ | `Locale`, `Profile.locale`, résolution, `<html lang>`, `LocaleProvider` + `useT()`, `<select>` profil (fr seul) | ~2 h | oui (rien ne change visuellement) |
 | **1 — UI EN** ✅ | `messages/fr.ts` (extraction), `messages/en.ts`, migration composants → `t()`, `formatNumber` locale-aware | ~4 h | oui — bascule EN traduit le chrome ; questions encore FR, EN pas encore dans le `<select>` |
 | **2 — génération pluggable** ✅ | `grammar/{fr,en}`, `templates/{fr,en}`, refactor `generateQuiz` (`fill`, grammar, `qid` locale-indep) + tests | ~1 j | non seul (questions = « Capital of Jamaïque ? ») |
-| **3 — données EN** | `caribbean.i18n.ts` (valeurs + articles + libellés EN), `tr()` dans le générateur | ~1 j (surtout contenu) | **oui — EN complet**, on active `en` dans le `<select>` |
+| **3 — données EN** ✅ | `data.ts` + `caribbean.i18n.ts` (valeurs + articles + libellés EN), `tr()` dans le générateur, régé. au changement de langue, historique par id | ~1 j (surtout contenu) | **oui — EN actif dans le `<select>`** |
 | **4 — espagnol** | `messages/es`, `grammar/es` (de/del), `templates/es`, colonne `es` dans `caribbean.i18n.ts` | ~0,5 j | oui — on active `es` |
 | **5 — néerlandais** | idem, grammaire simple | ~0,5 j | oui |
 | **6 — créole** | idem + choix de la variante/orthographe + relecture native ; article postposé → gabarits adaptés | ~1 j + relecture | oui |

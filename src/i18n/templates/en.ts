@@ -19,10 +19,10 @@ export const en: Record<TemplateKey, string> = {
   'prompt.silhouette': 'Which {noun} has this outline?',
 
   'explanation.fact': '{Label} {ofSubject}: {value}.',
-  'explanation.image': 'This {label} is the one {ofSubject}.',
+  'explanation.image': 'This {label} belongs to {subject}.',
   'explanation.boolean': '{verdict}. {fact}',
-  'explanation.imageYear': 'This {imageLabel} is the one {ofSubject} — {label}: {value}.',
-  'explanation.silhouette': 'This outline is the one {ofSubject}.',
+  'explanation.imageYear': 'This {imageLabel} belongs to {subject} — {label}: {value}.',
+  'explanation.silhouette': 'This outline belongs to {subject}.',
 
   'topic.labelSubject': '{Label} {ofSubject}',
   'topic.labelList': '{Label}: {list}',

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes as caribbeanShapes } from './data/shapes'
 import { aliases as caribbeanAliases } from './data/aliases'
+import { caribbeanI18n } from './data/caribbean.i18n'
 import { ChartBackground } from './components/ChartBackground'
 import { FilterPanel } from './components/FilterPanel'
 import { HistoryPage } from './components/HistoryPage'
@@ -13,8 +14,9 @@ import { QuizPage } from './components/QuizPage'
 import { ResultPage } from './components/ResultPage'
 import type { AnswersByQuestion, Difficulty, Quiz, Question } from './types/quiz'
 import type { Profile } from './types/profile'
-import { LocaleProvider, useT } from './i18n'
-import { applyLocale, resolveLocale } from './i18n/locale'
+import { LocaleProvider, useLocale, useT } from './i18n'
+import { applyLocale, DEFAULT_LOCALE, resolveLocale, type Locale } from './i18n/locale'
+import type { DataI18n } from './i18n/data'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
 import { applyTheme } from './utils/theme'
@@ -26,7 +28,15 @@ import { isSoundMuted, playClick, setSoundMuted } from './utils/sound'
 import { shuffle } from './utils/shuffle'
 
 type View = 'start' | 'quiz' | 'results' | 'content' | 'history' | 'profile' | 'atlas'
-type Dataset = { rows: Row[]; schema: GenSchema; shapes?: Record<string, string>; aliases?: Record<string, string[]> }
+type Dataset = {
+  rows: Row[]
+  schema: GenSchema
+  shapes?: Record<string, string>
+  aliases?: Record<string, string[]>
+  i18n?: DataI18n
+  /** Nom d'un élément par locale (le CSV n'a pas cette info) ; défaut = `schema.noun`. */
+  nouns?: Partial<Record<Locale, string>>
+}
 
 const questionCounts = [5, 10, 20, 30, 50]
 
@@ -37,9 +47,16 @@ const FALLBACK_QUIZ: Quiz = {
   questions: [],
 }
 
-function safeGenerate(dataset: Dataset, seed: string): { quiz: Quiz; error: string } {
+function safeGenerate(dataset: Dataset, seed: string, locale: Locale = DEFAULT_LOCALE): { quiz: Quiz; error: string } {
+  const localeNoun = dataset.nouns?.[locale]
+  const schema = localeNoun ? { ...dataset.schema, noun: localeNoun } : dataset.schema
   try {
-    return { quiz: parseQuiz(generateQuiz(dataset.rows, dataset.schema, { seed, shapes: dataset.shapes, aliases: dataset.aliases })), error: '' }
+    return {
+      quiz: parseQuiz(generateQuiz(dataset.rows, schema, {
+        seed, locale, i18n: dataset.i18n, shapes: dataset.shapes, aliases: dataset.aliases,
+      })),
+      error: '',
+    }
   } catch (error) {
     return { quiz: FALLBACK_QUIZ, error: error instanceof Error ? error.message : 'Génération impossible.' }
   }
@@ -49,7 +66,14 @@ const bundledRows = (() => {
   try { return parseCsv(caribbeanCsv) } catch { return [] as Row[] }
 })()
 const initialDataset: Dataset | null = bundledRows.length
-  ? { rows: bundledRows, schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' }, shapes: caribbeanShapes, aliases: caribbeanAliases }
+  ? {
+      rows: bundledRows,
+      schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' },
+      shapes: caribbeanShapes,
+      aliases: caribbeanAliases,
+      i18n: caribbeanI18n,
+      nouns: { fr: 'territoire', en: 'territory' },
+    }
   : null
 const initialQuiz = initialDataset ? safeGenerate(initialDataset, 'caribbean').quiz : FALLBACK_QUIZ
 
@@ -71,10 +95,13 @@ export default function App() {
 
 function AppInner({ profile, onProfileChange }: { profile: Profile | null; onProfileChange: (p: Profile) => void }) {
   const t = useT()
+  const locale = useLocale()
   const tRef = useRef(t)
   tRef.current = t
   const [quiz, setQuiz] = useState<Quiz>(initialQuiz)
   const [dataset, setDataset] = useState<Dataset | null>(initialDataset)
+  // Tirage courant : seed + locale ayant produit `quiz`. `initialQuiz` = seed « caribbean » en FR.
+  const genRef = useRef<{ seed: string; locale: Locale }>({ seed: 'caribbean', locale: DEFAULT_LOCALE })
   const [ficheSubject, setFicheSubject] = useState<string | null>(null)
   const [genError, setGenError] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -127,10 +154,19 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
   }
 
   const applyGenerated = (nextDataset: Dataset, seed: string) => {
-    const { quiz: next, error } = safeGenerate(nextDataset, seed)
+    const { quiz: next, error } = safeGenerate(nextDataset, seed, locale)
     setGenError(error)
-    if (!error) applyQuiz(next)
+    if (!error) {
+      genRef.current = { seed, locale }
+      applyQuiz(next)
+    }
   }
+
+  // Changement de langue : on régénère le quiz courant (données + formulations traduites) avec le
+  // même seed, pour une bascule immédiate. Le `subject`/`id` des questions restent FR → l'historique suit.
+  useEffect(() => {
+    if (dataset && genRef.current.locale !== locale) applyGenerated(dataset, genRef.current.seed)
+  }, [locale, dataset]) // applyGenerated volontairement hors deps : ne dépend que de (locale, dataset)
 
   const loadJson = async (file?: File) => {
     if (!file) return
@@ -160,7 +196,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
 
   const generateFromPanel = (schema: GenSchema, seed: string) => {
     if (!dataset) return
-    const nextDataset: Dataset = { rows: dataset.rows, schema, shapes: dataset.shapes, aliases: dataset.aliases }
+    const nextDataset: Dataset = { ...dataset, schema }
     setDataset(nextDataset)
     applyGenerated(nextDataset, seed)
     navigate('start')

@@ -32,20 +32,14 @@ describe('buildQuizResultPayload', () => {
     expect(payload.earned_points).toBe(2)
   })
 
-  it('resolves category ids to labels and dedupes them', () => {
+  it('stores category ids (language-independent) and dedupes them', () => {
     const payload = buildQuizResultPayload([qcm, bool], {}, categories, 0, 'Culture générale')
-    expect(payload.categories).toEqual(['Histoire', 'Géographie'])
+    expect(payload.categories).toEqual(['histoire', 'geo'])
   })
 
-  it('falls back to the raw id when a category is unknown', () => {
-    const orphan: QCMQuestion = { ...qcm, id: 'q3', category: 'unknown' }
-    const payload = buildQuizResultPayload([orphan], {}, categories, 0, 'Culture générale')
-    expect(payload.categories).toEqual(['unknown'])
-  })
-
-  it('aggregates correctness by category, type and difficulty', () => {
+  it('aggregates correctness by category id, type and difficulty', () => {
     const payload = buildQuizResultPayload([qcm, bool], { q1: ['a'], q2: ['false'] }, categories, 0, 'Culture générale')
-    expect(payload.by_category).toEqual({ Histoire: { correct: 1, total: 1 }, Géographie: { correct: 0, total: 1 } })
+    expect(payload.by_category).toEqual({ histoire: { correct: 1, total: 1 }, geo: { correct: 0, total: 1 } })
     expect(payload.by_type).toEqual({ qcm: { correct: 1, total: 1 }, boolean: { correct: 0, total: 1 } })
     expect(payload.by_difficulty).toEqual({ easy: { correct: 1, total: 1 }, medium: { correct: 0, total: 1 } })
   })

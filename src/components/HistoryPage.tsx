@@ -15,6 +15,11 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
   const longDate = (iso: string) => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
   const typeName = (key: string) => (QUESTION_TYPES as string[]).includes(key) ? typeLabel(key as Question['type'], t) : key
   const diffName = (key: string) => ['easy', 'medium', 'hard'].includes(key) ? difficultyLabel(key as 'easy' | 'medium' | 'hard', t) : key
+  // Les parties stockent l'id de catégorie (indépendant de la langue) ; on résout le libellé ici.
+  // Anciennes lignes (libellé FR déjà stocké) : introuvable comme id → affiché tel quel.
+  const catName = (key: string) => quiz.categories.find((category) => category.id === key)?.label ?? key
+  const pass = t('result.passed')
+  const fail = t('result.failed')
 
   const [rows, setRows] = useState<QuizResultRow[] | null>(null)
   const [questionRows, setQuestionRows] = useState<QuestionResultRow[]>([])
@@ -32,9 +37,9 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
 
   const records = quizRows ? computeRecords(quizRows) : null
   const chartPoints = quizRows ? [...quizRows].reverse().map((row) => ({ label: shortDate(row.created_at), score: row.score })) : []
-  const byCategory = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_category), (key) => key) : []
-  const byType = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_type), typeName) : []
-  const byDifficulty = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_difficulty), diffName) : []
+  const byCategory = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_category), catName, pass, fail) : []
+  const byType = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_type), typeName, pass, fail) : []
+  const byDifficulty = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_difficulty), diffName, pass, fail) : []
 
   const missedQuestions = activeQuiz ? computeMissedQuestions(questionRows, activeQuiz) : []
   const canReplay = activeQuiz === quiz.metadata.title
@@ -94,7 +99,7 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
       {quizRows.map((row) => <li className="history-item" key={row.id}>
         <span className="history-score">{row.score}%</span>
         <span className="history-date">{longDate(row.created_at)}</span>
-        <span className="history-categories">{row.categories.join(', ')}</span>
+        <span className="history-categories">{row.categories.map(catName).join(', ')}</span>
         <span>{t('history.pointsPair', { earned: row.earned_points, total: row.total_points })}</span>
         <span>⏱ {formatDuration(row.elapsed_seconds)}</span>
       </li>)}

@@ -36,11 +36,13 @@ function aggregate(questions: Question[], answers: AnswersByQuestion, keyOf: (qu
   return buckets
 }
 
-/** Construit le résumé d'une partie terminée, prêt à être enregistré. Les catégories sont figées en libellés (pas des ids) pour rester lisibles même si le quiz importé change ensuite. */
-export function buildQuizResultPayload(questions: Question[], answers: AnswersByQuestion, categories: Category[], elapsedSeconds: number, quizTitle: string): QuizResultPayload {
+/** Construit le résumé d'une partie terminée, prêt à être enregistré. On fige les **ids** de
+ * catégorie (noms de colonnes, indépendants de la langue), pas les libellés : l'historique ne
+ * se retrouve pas en langue mixte si l'utilisateur change de langue. Les libellés sont résolus
+ * à l'affichage (`HistoryPage`). Les anciennes lignes (libellés FR) : repli sur la clé telle quelle. */
+export function buildQuizResultPayload(questions: Question[], answers: AnswersByQuestion, _categories: Category[], elapsedSeconds: number, quizTitle: string): QuizResultPayload {
   const earnedPoints = questions.filter((question) => isCorrect(question, answers[question.id])).reduce((sum, question) => sum + question.points, 0)
   const totalPoints = questions.reduce((sum, question) => sum + question.points, 0)
-  const categoryLabel = (id: string) => categories.find((category) => category.id === id)?.label ?? id
 
   return {
     quiz_title: quizTitle,
@@ -49,8 +51,8 @@ export function buildQuizResultPayload(questions: Question[], answers: AnswersBy
     total_points: totalPoints,
     elapsed_seconds: elapsedSeconds,
     question_count: questions.length,
-    categories: Array.from(new Set(questions.map((question) => categoryLabel(question.category)))),
-    by_category: aggregate(questions, answers, (question) => categoryLabel(question.category)),
+    categories: Array.from(new Set(questions.map((question) => question.category))),
+    by_category: aggregate(questions, answers, (question) => question.category),
     by_type: aggregate(questions, answers, (question) => question.type),
     by_difficulty: aggregate(questions, answers, (question) => question.difficulty),
   }
@@ -138,14 +140,20 @@ export function sumBuckets(rows: QuizResultRow[], pick: (row: QuizResultRow) => 
   return totals
 }
 
-/** Convertit des buckets cumulés en groupes prêts pour `PieChart`. */
-export function bucketsToChartGroups(buckets: Record<string, StatBucket>, labelOf: (key: string) => string): ChartGroup[] {
+/** Convertit des buckets cumulés en groupes prêts pour `PieChart`. `passLabel`/`failLabel`
+ * viennent de l'UI (i18n) ; défauts FR pour les appels hors composant / tests. */
+export function bucketsToChartGroups(
+  buckets: Record<string, StatBucket>,
+  labelOf: (key: string) => string,
+  passLabel = 'Réussi',
+  failLabel = 'Raté',
+): ChartGroup[] {
   return Object.entries(buckets).map(([key, bucket]) => ({
     key,
     label: labelOf(key),
     data: [
-      { label: 'Réussi', value: bucket.correct, color: '#34d399' },
-      { label: 'Raté', value: bucket.total - bucket.correct, color: '#fb7185' },
+      { label: passLabel, value: bucket.correct, color: '#34d399' },
+      { label: failLabel, value: bucket.total - bucket.correct, color: '#fb7185' },
     ].filter((slice) => slice.value > 0),
   }))
 }

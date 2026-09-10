@@ -1,0 +1,21 @@
+import type { Locale } from './locale'
+
+/** Traductions d'un jeu de données (sidecar, à côté du CSV — même patron que `shapes.ts` /
+ * `aliases.ts`). Indexé par la **valeur française canonique** ; une locale absente retombe
+ * sur le français. Ne concerne jamais les nombres. */
+export interface DataI18n {
+  /** Valeurs de cellules texte : noms de sujets, capitales, monnaies, langues (atome par
+   * atome), sommets… « La Havane » → `{ en: 'Havana' }`. */
+  values: Record<string, Partial<Record<Locale, string>>>
+  /** Article de tête du sujet, par locale. Clé = nom FR du sujet. En anglais : « the » pour
+   * « the Bahamas », vide partout ailleurs. */
+  articles: Record<string, Partial<Record<Locale, string>>>
+  /** Libellé d'une colonne (minuscule — `grammar.cap` le capitalise si besoin). Clé = libellé
+   * FR normalisé (`spec.label`). */
+  columnLabels: Record<string, Partial<Record<Locale, string>>>
+}
+
+/** Résout une valeur pour la locale, avec repli français. */
+export function trValue(i18n: DataI18n | undefined, value: string, locale: Locale): string {
+  return i18n?.values[value]?.[locale] ?? value
+}
