@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import type { MessageKey } from '../i18n'
+import { useT } from '../i18n'
 import { inferSchema, randomSeed } from '../utils/quizGenerator'
 import { playClick } from '../utils/sound'
 
@@ -10,16 +12,21 @@ interface GeneratorPanelProps {
   error: string
 }
 
-function typeBadges(spec: GenSchema['columns'][string]): string[] {
-  if (spec.isImage) return ['image', ...(spec.unique ? ['unique'] : [])]
-  const badges = [spec.kind === 'number' ? 'nombre' : 'texte']
-  if (spec.isYear) badges.push('année')
-  if (spec.multivalueSeparator) badges.push('multi')
-  if (spec.unique) badges.push('unique')
+function typeBadges(spec: GenSchema['columns'][string]): MessageKey[] {
+  if (spec.isImage) {
+    const badges: MessageKey[] = ['gen.badge.image']
+    if (spec.unique) badges.push('gen.badge.unique')
+    return badges
+  }
+  const badges: MessageKey[] = [spec.kind === 'number' ? 'gen.badge.number' : 'gen.badge.text']
+  if (spec.isYear) badges.push('gen.badge.year')
+  if (spec.multivalueSeparator) badges.push('gen.badge.multi')
+  if (spec.unique) badges.push('gen.badge.unique')
   return badges
 }
 
 export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPanelProps) {
+  const t = useT()
   const [draft, setDraft] = useState<GenSchema>(schema)
   const [seed, setSeed] = useState(randomSeed())
   const headers = rows.length ? Object.keys(rows[0]) : []
@@ -36,18 +43,18 @@ export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPan
 
   return (
     <section className="generator-panel">
-      <h3 className="stats-group-title">Générer un quiz depuis ces données ({rows.length} lignes)</h3>
+      <h3 className="stats-group-title">{t('gen.title', { n: rows.length })}</h3>
 
       <div className="generator-fields">
-        <label>Colonne « sujet »
+        <label>{t('gen.subjectColumn')}
           <select value={draft.subjectColumn} onChange={(event) => changeSubject(event.target.value)}>
             {headers.map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
         </label>
-        <label>Nom d'un élément
-          <input value={draft.noun} onChange={(event) => setDraft((c) => ({ ...c, noun: event.target.value }))} placeholder="pays, ville, film…" />
+        <label>{t('gen.itemNoun')}
+          <input value={draft.noun} onChange={(event) => setDraft((c) => ({ ...c, noun: event.target.value }))} placeholder={t('gen.itemNounPlaceholder')} />
         </label>
-        <label>Titre du quiz
+        <label>{t('gen.quizTitle')}
           <input value={draft.title} onChange={(event) => setDraft((c) => ({ ...c, title: event.target.value }))} />
         </label>
       </div>
@@ -59,9 +66,9 @@ export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPan
               <input type="checkbox" checked={spec.include} onChange={(event) => patchColumn(col, { include: event.target.checked })} />
               <span className="generator-column-name">{col}</span>
             </label>
-            <span className="generator-column-badges">{typeBadges(spec).map((b) => <span key={b} className="generator-badge">{b}</span>)}</span>
+            <span className="generator-column-badges">{typeBadges(spec).map((badge) => <span key={badge} className="generator-badge">{t(badge)}</span>)}</span>
             {spec.kind === 'string' && !spec.isImage && spec.include && (
-              <label className="generator-sep">séparateur multivaleur
+              <label className="generator-sep">{t('gen.multivalueSep')}
                 <input
                   value={spec.multivalueSeparator ?? ''}
                   maxLength={1}
@@ -75,15 +82,15 @@ export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPan
       </ul>
 
       <div className="generator-actions">
-        <label>Seed
+        <label>{t('gen.seed')}
           <input value={seed} onChange={(event) => setSeed(event.target.value)} />
         </label>
-        <button type="button" onClick={() => { playClick(); setSeed(randomSeed()) }} className="secondary">Seed aléatoire</button>
+        <button type="button" onClick={() => { playClick(); setSeed(randomSeed()) }} className="secondary">{t('gen.randomSeed')}</button>
         <button type="button" onClick={() => { playClick(); onGenerate(draft, seed) }} disabled={!includedCount}>
-          Générer le quiz
+          {t('gen.generate')}
         </button>
       </div>
-      {!includedCount && <p className="alert" role="alert">Active au moins une colonne.</p>}
+      {!includedCount && <p className="alert" role="alert">{t('gen.needColumn')}</p>}
       {error && <p className="alert" role="alert">{error}</p>}
     </section>
   )

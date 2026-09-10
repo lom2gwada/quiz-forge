@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import { useT } from '../i18n'
 import { Fiche } from './Fiche'
 
 interface FicheModalProps {
@@ -13,6 +14,7 @@ interface FicheModalProps {
 /** Affiche une fiche dans une modale centrée (portail sur `<body>`) : Échap / clic hors panneau
  * / bouton × pour fermer. */
 export function FicheModal({ row, schema, shapes, onClose }: FicheModalProps) {
+  const t = useT()
   const closeRef = useRef<HTMLButtonElement>(null)
   const name = row[schema.subjectColumn] ?? ''
 
@@ -34,10 +36,10 @@ export function FicheModal({ row, schema, shapes, onClose }: FicheModalProps) {
         className="modal-panel fiche-modal"
         role="dialog"
         aria-modal="true"
-        aria-label={`Fiche : ${name}`}
+        aria-label={t('fiche.modalLabel', { name })}
         onClick={(event) => event.stopPropagation()}
       >
-        <button ref={closeRef} type="button" className="modal-close" onClick={onClose} aria-label="Fermer">×</button>
+        <button ref={closeRef} type="button" className="modal-close" onClick={onClose} aria-label={t('fiche.close')}>×</button>
         <Fiche row={row} schema={schema} shapes={shapes} />
       </div>
     </div>,

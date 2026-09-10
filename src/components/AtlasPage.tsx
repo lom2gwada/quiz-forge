@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import { useT } from '../i18n'
 import { Fiche } from './Fiche'
 
 interface AtlasPageProps {
@@ -14,6 +15,7 @@ interface AtlasPageProps {
 /** Grille de fiches, une par entité, dans l'ordre du tri choisi. Filtre + tri génériques
  * depuis le schéma. Cliquer une carte ouvre la fiche en modale. */
 export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPageProps) {
+  const t = useT()
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState('name') // 'name' ou une colonne nombre
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
@@ -54,22 +56,22 @@ export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPa
   return (
     <section className="atlas-page">
       <div className="stats-header">
-        <h2>Fiches</h2>
-        <button type="button" className="secondary" onClick={onBack}>Retour</button>
+        <h2>{t('atlas.title')}</h2>
+        <button type="button" className="secondary" onClick={onBack}>{t('common.back')}</button>
       </div>
       <div className="atlas-controls">
         <input
           className="atlas-search"
           type="search"
-          placeholder="Filtrer par nom…"
+          placeholder={t('atlas.filterPlaceholder')}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          aria-label="Filtrer les fiches par nom"
+          aria-label={t('atlas.filterAria')}
         />
         <label className="atlas-sort">
-          Trier par
+          {t('atlas.sortBy')}
           <select value={sortKey} onChange={(event) => changeSort(event.target.value)}>
-            <option value="name">nom</option>
+            <option value="name">{t('atlas.sortName')}</option>
             {numCols.map(([col, spec]) => <option key={col} value={col}>{spec.label}</option>)}
           </select>
         </label>
@@ -77,7 +79,7 @@ export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPa
           type="button"
           className="secondary atlas-dir"
           onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-          aria-label={sortDir === 'asc' ? 'Ordre croissant, cliquer pour décroissant' : 'Ordre décroissant, cliquer pour croissant'}
+          aria-label={sortDir === 'asc' ? t('atlas.sortAsc') : t('atlas.sortDesc')}
         >
           {sortDir === 'asc' ? '↑' : '↓'}
         </button>
@@ -101,7 +103,7 @@ export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPa
           )
         })}
       </div>
-      {!sorted.length && <p className="atlas-empty">Aucune fiche pour « {query} ».</p>}
+      {!sorted.length && <p className="atlas-empty">{t('atlas.empty', { query })}</p>}
     </section>
   )
 }

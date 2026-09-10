@@ -1,6 +1,10 @@
 # Plan : internationalisation de quiz-forge
 
-> **Statut** : plan validé, pas encore implémenté. Rédigé le 2026-09-10.
+> **Statut** : phases 0–1 faites le 2026-09-10 (socle `Locale` + `Profile.locale`,
+> `LocaleProvider`/`useT()`, `messages/{fr,en}.ts`, tout le chrome migré vers `t()`,
+> `formatNumber` locale-aware). `en` est câblé et testé mais **hors `SUPPORTED_LOCALES`** :
+> le `<select>` du profil n'offre que `fr` tant que les questions ne sont pas traduites
+> (phases 2–3). Plan rédigé le 2026-09-10.
 > Langues visées : français (défaut + source de vérité), puis **anglais**, **espagnol**,
 > **néerlandais** (Aruba / Curaçao / Sint Maarten), **créole**. L'architecture reste
 > **ouverte à n'importe quelle locale** — ajouter une langue ne touche pas le cœur.
@@ -196,8 +200,8 @@ export const i18n: {
 
 | Phase | Contenu | Effort | Shippable ? |
 | --- | --- | --- | --- |
-| **0 — socle** | `Locale`, `Profile.locale`, résolution, `<html lang>`, `LocaleProvider` + `useT()`, `<select>` profil (fr seul) | ~2 h | oui (rien ne change visuellement) |
-| **1 — UI EN** | `messages/fr.ts` (extraction), `messages/en.ts`, migration composants → `t()`, `formatNumber` locale-aware | ~4 h | oui — bascule EN traduit le chrome ; questions encore FR, EN pas encore dans le `<select>` |
+| **0 — socle** ✅ | `Locale`, `Profile.locale`, résolution, `<html lang>`, `LocaleProvider` + `useT()`, `<select>` profil (fr seul) | ~2 h | oui (rien ne change visuellement) |
+| **1 — UI EN** ✅ | `messages/fr.ts` (extraction), `messages/en.ts`, migration composants → `t()`, `formatNumber` locale-aware | ~4 h | oui — bascule EN traduit le chrome ; questions encore FR, EN pas encore dans le `<select>` |
 | **2 — génération pluggable** | `grammar/{fr,en}`, `templates/{fr,en}`, refactor `generateQuiz` (`fill`, grammar, `qid` locale-indep) + tests | ~1 j | non seul (questions = « Capital of Jamaïque ? ») |
 | **3 — données EN** | `caribbean.i18n.ts` (valeurs + articles + libellés EN), `tr()` dans le générateur | ~1 j (surtout contenu) | **oui — EN complet**, on active `en` dans le `<select>` |
 | **4 — espagnol** | `messages/es`, `grammar/es` (de/del), `templates/es`, colonne `es` dans `caribbean.i18n.ts` | ~0,5 j | oui — on active `es` |

@@ -1,4 +1,5 @@
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import { useT } from '../i18n'
 import { formatNumber } from '../utils/number'
 import { CellImagePreview } from './CellImagePreview'
 
@@ -10,6 +11,7 @@ interface DataTableProps {
 // Affiche les données source du quiz (le CSV). Lecture seule pour l'instant ;
 // l'édition par l'admin (cellules éditables + remontée des changements) viendra ici.
 export function DataTable({ rows, schema }: DataTableProps) {
+  const t = useT()
   const headers = rows.length ? Object.keys(rows[0]) : []
   if (!headers.length) return null
   const subject = schema.subjectColumn
@@ -26,7 +28,7 @@ export function DataTable({ rows, schema }: DataTableProps) {
 
   return (
     <section className="data-table-section">
-      <h3 className="stats-group-title">Données source — {rows.length} lignes × {headers.length} colonnes</h3>
+      <h3 className="stats-group-title">{t('data.title', { rows: rows.length, cols: headers.length })}</h3>
       <div className="data-table-wrap">
         <table className="data-table">
           <thead>

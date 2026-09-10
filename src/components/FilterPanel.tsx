@@ -1,4 +1,5 @@
 import type { Category, Difficulty } from '../types/quiz'
+import { useT } from '../i18n'
 import { playClick } from '../utils/sound'
 
 interface FilterPanelProps {
@@ -10,23 +11,25 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel({ categories, selectedCategories, difficulty, onCategoryToggle, onDifficultyChange }: FilterPanelProps) {
-  return <section className="filter-panel" aria-label="Filtres du quiz">
+  const t = useT()
+  const n = selectedCategories.length
+  return <section className="filter-panel" aria-label={t('filter.aria')}>
     <fieldset className="category-filter">
-      <legend>Catégories</legend>
+      <legend>{t('filter.categories')}</legend>
       <div className="category-checkboxes">
         {categories.map((item) => <label key={item.id} className="category-checkbox">
           <input type="checkbox" checked={selectedCategories.includes(item.id)} onChange={() => { playClick(); onCategoryToggle(item.id) }} />
           {item.label}
         </label>)}
       </div>
-      <p className="category-hint">{selectedCategories.length ? `${selectedCategories.length} catégorie${selectedCategories.length > 1 ? 's' : ''} sélectionnée${selectedCategories.length > 1 ? 's' : ''}` : 'Toutes les catégories'}</p>
+      <p className="category-hint">{n ? t(n === 1 ? 'filter.selected.one' : 'filter.selected.other', { n }) : t('filter.allCategories')}</p>
     </fieldset>
-    <label>Difficulté
+    <label>{t('filter.difficulty')}
       <select value={difficulty} onChange={(event) => { playClick(); onDifficultyChange(event.target.value as Difficulty | '') }}>
-        <option value="">Toutes les difficultés</option>
-        <option value="easy">Facile</option>
-        <option value="medium">Intermédiaire</option>
-        <option value="hard">Difficile</option>
+        <option value="">{t('filter.allDifficulties')}</option>
+        <option value="easy">{t('difficulty.easy')}</option>
+        <option value="medium">{t('difficulty.medium')}</option>
+        <option value="hard">{t('difficulty.hard')}</option>
       </select>
     </label>
   </section>

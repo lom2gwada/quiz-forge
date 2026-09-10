@@ -13,6 +13,8 @@ import { QuizPage } from './components/QuizPage'
 import { ResultPage } from './components/ResultPage'
 import type { AnswersByQuestion, Difficulty, Quiz, Question } from './types/quiz'
 import type { Profile } from './types/profile'
+import { LocaleProvider, useT } from './i18n'
+import { applyLocale, resolveLocale } from './i18n/locale'
 import { buildQuestionResultPayloads, buildQuizResultPayload, saveQuestionResults, saveQuizResult } from './utils/quizHistory'
 import { fetchProfile, saveProfile } from './utils/profile'
 import { applyTheme } from './utils/theme'
@@ -56,6 +58,21 @@ function pickRandomQuestions<T>(questions: T[], count: number): T[] {
 }
 
 export default function App() {
+  const [profile, setProfile] = useState<Profile | null>(null)
+  useEffect(() => { fetchProfile().then(setProfile).catch(() => {}) }, [])
+  const locale = resolveLocale(profile?.locale)
+  useEffect(() => { applyLocale(locale) }, [locale])
+  return (
+    <LocaleProvider locale={locale}>
+      <AppInner profile={profile} onProfileChange={setProfile} />
+    </LocaleProvider>
+  )
+}
+
+function AppInner({ profile, onProfileChange }: { profile: Profile | null; onProfileChange: (p: Profile) => void }) {
+  const t = useT()
+  const tRef = useRef(t)
+  tRef.current = t
   const [quiz, setQuiz] = useState<Quiz>(initialQuiz)
   const [dataset, setDataset] = useState<Dataset | null>(initialDataset)
   const [ficheSubject, setFicheSubject] = useState<string | null>(null)
@@ -69,9 +86,7 @@ export default function App() {
   const [sessionQuestions, setSessionQuestions] = useState<Quiz['questions']>([])
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [muted, setMuted] = useState(isSoundMuted())
-  const [profile, setProfile] = useState<Profile | null>(null)
   const theme = profile?.theme ?? 'lagon'
-  useEffect(() => { fetchProfile().then(setProfile).catch(() => {}) }, [])
   useEffect(() => { applyTheme(theme) }, [theme])
   const [historyBack, setHistoryBack] = useState<View>('profile')
   const viewHistory = (from: View) => { setHistoryBack(from); navigate('history') }
@@ -85,7 +100,7 @@ export default function App() {
     const onPopState = (event: PopStateEvent) => {
       const nextView = (event.state?.view as View | undefined) ?? 'start'
       if (viewRef.current === 'quiz' && nextView !== 'quiz') {
-        if (!window.confirm('Abandonner le quiz en cours ? Votre progression sera perdue.')) {
+        if (!window.confirm(tRef.current('quiz.abandonConfirm'))) {
           window.history.pushState({ view: 'quiz' }, '')
           return
         }
@@ -187,8 +202,8 @@ export default function App() {
 
   return <main className="app-shell">
     <ChartBackground />
-    <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>par {quiz.metadata.author}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? 'Activer le son' : 'Couper le son'}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : '👤 Profil'}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => navigate('atlas')}>🗺️ Fiches</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ Quiz</button>}</div></header>
-    {view === 'start' && <section className="start-page"><FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} /><label className="question-count">Nombre de questions<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{count} {count === 1 ? 'question' : 'questions'}{count > filteredQuestions.length ? ' (indisponible)' : ''}</option>)}<option value={filteredQuestions.length}>Toutes les questions ({formatNumber(filteredQuestions.length)})</option></select></label><p>{formatNumber(filteredQuestions.length)} question{filteredQuestions.length > 1 ? 's' : ''} disponible{filteredQuestions.length > 1 ? 's' : ''} — {Math.min(questionCount, filteredQuestions.length)} seront tirées aléatoirement.</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>Démarrer le quiz</button></div></section>}
+    <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>{t('header.by', { author: quiz.metadata.author })}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? t('header.soundOn') : t('header.soundOff')}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : `👤 ${t('nav.profile')}`}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => navigate('atlas')}>🗺️ {t('nav.fiches')}</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ {t('nav.quiz')}</button>}</div></header>
+    {view === 'start' && <section className="start-page"><FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} /><label className="question-count">{t('start.questionCount')}<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{t(count === 1 ? 'start.count.one' : 'start.count.other', { n: count })}{count > filteredQuestions.length ? t('start.unavailableSuffix') : ''}</option>)}<option value={filteredQuestions.length}>{t('start.allQuestions', { n: formatNumber(filteredQuestions.length) })}</option></select></label><p>{t('start.availability', { n: formatNumber(filteredQuestions.length), picked: Math.min(questionCount, filteredQuestions.length) })}</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>{t('start.play')}</button></div></section>}
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} onFinish={(nextAnswers, duration) => {
       setAnswers(nextAnswers); setElapsedSeconds(duration); replace('results')
       saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.categories, duration, quiz.metadata.title))
@@ -202,6 +217,6 @@ export default function App() {
       return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} onClose={() => setFicheSubject(null)} /> : null
     })()}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} onReplayMissed={replayMissed} />}
-    {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); setProfile((current) => ({ ...current, ...next })) }} onViewHistory={() => viewHistory('profile')} />}
+    {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}
   </main>
 }

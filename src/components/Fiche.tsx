@@ -1,4 +1,5 @@
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import { useT } from '../i18n'
 import { formatNumericValue } from '../utils/number'
 import { HoverPreview } from './HoverPreview'
 import { QuestionShape } from './QuestionShape'
@@ -14,6 +15,7 @@ interface FicheProps {
 /** Contenu d'une fiche : en-tête (silhouette + nom + drapeau) et liste des champs non vides,
  * rendu générique depuis le schéma. Utilisé dans la grille Atlas et dans la modale. */
 export function Fiche({ row, schema, shapes }: FicheProps) {
+  const t = useT()
   const { subjectColumn, articleColumn, columns } = schema
   const name = row[subjectColumn] ?? ''
   const article = articleColumn ? (row[articleColumn] ?? '').trim() : ''
@@ -30,7 +32,7 @@ export function Fiche({ row, schema, shapes }: FicheProps) {
         {shape && (
           <HoverPreview
             className="fiche-shape-wrap"
-            label={`Silhouette : ${name} (survoler pour agrandir)`}
+            label={t('fiche.silhouetteLabel', { name })}
             trigger={<QuestionShape svg={shape} className="fiche-shape" />}
             preview={<QuestionShape svg={shape} />}
           />
@@ -40,7 +42,7 @@ export function Fiche({ row, schema, shapes }: FicheProps) {
           <HoverPreview
             href={flag}
             className="fiche-flag-wrap"
-            label={`Image de ${name} — survoler pour agrandir, cliquer pour ouvrir`}
+            label={t('fiche.flagLabel', { name })}
             trigger={<img className="fiche-flag" src={flag} alt="" loading="lazy" />}
             preview={<img src={flag} alt="" />}
           />
