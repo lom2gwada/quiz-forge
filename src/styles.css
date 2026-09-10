@@ -115,12 +115,19 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .question-list-explanation { margin-bottom: 0; }
 .data-table-section { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
 .data-table-wrap { max-height: 26rem; overflow: auto; border: 1px solid var(--border); border-radius: .6rem; }
-.data-table { border-collapse: collapse; width: 100%; font-size: .8rem; }
+.data-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: .8rem; }
 .data-table th, .data-table td { padding: .4rem .65rem; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--border); }
-.data-table thead th { position: sticky; top: 0; z-index: 1; background: var(--surface-alt); color: var(--text); font-weight: 700; }
+.data-table thead th { position: sticky; top: 0; z-index: 2; background: var(--surface-alt); color: var(--text); font-weight: 700; }
 .data-table tbody tr:hover { background: var(--surface-selected); }
-.data-table .row-num { text-align: right; color: var(--text-muted); }
 .data-table td.is-empty { color: var(--text-muted); }
+/* Colonnes figées : le numéro de ligne et la colonne sujet restent visibles pendant le scroll horizontal. */
+.data-table .row-num, .data-table .sticky-col { position: sticky; }
+.data-table .row-num { left: 0; min-width: 2.4rem; width: 2.4rem; text-align: right; color: var(--text-muted); }
+.data-table .sticky-col { left: 2.4rem; font-weight: 600; }
+.data-table tbody .row-num, .data-table tbody .sticky-col { z-index: 1; background: var(--surface-solid); }
+.data-table thead .row-num, .data-table thead .sticky-col { z-index: 3; }
+.data-table tbody .sticky-col { box-shadow: inset -1px 0 0 var(--border); }
+.data-table tbody tr:hover .row-num, .data-table tbody tr:hover .sticky-col { background: var(--surface-selected); }
 .pie-chart { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; display: grid; justify-items: center; gap: .8rem; }
 .pie-chart svg { width: 140px; height: 140px; }
 .pie-chart h3 { text-align: center; margin: 0 0 .6rem; }

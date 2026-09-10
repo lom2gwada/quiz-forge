@@ -11,6 +11,7 @@ interface DataTableProps {
 export function DataTable({ rows, schema }: DataTableProps) {
   const headers = rows.length ? Object.keys(rows[0]) : []
   if (!headers.length) return null
+  const subject = schema.subjectColumn
 
   // Colonnes nombre (hors années) : on sépare les milliers à l'affichage.
   const separated = new Set(
@@ -30,7 +31,9 @@ export function DataTable({ rows, schema }: DataTableProps) {
           <thead>
             <tr>
               <th className="row-num" scope="col">#</th>
-              {headers.map((header) => <th key={header} scope="col">{header}</th>)}
+              {headers.map((header) => (
+                <th key={header} scope="col" className={header === subject ? 'sticky-col' : undefined}>{header}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -39,7 +42,8 @@ export function DataTable({ rows, schema }: DataTableProps) {
                 <td className="row-num">{index + 1}</td>
                 {headers.map((header) => {
                   const raw = row[header] ?? ''
-                  return <td key={header} className={raw.trim() ? '' : 'is-empty'}>{display(header, raw)}</td>
+                  const className = [header === subject ? 'sticky-col' : '', raw.trim() ? '' : 'is-empty'].filter(Boolean).join(' ')
+                  return <td key={header} className={className || undefined}>{display(header, raw)}</td>
                 })}
               </tr>
             ))}
