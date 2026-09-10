@@ -52,4 +52,5 @@ Un fichier de quiz importé doit respecter le contrat de [`src/types/quiz.ts`](s
 
 ## Perspectives
 
-[`docs/architecture-packs.md`](docs/architecture-packs.md) — réflexion sur l'ouverture de quiz-forge à d'autres sujets (« packs ») : un moteur générique, un sujet = du contenu (données + schéma + config de génération + thème), avec ou sans base de données. Proposition, non implémentée.
+- [`docs/architecture-packs.md`](docs/architecture-packs.md) — réflexion sur l'ouverture de quiz-forge à d'autres sujets (« packs ») : un moteur générique, un sujet = du contenu (données + schéma + config de génération + thème), avec ou sans base de données. Proposition, non implémentée.
+- [`docs/i18n-plan.md`](docs/i18n-plan.md) — plan d'internationalisation (UI + formulations générées + données), locales ouvertes, français source de vérité. Validé, non implémenté.
