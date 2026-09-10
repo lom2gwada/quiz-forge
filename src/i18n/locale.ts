@@ -6,7 +6,7 @@ export const DEFAULT_LOCALE: Locale = 'fr'
 
 /** Locales réellement câblées (chrome + génération + données). Alimente le sélecteur de langue.
  * On y ajoute une entrée quand une langue est **complète** — cf. `docs/i18n-plan.md`. */
-export const SUPPORTED_LOCALES: Locale[] = ['fr', 'en']
+export const SUPPORTED_LOCALES: Locale[] = ['fr', 'en', 'es', 'nl', 'ht']
 
 export const LOCALE_LABELS: Record<string, string> = {
   fr: 'Français',

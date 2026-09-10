@@ -217,6 +217,8 @@ export function generateQuiz(
   const tr = (value: string): string => trValue(opts.i18n, value, locale)
   // Libellé de colonne traduit (minuscule ; `grammar.cap` capitalise si besoin).
   const labelFor = (rawLabel: string): string => opts.i18n?.columnLabels[rawLabel]?.[locale] ?? rawLabel
+  // Unité traduite (« Mds $ » → « bn $ »…) ; repli sur la forme FR.
+  const unitFor = (rawUnit: string): string => opts.i18n?.units?.[rawUnit]?.[locale] ?? rawUnit
 
   const rand = mulberry32(hashStr(opts.seed))
   const shuffle = <T>(arr: T[]): T[] => {
@@ -257,9 +259,12 @@ export function generateQuiz(
     }
     return groups
   }
-  // Article de tête : d'abord l'override de locale (sidecar), sinon la colonne `article` du CSV.
+  // Article de tête : override de locale (sidecar) en priorité ; sinon la colonne `article` du
+  // CSV, mais SEULEMENT en français (elle contient « le »/« la »/« les », propres à la grammaire
+  // FR — les passer à `grammar.es`/`nl` produirait « de le Nicaragua »).
   const artOf = (row: Row): string =>
-    opts.i18n?.articles[nameOf(row)]?.[locale] ?? (articleColumn ? row[articleColumn] ?? '' : '')
+    opts.i18n?.articles[nameOf(row)]?.[locale] ??
+    (locale === DEFAULT_LOCALE && articleColumn ? row[articleColumn] ?? '' : '')
   const de = (row: Row): string => grammar.of(displayName(row), artOf(row))
   const nouns = grammar.plural(noun, 2)
 
@@ -297,6 +302,7 @@ export function generateQuiz(
     const numRowsWith = spec.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(asNumber(row[col]))) : rowsWith
     const label = labelFor(spec.label)
     const Label = grammar.cap(label)
+    const unit = spec.unit ? unitFor(spec.unit) : undefined
     // Contexte commun aux gabarits d'une ligne : libellé de colonne + « de <sujet> ».
     const ctx = (row: Row) => ({ label, Label, noun, nouns, ...subj(row), ofSubject: de(row) })
 
@@ -441,10 +447,10 @@ export function generateQuiz(
           id: qid([col, 'numeric', nameOf(row)]), type: 'numeric', category: categoryId, difficulty: CFG.estimate.difficulty, points: CFG.estimate.points, tags: [col],
           question: spec.isYear
             ? T('prompt.numericYear', ctx(row))
-            : T(spec.unit ? 'prompt.estimateUnit' : 'prompt.estimate', { ...ctx(row), unit: spec.unit ?? '' }),
+            : T(unit ? 'prompt.estimateUnit' : 'prompt.estimate', { ...ctx(row), unit: unit ?? '' }),
           topic: T('topic.labelSubject', ctx(row)), ...subj(row),
-          explanation: T('explanation.fact', { ...ctx(row), value: `${formatNumericValue(target, spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}` }),
-          content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(spec.unit && !spec.isYear ? { unit: spec.unit } : {}) },
+          explanation: T('explanation.fact', { ...ctx(row), value: `${formatNumericValue(target, spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''}` }),
+          content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(unit && !spec.isYear ? { unit } : {}) },
         })
       }
     }
@@ -465,7 +471,7 @@ export function generateQuiz(
           question: T('prompt.ordering', { nouns, label, direction: grammar.direction(direction) }),
           topic: T('topic.labelList', { Label, list: members.join(', ') }),
           explanation: sorted
-            .map((r) => `${displayName(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
+            .map((r) => `${displayName(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''})`)
             .join(' › '),
           content: {
             items: shuffle(group).map<OrderingItem>((r) => ({ id: idOf(r), label: displayName(r) })),
@@ -480,7 +486,7 @@ export function generateQuiz(
       for (const row of numRowsWith) {
         const target = asNumber(row[col])
         const shown = formatNumericValue(target, spec.isYear)
-        const unitSuffix = spec.unit && !spec.isYear ? ` ${spec.unit}` : ''
+        const unitSuffix = unit && !spec.isYear ? ` ${unit}` : ''
         const about = T('topic.labelSubject', ctx(row))
         const fact = T('explanation.fact', { ...ctx(row), value: `${shown}${unitSuffix}` })
 
@@ -490,7 +496,7 @@ export function generateQuiz(
             id: qid([col, 'num-qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
             question: spec.isYear
               ? T('prompt.numericYear', ctx(row))
-              : T(spec.unit ? 'prompt.numericValueUnit' : 'prompt.qcm', { ...ctx(row), unit: spec.unit ?? '' }),
+              : T(unit ? 'prompt.numericValueUnit' : 'prompt.qcm', { ...ctx(row), unit: unit ?? '' }),
             topic: about, ...subj(row),
             explanation: fact,
             content: {
@@ -529,7 +535,7 @@ export function generateQuiz(
     // ---- QCM inversé sur un nombre (colonnes uniques : une seule bonne réponse possible) ----
     if (spec.kind === 'number' && spec.unique && rows.length > CFG.qcmBackward.choices) {
       for (const row of numRowsWith) {
-        const shown = `${formatNumericValue(asNumber(row[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}`
+        const shown = `${formatNumericValue(asNumber(row[col]), spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''}`
         const correct = displayName(row)
         const distractors = sample(rows.filter((r) => r !== row).map(displayName), CFG.qcmBackward.choices - 1)
         questions.push({
@@ -550,7 +556,7 @@ export function generateQuiz(
       const distinct = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
       const leftId = (r: Row): string => `l-${hashStr(nameOf(r) + '#' + col)}`
       const rightId = (r: Row): string => `r-${hashStr(String(asNumber(r[col])) + col)}`
-      const valOf = (r: Row): string => `${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}`
+      const valOf = (r: Row): string => `${formatNumericValue(asNumber(r[col]), spec.isYear)}${unit && !spec.isYear ? ` ${unit}` : ''}`
       for (const group of overlapGroups(distinct, CFG.matching.groupSize)) {
         const idMembers = [...group].map(nameOf).sort()
         const members = [...group].map(displayName).sort((a, b) => a.localeCompare(b, locale))

@@ -72,7 +72,7 @@ const initialDataset: Dataset | null = bundledRows.length
       shapes: caribbeanShapes,
       aliases: caribbeanAliases,
       i18n: caribbeanI18n,
-      nouns: { fr: 'territoire', en: 'territory' },
+      nouns: { fr: 'territoire', en: 'territory', es: 'territorio', nl: 'gebied', ht: 'teritwa' },
     }
   : null
 const initialQuiz = initialDataset ? safeGenerate(initialDataset, 'caribbean').quiz : FALLBACK_QUIZ

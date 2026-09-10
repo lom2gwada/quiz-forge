@@ -323,6 +323,8 @@ describe('generateQuiz', () => {
     const jam = en.questions.find((q) => q.subject === 'Jamaïque')
     expect(jam).toBeDefined()
     expect(jam?.subjectLabel).toBe('Jamaica')
+    // subjectLabel survit à la validation (parseQuiz)
+    expect(parseQuiz(en).questions.find((q) => q.subject === 'Jamaïque')?.subjectLabel).toBe('Jamaica')
     // pas de subjectLabel quand le nom ne change pas
     expect(en.questions.find((q) => q.subject === 'Cuba')?.subjectLabel).toBeUndefined()
   })
@@ -337,6 +339,24 @@ describe('generateQuiz', () => {
     const a = generateQuiz(caribbeanRows, schema, { seed: 'z', locale: 'en', i18n: caribbeanI18n })
     const b = generateQuiz(caribbeanRows, schema, { seed: 'z', locale: 'en', i18n: caribbeanI18n })
     expect(a).toEqual(b)
+  })
+
+  it('generates a valid quiz for every supported locale', () => {
+    for (const locale of ['es', 'nl', 'ht'] as const) {
+      const q = generateQuiz(caribbeanRows, schema, { seed: 'multi', locale, i18n: caribbeanI18n })
+      expect(() => parseQuiz(q), locale).not.toThrow()
+      expect(q.questions.length, locale).toBeGreaterThan(15)
+      // libellés de catégorie et sujets traduits, ids inchangés
+      const cloze = q.questions.find((question) => question.type === 'cloze' && question.subject === 'Cuba' && question.tags.includes('capitale'))
+      expect(cloze?.subject, locale).toBe('Cuba') // clé FR canonique
+      expect(cloze?.question, locale).not.toContain('Capitale de') // plus la formulation FR
+    }
+    // exemples de formulations / données attendues
+    const es = generateQuiz(caribbeanRows, schema, { seed: 'multi', locale: 'es', i18n: caribbeanI18n })
+    expect(es.categories.some((c) => c.label === 'Capital')).toBe(true)
+    expect(JSON.stringify(es)).toContain('La Habana')
+    const nl = generateQuiz(caribbeanRows, schema, { seed: 'multi', locale: 'nl', i18n: caribbeanI18n })
+    expect(nl.questions.some((q) => q.question.includes('van de Bahamas'))).toBe(true)
   })
 
   it('picks the first text column as subject when no header hint matches', () => {

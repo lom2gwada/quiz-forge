@@ -4,11 +4,14 @@ import { setNumberLocale } from '../utils/number'
 import { DEFAULT_LOCALE, type Locale } from './locale'
 import { fr, type MessageKey } from './messages/fr'
 import { en } from './messages/en'
+import { es } from './messages/es'
+import { nl } from './messages/nl'
+import { ht } from './messages/ht'
 
 export type { MessageKey } from './messages/fr'
 export type { Locale } from './locale'
 
-const DICTS: Record<string, Partial<Record<MessageKey, string>>> = { fr, en }
+const DICTS: Record<string, Partial<Record<MessageKey, string>>> = { fr, en, es, nl, ht }
 
 export type TParams = Record<string, string | number>
 export type TFunction = (key: MessageKey, params?: TParams) => string

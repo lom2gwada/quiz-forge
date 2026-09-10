@@ -13,6 +13,9 @@ export interface DataI18n {
   /** Libellé d'une colonne (minuscule — `grammar.cap` le capitalise si besoin). Clé = libellé
    * FR normalisé (`spec.label`). */
   columnLabels: Record<string, Partial<Record<Locale, string>>>
+  /** Unité d'une colonne numérique (clé = suffixe FR détecté : « Mds $ », « hab/km² »…).
+   * `km²` / `m` / `%` sont universels : inutile de les lister. Optionnel. */
+  units?: Record<string, Partial<Record<Locale, string>>>
 }
 
 /** Résout une valeur pour la locale, avec repli français. */

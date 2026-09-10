@@ -1,6 +1,9 @@
 import { DEFAULT_LOCALE, type Locale } from '../locale'
 import { fr } from './fr'
 import { en } from './en'
+import { es } from './es'
+import { nl } from './nl'
+import { ht } from './ht'
 
 /** Petites règles de langue dont la génération de quiz a besoin : contraction de l'article,
  * énumération, pluriel, sens de tri. Une implémentation par famille de langue. */
@@ -17,7 +20,7 @@ export interface Grammar {
   cap(s: string): string
 }
 
-const GRAMMARS: Record<string, Grammar> = { fr, en }
+const GRAMMARS: Record<string, Grammar> = { fr, en, es, nl, ht }
 
 export function getGrammar(locale: Locale = DEFAULT_LOCALE): Grammar {
   return GRAMMARS[locale] ?? GRAMMARS[DEFAULT_LOCALE]
