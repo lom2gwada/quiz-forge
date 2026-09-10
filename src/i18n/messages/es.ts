@@ -100,6 +100,7 @@ export const es: Record<MessageKey, string> = {
   'profile.pseudo': 'Apodo',
   'profile.pseudoPlaceholder': 'Tu nombre o apodo',
   'profile.avatar': 'Avatar',
+  'profile.avatarCustom': 'O el tuyo: un emoji, o un código Unicode («U+1F984»).',
   'profile.theme': 'Tema',
   'profile.themeLagon': '🌙 Laguna',
   'profile.themeCarte': '🧭 Carta náutica',

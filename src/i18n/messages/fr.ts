@@ -109,6 +109,7 @@ export const fr = {
   'profile.pseudo': 'Pseudo',
   'profile.pseudoPlaceholder': 'Ton prénom ou pseudo',
   'profile.avatar': 'Avatar',
+  'profile.avatarCustom': 'Ou le tien : un emoji, ou un code Unicode (« U+1F984 »).',
   'profile.theme': 'Thème',
   'profile.themeLagon': '🌙 Lagon',
   'profile.themeCarte': '🧭 Carte marine',

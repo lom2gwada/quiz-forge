@@ -101,6 +101,7 @@ export const ht: Record<MessageKey, string> = {
   'profile.pseudo': 'Ti non',
   'profile.pseudoPlaceholder': 'Prenon ou oswa ti non ou',
   'profile.avatar': 'Avatar',
+  'profile.avatarCustom': 'Oswa pa w: yon emoji, oswa yon kòd Unicode («U+1F984»).',
   'profile.theme': 'Tèm',
   'profile.themeLagon': '🌙 Lagon',
   'profile.themeCarte': '🧭 Kat maren',

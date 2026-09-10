@@ -99,6 +99,7 @@ export const en: Record<MessageKey, string> = {
   'profile.pseudo': 'Nickname',
   'profile.pseudoPlaceholder': 'Your first name or nickname',
   'profile.avatar': 'Avatar',
+  'profile.avatarCustom': 'Or your own: an emoji, or a Unicode code point ("U+1F984").',
   'profile.theme': 'Theme',
   'profile.themeLagon': '🌙 Lagoon',
   'profile.themeCarte': '🧭 Nautical chart',

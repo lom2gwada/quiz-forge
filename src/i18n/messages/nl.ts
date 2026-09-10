@@ -100,6 +100,7 @@ export const nl: Record<MessageKey, string> = {
   'profile.pseudo': 'Bijnaam',
   'profile.pseudoPlaceholder': 'Je voornaam of bijnaam',
   'profile.avatar': 'Avatar',
+  'profile.avatarCustom': 'Of je eigen: een emoji, of een Unicode-codepunt ("U+1F984").',
   'profile.theme': 'Thema',
   'profile.themeLagon': '🌙 Lagune',
   'profile.themeCarte': '🧭 Zeekaart',
