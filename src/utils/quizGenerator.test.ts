@@ -173,6 +173,37 @@ describe('generateQuiz', () => {
     expect(new Set(booleans.map((q) => (q.content as { isTrue: boolean }).isTrue)).size).toBe(2)
   })
 
+  it('numeric columns feed every question type, not just estimation and ordering', () => {
+    const byCol = (c: string) => quiz.questions.filter((q) => q.tags.includes(c))
+    const types = (c: string) => new Set(byCol(c).map((q) => q.type))
+    // population : nombre unique, pas une année
+    expect(types('population')).toEqual(new Set(['numeric', 'ordering', 'qcm', 'boolean', 'matching']))
+    // pas de texte à trous sur un nombre non-année (taper la valeur exacte serait absurde)
+    expect(byCol('population').some((q) => q.type === 'cloze')).toBe(false)
+    // independance : année, non unique (Amérique centrale = 1821) → pas de QCM inversé, mais du cloze
+    expect(types('independance').has('cloze')).toBe(true)
+    expect(byCol('independance').some((q) => q.question.startsWith('Quel'))).toBe(false)
+    // QCM numérique : bonne réponse + distracteurs tous distincts, aucun 'http'
+    for (const q of byCol('population')) {
+      if (q.type !== 'qcm') continue
+      expect(q.content.answers.filter((a) => a.isCorrect)).toHaveLength(1)
+      expect(new Set(q.content.answers.map((a) => a.label)).size).toBe(q.content.answers.length)
+    }
+  })
+
+  it('produces flag + year questions when an image column and a year column coexist', () => {
+    const iy = quiz.questions.filter((q) => q.imageUrl && /En quelle année/.test(q.question))
+    expect(iy.length).toBeGreaterThan(5)
+    for (const q of iy) {
+      expect(q.type).toBe('qcm')
+      expect(q.imageUrl).toMatch(/^https?:\/\//)
+      if (q.type === 'qcm') {
+        expect(q.content.answers.filter((a) => a.isCorrect)).toHaveLength(1)
+        expect(q.content.answers.every((a) => /^\d{3,4}$/.test(a.label))).toBe(true) // des années
+      }
+    }
+  })
+
   it('skips empty cells: no independence question about a non-sovereign territory', () => {
     const territories = ['Guadeloupe', 'Martinique', 'Aruba', 'Curaçao', 'Porto Rico', 'Saint-Martin', 'Îles Caïmans']
     const independence = quiz.questions.filter((q) => q.tags.includes('independance'))

@@ -241,6 +241,9 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
   const artOf = (row: Row): string => (articleColumn ? row[articleColumn] ?? '' : '')
   const de = (row: Row): string => dePhrase(nameOf(row), artOf(row))
 
+  // Colonne image du schéma (drapeau…) : sert aux questions « image + valeur ».
+  const imageCol = Object.entries(schema.columns).find(([, s]) => s.include && s.isImage && s.unique)?.[0]
+
   const questions: Question[] = []
   const usedIds = new Set<string>()
   // Identité STABLE d'une question : dérivée de son contenu (catégorie + variante + sujet·s),
@@ -270,6 +273,22 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
     const rowsWith = rows.filter((row) => atomsOf(row).length > 0)
     const numRowsWith = spec.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(asNumber(row[col]))) : rowsWith
     const Label = capitalize(spec.label)
+
+    // Distracteurs pour un nombre : autres valeurs réelles de la colonne (années) puis valeurs perturbées.
+    const numericDistractors = (target: number, n: number): string[] => {
+      const out = new Set<number>()
+      if (spec.isYear) {
+        for (const v of sample([...new Set(numRowsWith.map((r) => asNumber(r[col])))].filter((v) => v !== target), n)) out.add(v)
+      }
+      const factors = spec.isYear ? [-18, -11, -6, 5, 9, 15, 24] : [0.4, 0.6, 0.75, 1.3, 1.6, 2.1]
+      const step = spec.isYear ? 1 : niceStep(target * 2)
+      for (const f of shuffle(factors)) {
+        if (out.size >= n) break
+        const v = spec.isYear ? target + f : Math.max(step, roundTo(target * f, step))
+        if (v !== target && v > 0 && (!spec.isYear || v <= 2024)) out.add(v)
+      }
+      return shuffle([...out]).slice(0, n).map((v) => formatNumericValue(v, spec.isYear))
+    }
 
     // ---- Colonne image (ex. drapeaux) : identifier l'entité d'après l'image ----
     if (spec.isImage && spec.unique) {
@@ -422,6 +441,120 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           content: {
             items: shuffle(group).map<OrderingItem>((r) => ({ id: idOf(r), label: nameOf(r) })),
             correctOrder: sorted.map(idOf),
+          },
+        })
+      }
+    }
+
+    // ---- Colonne nombre : QCM + Vrai/Faux + texte à trous (années), une série par ligne ----
+    if (spec.kind === 'number') {
+      for (const row of numRowsWith) {
+        const target = asNumber(row[col])
+        const shown = formatNumericValue(target, spec.isYear)
+        const unitSuffix = spec.unit && !spec.isYear ? ` ${spec.unit}` : ''
+        const about = `${Label} ${de(row)}`
+        const fact = `${about} : ${shown}${unitSuffix}.`
+
+        const dist = numericDistractors(target, CFG.qcm.choices - 1)
+        if (dist.length >= CFG.qcm.choices - 1) {
+          questions.push({
+            id: qid([col, 'num-qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
+            question: spec.isYear ? `En quelle année : ${spec.label} ${de(row)} ?` : `${about}${spec.unit ? ` (en ${spec.unit})` : ''} ?`,
+            topic: about,
+            explanation: fact,
+            content: {
+              multiple: false,
+              answers: shuffle([shown, ...dist]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === shown })),
+            },
+          })
+        }
+
+        // Vrai/Faux : la vraie valeur, ou une valeur perturbée
+        const showTrue = rand() < 0.5
+        const shownVal = showTrue ? shown : numericDistractors(target, 1)[0]
+        if (shownVal) {
+          questions.push({
+            id: qid([col, 'num-boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
+            question: `${about} : ${shownVal}${unitSuffix}.`,
+            topic: about,
+            explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
+            content: { isTrue: showTrue },
+          })
+        }
+
+        // Texte à trous : années seulement (taper une population exacte serait absurde)
+        if (spec.isYear) {
+          questions.push({
+            id: qid([col, 'num-cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
+            question: `${about} : ___`,
+            topic: about,
+            explanation: fact,
+            content: { expectedAnswers: [String(target), shown], caseSensitive: false },
+          })
+        }
+      }
+    }
+
+    // ---- QCM inversé sur un nombre (colonnes uniques : une seule bonne réponse possible) ----
+    if (spec.kind === 'number' && spec.unique && rows.length > CFG.qcmBackward.choices) {
+      for (const row of numRowsWith) {
+        const shown = `${formatNumericValue(asNumber(row[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}`
+        const correct = nameOf(row)
+        const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.qcmBackward.choices - 1)
+        questions.push({
+          id: qid([col, 'num-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
+          question: `Quel ${noun} a pour ${spec.label} « ${shown} » ?`,
+          topic: `${Label} ${de(row)}`,
+          explanation: `${Label} ${de(row)} : ${shown}.`,
+          content: {
+            multiple: false,
+            answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
+          },
+        })
+      }
+    }
+
+    // ---- Association sur un nombre : groupes recouvrants, une ligne par valeur distincte ----
+    if (spec.kind === 'number') {
+      const distinct = [...new Map(shuffle(numRowsWith).map((r) => [asNumber(r[col]), r] as const)).values()]
+      const leftId = (r: Row): string => `l-${hashStr(nameOf(r) + '#' + col)}`
+      const rightId = (r: Row): string => `r-${hashStr(String(asNumber(r[col])) + col)}`
+      const valOf = (r: Row): string => `${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}`
+      for (const group of overlapGroups(distinct, CFG.matching.groupSize)) {
+        const members = [...group].map(nameOf).sort()
+        questions.push({
+          id: qid([col, 'num-matching', ...members]), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
+          question: `Associez chaque ${noun} à : ${spec.label}.`,
+          topic: `${Label} : ${members.join(', ')}`,
+          explanation: group.map((r) => `${nameOf(r)} → ${valOf(r)}`).join(' · '),
+          content: {
+            left: group.map<MatchingItem>((r) => ({ id: leftId(r), label: nameOf(r) })),
+            right: shuffle(group).map<MatchingItem>((r) => ({ id: rightId(r), label: valOf(r) })),
+            correctPairs: Object.fromEntries(group.map((r) => [leftId(r), rightId(r)])),
+          },
+        })
+      }
+    }
+
+    // ---- Question image + année : reconnaître le drapeau ET connaître l'année ----
+    if (spec.kind === 'number' && spec.isYear && imageCol) {
+      const imgLabel = schema.columns[imageCol].label
+      for (const row of numRowsWith) {
+        if (!hasValue(row[imageCol])) continue
+        const target = asNumber(row[col])
+        const shown = formatNumericValue(target, true)
+        const dist = numericDistractors(target, CFG.image.choices - 1)
+        if (dist.length < CFG.image.choices - 1) continue
+        questions.push({
+          id: qid([col, 'image-year', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
+          question: `Ce ${imgLabel} représente un ${noun}. En quelle année : ${spec.label} ?`,
+          topic: `${Label} ${de(row)}`,
+          explanation: `Ce ${imgLabel} est celui ${de(row)} — ${spec.label} : ${shown}.`,
+          imageUrl: row[imageCol],
+          imageAlt: `Un ${imgLabel}.`,
+          content: {
+            multiple: false,
+            answers: shuffle([shown, ...dist]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === shown })),
           },
         })
       }
