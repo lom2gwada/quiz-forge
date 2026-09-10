@@ -57,6 +57,7 @@ function pickRandomQuestions<T>(questions: T[], count: number): T[] {
 export default function App() {
   const [quiz, setQuiz] = useState<Quiz>(initialQuiz)
   const [dataset, setDataset] = useState<Dataset | null>(initialDataset)
+  const [atlasQuery, setAtlasQuery] = useState('')
   const [genError, setGenError] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [difficulty, setDifficulty] = useState<Difficulty | ''>('')
@@ -185,16 +186,16 @@ export default function App() {
 
   return <main className="app-shell">
     <ChartBackground />
-    <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>par {quiz.metadata.author}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? 'Activer le son' : 'Couper le son'}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : '👤 Profil'}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => navigate('atlas')}>🗺️ Fiches</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ Quiz</button>}</div></header>
+    <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>par {quiz.metadata.author}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? 'Activer le son' : 'Couper le son'}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : '👤 Profil'}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => { setAtlasQuery(''); navigate('atlas') }}>🗺️ Fiches</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ Quiz</button>}</div></header>
     {view === 'start' && <section className="start-page"><FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} /><label className="question-count">Nombre de questions<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{count} {count === 1 ? 'question' : 'questions'}{count > filteredQuestions.length ? ' (indisponible)' : ''}</option>)}<option value={filteredQuestions.length}>Toutes les questions ({formatNumber(filteredQuestions.length)})</option></select></label><p>{formatNumber(filteredQuestions.length)} question{filteredQuestions.length > 1 ? 's' : ''} disponible{filteredQuestions.length > 1 ? 's' : ''} — {Math.min(questionCount, filteredQuestions.length)} seront tirées aléatoirement.</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>Démarrer le quiz</button></div></section>}
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} onFinish={(nextAnswers, duration) => {
       setAnswers(nextAnswers); setElapsedSeconds(duration); replace('results')
       saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.categories, duration, quiz.metadata.title))
       saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, quiz.metadata.title))
     }} onCancel={backToStart} />}
-    {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} />}
+    {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? (subject) => { setAtlasQuery(subject); navigate('atlas') } : undefined} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
-    {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} onBack={() => navigate('start')} />}
+    {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} initialQuery={atlasQuery} onBack={() => window.history.back()} />}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); setProfile((current) => ({ ...current, ...next })) }} onViewHistory={() => viewHistory('profile')} />}
   </main>

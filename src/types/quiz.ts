@@ -76,6 +76,9 @@ export interface BaseQuestion {
    *  révision où l'énoncé joué (marqueur `___`, image générique, affirmation V/F) est inadapté.
    *  Optionnel : les quiz importés sans ce champ retombent sur `question`. */
   topic?: string
+  /** Sujet de la question (ex. « Cuba ») quand elle en a un seul — permet un lien « Voir la fiche ».
+   *  Absent pour les questions de groupe (classement, association). */
+  subject?: string
   tags: string[]
   explanation: string
   points: number

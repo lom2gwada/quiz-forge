@@ -80,6 +80,15 @@ describe('generateQuiz', () => {
     expect(quiz.questions.length).toBeGreaterThan(15)
   })
 
+  it('tags single-subject questions with their subject, not group questions', () => {
+    const cloze = quiz.questions.find((q) => q.question === 'Capitale de Cuba : ___')
+    expect(cloze?.subject).toBe('Cuba')
+    const ordering = quiz.questions.find((q) => q.type === 'ordering')
+    expect(ordering?.subject).toBeUndefined()
+    const matching = quiz.questions.find((q) => q.type === 'matching')
+    expect(matching?.subject).toBeUndefined()
+  })
+
   it('exposes one category per column that produced questions', () => {
     const cols = new Set(Object.entries(schema.columns).filter(([, s]) => s.include).map(([c]) => c))
     const categoryIds = new Set(quiz.categories.map((c) => c.id))

@@ -303,7 +303,7 @@ export function generateQuiz(
         questions.push({
           id: qid([col, 'image', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.image.difficulty, points: CFG.image.points, tags: [col],
           question: `Quel ${noun} ce ${spec.label} représente-t-il ?`,
-          topic: `${Label} ${de(row)}`,
+          topic: `${Label} ${de(row)}`, subject: nameOf(row),
           explanation: `Ce ${spec.label} est celui ${de(row)}.`,
           imageUrl: row[col],
           imageAlt: `Un ${spec.label}.`,
@@ -331,7 +331,7 @@ export function generateQuiz(
             questions.push({
               id: qid([col, 'qcm-multi', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
               question: `${Label} ${de(row)} ? (plusieurs réponses)`,
-              topic: about,
+              topic: about, subject: nameOf(row),
               explanation: fact,
               content: {
                 multiple: true,
@@ -346,7 +346,7 @@ export function generateQuiz(
             questions.push({
               id: qid([col, 'qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
               question: `${Label} ${de(row)} ?`,
-              topic: about,
+              topic: about, subject: nameOf(row),
               explanation: `${about} : ${correct}.`,
               content: {
                 multiple: false,
@@ -365,7 +365,7 @@ export function generateQuiz(
           questions.push({
             id: qid([col, 'boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
             question: `${Label} ${de(row)} : ${shown}.`,
-            topic: about,
+            topic: about, subject: nameOf(row),
             explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
             content: { isTrue: showTrue },
           })
@@ -376,7 +376,7 @@ export function generateQuiz(
         questions.push({
           id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
           question: `${Label} ${de(row)} : ___`,
-          topic: about,
+          topic: about, subject: nameOf(row),
           explanation: fact,
           content: { expectedAnswers: expected, caseSensitive: false },
         })
@@ -391,7 +391,7 @@ export function generateQuiz(
         questions.push({
           id: qid([col, 'qcm-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
           question: `Quel ${noun} a pour ${spec.label} « ${row[col]} » ?`,
-          topic: `${Label} ${de(row)}`,
+          topic: `${Label} ${de(row)}`, subject: nameOf(row),
           explanation: `${Label} ${de(row)} : ${row[col]}.`,
           content: {
             multiple: false,
@@ -419,7 +419,7 @@ export function generateQuiz(
           question: spec.isYear
             ? `En quelle année : ${spec.label} ${de(row)} ?`
             : `Estimez : ${spec.label} ${de(row)}${spec.unit ? ` (en ${spec.unit})` : ''}.`,
-          topic: `${Label} ${de(row)}`,
+          topic: `${Label} ${de(row)}`, subject: nameOf(row),
           explanation: `${Label} ${de(row)} : ${formatNumericValue(target, spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}.`,
           content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(spec.unit && !spec.isYear ? { unit: spec.unit } : {}) },
         })
@@ -465,7 +465,7 @@ export function generateQuiz(
           questions.push({
             id: qid([col, 'num-qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
             question: spec.isYear ? `En quelle année : ${spec.label} ${de(row)} ?` : `${about}${spec.unit ? ` (en ${spec.unit})` : ''} ?`,
-            topic: about,
+            topic: about, subject: nameOf(row),
             explanation: fact,
             content: {
               multiple: false,
@@ -481,7 +481,7 @@ export function generateQuiz(
           questions.push({
             id: qid([col, 'num-boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
             question: `${about} : ${shownVal}${unitSuffix}.`,
-            topic: about,
+            topic: about, subject: nameOf(row),
             explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
             content: { isTrue: showTrue },
           })
@@ -492,7 +492,7 @@ export function generateQuiz(
           questions.push({
             id: qid([col, 'num-cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
             question: `${about} : ___`,
-            topic: about,
+            topic: about, subject: nameOf(row),
             explanation: fact,
             content: { expectedAnswers: [String(target), shown], caseSensitive: false },
           })
@@ -509,7 +509,7 @@ export function generateQuiz(
         questions.push({
           id: qid([col, 'num-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
           question: `Quel ${noun} a pour ${spec.label} « ${shown} » ?`,
-          topic: `${Label} ${de(row)}`,
+          topic: `${Label} ${de(row)}`, subject: nameOf(row),
           explanation: `${Label} ${de(row)} : ${shown}.`,
           content: {
             multiple: false,
@@ -553,7 +553,7 @@ export function generateQuiz(
         questions.push({
           id: qid([col, 'image-year', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
           question: `Ce ${imgLabel} représente un ${noun}. En quelle année : ${spec.label} ?`,
-          topic: `${Label} ${de(row)}`,
+          topic: `${Label} ${de(row)}`, subject: nameOf(row),
           explanation: `Ce ${imgLabel} est celui ${de(row)} — ${spec.label} : ${shown}.`,
           imageUrl: row[imageCol],
           imageAlt: `Un ${imgLabel}.`,
@@ -596,7 +596,7 @@ export function generateQuiz(
       questions.push({
         id: qid(['silhouette', correct]), type: 'qcm', category: 'silhouette', difficulty: CFG.image.difficulty, points: CFG.image.points, tags: ['silhouette'],
         question: `Quel ${noun} a cette silhouette ?`,
-        topic: `Silhouette ${de(row)}`,
+        topic: `Silhouette ${de(row)}`, subject: correct,
         explanation: `Cette silhouette est celle ${de(row)}.`,
         shapeSvg: opts.shapes[correct],
         imageAlt: `Silhouette d’un ${noun}.`,

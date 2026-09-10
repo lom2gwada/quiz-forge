@@ -9,15 +9,17 @@ interface AtlasPageProps {
   schema: GenSchema
   shapes?: Record<string, string>
   onBack: () => void
+  /** Pré-remplit le filtre (ex. « Voir la fiche » depuis une correction). */
+  initialQuery?: string
 }
 
 const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s)
 
 /** Une fiche par entité du jeu de données : drapeau + silhouette + tous les champs non vides,
  * rendu générique depuis le schéma (marche pour n'importe quel pack, sans code par sujet). */
-export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
-  const [query, setQuery] = useState('')
-  const [sortKey, setSortKey] = useState('') // '' = ordre du CSV, 'name', ou une colonne nombre
+export function AtlasPage({ rows, schema, shapes, onBack, initialQuery }: AtlasPageProps) {
+  const [query, setQuery] = useState(initialQuery ?? '')
+  const [sortKey, setSortKey] = useState('name') // 'name' ou une colonne nombre
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const { subjectColumn, articleColumn, columns } = schema
 
@@ -48,7 +50,6 @@ export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
   const q = query.trim().toLowerCase()
   const filtered = q ? rows.filter((r) => (r[subjectColumn] ?? '').toLowerCase().includes(q)) : rows
   const sorted = useMemo(() => {
-    if (!sortKey) return filtered
     return [...filtered].sort((a, b) => {
       if (sortKey === 'name') {
         const cmp = (a[subjectColumn] ?? '').localeCompare(b[subjectColumn] ?? '', 'fr')
@@ -87,21 +88,18 @@ export function AtlasPage({ rows, schema, shapes, onBack }: AtlasPageProps) {
         <label className="atlas-sort">
           Trier par
           <select value={sortKey} onChange={(event) => changeSort(event.target.value)}>
-            <option value="">ordre du tableau</option>
             <option value="name">nom</option>
             {numCols.map(([col, spec]) => <option key={col} value={col}>{spec.label}</option>)}
           </select>
         </label>
-        {sortKey && (
-          <button
-            type="button"
-            className="secondary atlas-dir"
-            onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-            aria-label={sortDir === 'asc' ? 'Ordre croissant, cliquer pour décroissant' : 'Ordre décroissant, cliquer pour croissant'}
-          >
-            {sortDir === 'asc' ? '↑' : '↓'}
-          </button>
-        )}
+        <button
+          type="button"
+          className="secondary atlas-dir"
+          onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+          aria-label={sortDir === 'asc' ? 'Ordre croissant, cliquer pour décroissant' : 'Ordre décroissant, cliquer pour croissant'}
+        >
+          {sortDir === 'asc' ? '↑' : '↓'}
+        </button>
       </div>
       <div className="atlas-grid">
         {sorted.map((row) => {

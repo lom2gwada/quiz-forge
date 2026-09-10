@@ -98,9 +98,11 @@ interface ResultPageProps {
   elapsedSeconds: number
   onRestart: () => void
   onViewHistory: () => void
+  /** Ouvre la fiche du sujet d'une question ; absent s'il n'y a pas de jeu de données (quiz JSON importé). */
+  onViewFiche?: (subject: string) => void
 }
 
-export function ResultPage({ questions, answers, categories, elapsedSeconds, onRestart, onViewHistory }: ResultPageProps) {
+export function ResultPage({ questions, answers, categories, elapsedSeconds, onRestart, onViewHistory, onViewFiche }: ResultPageProps) {
   const earned = questions.filter((question) => isCorrect(question, answers[question.id])).reduce((total, question) => total + question.points, 0)
   const total = questions.reduce((sum, question) => sum + question.points, 0)
   const score = total ? Math.round((earned / total) * 100) : 0
@@ -141,6 +143,11 @@ export function ResultPage({ questions, answers, categories, elapsedSeconds, onR
         {!correct && <p><strong>Votre réponse :</strong> {userAnswer(question, answers[question.id])}</p>}
         {!correct && <p><strong>Bonne réponse :</strong> {correctAnswer(question)}</p>}
         <p>{question.explanation}</p>
+        {question.subject && onViewFiche && (
+          <button type="button" className="link-button" onClick={() => onViewFiche(question.subject!)}>
+            Voir la fiche {question.subject} →
+          </button>
+        )}
       </article>
     })}</div>
   </section>
