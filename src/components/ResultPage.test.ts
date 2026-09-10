@@ -49,6 +49,15 @@ describe('text', () => {
     expect(isCorrect(insensitive, 'PARIS')).toBe(true)
     expect(isCorrect(insensitive, ' paris ')).toBe(true)
   })
+  it('tolerates accents, hyphens/apostrophes and a leading article (non case-sensitive)', () => {
+    const port: TextQuestion = { ...shared, type: 'text', question: 'Q ?', points: 1, content: { expectedAnswers: ["Port-d'Espagne"], caseSensitive: false } }
+    expect(isCorrect(port, "port d'espagne")).toBe(true)
+    expect(isCorrect(port, 'Port-of-Spain')).toBe(false) // faux ici : c'est un synonyme, pas une variante ortho
+    const money: TextQuestion = { ...shared, type: 'text', question: 'Q ?', points: 1, content: { expectedAnswers: ['le peso cubain'], caseSensitive: false } }
+    expect(isCorrect(money, 'peso cubain')).toBe(true)
+    const accented: TextQuestion = { ...shared, type: 'text', question: 'Q ?', points: 1, content: { expectedAnswers: ['Bogotá'], caseSensitive: false } }
+    expect(isCorrect(accented, 'bogota')).toBe(true)
+  })
   it('rejects a wrong answer', () => expect(isCorrect(insensitive, 'Lyon')).toBe(false))
   it('rejects unanswered questions', () => expect(isCorrect(insensitive, undefined)).toBe(false))
   it('respects caseSensitive', () => expect(isCorrect(sensitive, 'paris')).toBe(false))

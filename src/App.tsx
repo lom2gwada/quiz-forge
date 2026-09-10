@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes as caribbeanShapes } from './data/shapes'
+import { aliases as caribbeanAliases } from './data/aliases'
 import { ChartBackground } from './components/ChartBackground'
 import { FilterPanel } from './components/FilterPanel'
 import { HistoryPage } from './components/HistoryPage'
@@ -21,7 +22,7 @@ import { isSoundMuted, playClick, setSoundMuted } from './utils/sound'
 import { shuffle } from './utils/shuffle'
 
 type View = 'start' | 'quiz' | 'results' | 'content' | 'history' | 'profile'
-type Dataset = { rows: Row[]; schema: GenSchema; shapes?: Record<string, string> }
+type Dataset = { rows: Row[]; schema: GenSchema; shapes?: Record<string, string>; aliases?: Record<string, string[]> }
 
 const questionCounts = [5, 10, 20, 30, 50]
 
@@ -34,7 +35,7 @@ const FALLBACK_QUIZ: Quiz = {
 
 function safeGenerate(dataset: Dataset, seed: string): { quiz: Quiz; error: string } {
   try {
-    return { quiz: parseQuiz(generateQuiz(dataset.rows, dataset.schema, { seed, shapes: dataset.shapes })), error: '' }
+    return { quiz: parseQuiz(generateQuiz(dataset.rows, dataset.schema, { seed, shapes: dataset.shapes, aliases: dataset.aliases })), error: '' }
   } catch (error) {
     return { quiz: FALLBACK_QUIZ, error: error instanceof Error ? error.message : 'Génération impossible.' }
   }
@@ -44,7 +45,7 @@ const bundledRows = (() => {
   try { return parseCsv(caribbeanCsv) } catch { return [] as Row[] }
 })()
 const initialDataset: Dataset | null = bundledRows.length
-  ? { rows: bundledRows, schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' }, shapes: caribbeanShapes }
+  ? { rows: bundledRows, schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' }, shapes: caribbeanShapes, aliases: caribbeanAliases }
   : null
 const initialQuiz = initialDataset ? safeGenerate(initialDataset, 'caribbean').quiz : FALLBACK_QUIZ
 
@@ -141,7 +142,7 @@ export default function App() {
 
   const generateFromPanel = (schema: GenSchema, seed: string) => {
     if (!dataset) return
-    const nextDataset: Dataset = { rows: dataset.rows, schema, shapes: dataset.shapes }
+    const nextDataset: Dataset = { rows: dataset.rows, schema, shapes: dataset.shapes, aliases: dataset.aliases }
     setDataset(nextDataset)
     applyGenerated(nextDataset, seed)
     navigate('start')

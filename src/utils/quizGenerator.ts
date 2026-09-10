@@ -207,7 +207,11 @@ const CFG = {
   matching: { groupSize: 4, points: 2, difficulty: 'medium' as const },
 }
 
-export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: string; shapes?: Record<string, string> }): Quiz {
+export function generateQuiz(
+  rows: Row[],
+  schema: GenSchema,
+  opts: { seed: string; shapes?: Record<string, string>; aliases?: Record<string, string[]> },
+): Quiz {
   const rand = mulberry32(hashStr(opts.seed))
   const shuffle = <T>(arr: T[]): T[] => {
     const a = [...arr]
@@ -367,13 +371,14 @@ export function generateQuiz(rows: Row[], schema: GenSchema, opts: { seed: strin
           })
         }
 
-        // Texte à trous : on masque la valeur
+        // Texte à trous : on masque la valeur. On accepte aussi les alias déclarés (autre nom / langue).
+        const expected = [...new Set(corrects.flatMap((v) => [v, ...(opts.aliases?.[v] ?? [])]))]
         questions.push({
           id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
           question: `${Label} ${de(row)} : ___`,
           topic: about,
           explanation: fact,
-          content: { expectedAnswers: corrects, caseSensitive: false },
+          content: { expectedAnswers: expected, caseSensitive: false },
         })
       }
     }

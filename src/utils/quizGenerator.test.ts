@@ -191,6 +191,22 @@ describe('generateQuiz', () => {
     }
   })
 
+  it('adds declared aliases to the accepted answers of a cloze', () => {
+    const withAlias = generateQuiz(caribbeanRows, schema, {
+      seed: 'test',
+      aliases: { "Port-d'Espagne": ['Port of Spain'] },
+    })
+    const cloze = withAlias.questions.find((q) => q.type === 'cloze' && q.question.startsWith('Capitale de Trinité-et-Tobago'))
+    expect(cloze?.type).toBe('cloze')
+    if (cloze?.type === 'cloze') {
+      expect(cloze.content.expectedAnswers).toContain("Port-d'Espagne")
+      expect(cloze.content.expectedAnswers).toContain('Port of Spain')
+    }
+    // sans alias : seule la valeur du CSV
+    const plain = quiz.questions.find((q) => q.type === 'cloze' && q.question.startsWith('Capitale de Trinité-et-Tobago'))
+    if (plain?.type === 'cloze') expect(plain.content.expectedAnswers).toEqual(["Port-d'Espagne"])
+  })
+
   it('produces silhouette questions when shapes are supplied', () => {
     const shaped = generateQuiz(caribbeanRows, schema, {
       seed: 'test',

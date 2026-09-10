@@ -15,7 +15,18 @@ const sameIds = (left: string[], right: string[]) => left.length === right.lengt
 export function isCorrect(question: Question, answer: AnswersByQuestion[string] | undefined): boolean {
   if (question.type === 'text' || question.type === 'cloze') {
     if (typeof answer !== 'string') return false
-    const normalize = (value: string) => question.content.caseSensitive ? value.trim() : value.trim().toLocaleLowerCase()
+    // Sauf en mode sensible : on tolère casse, accents, traits d'union / apostrophes / espaces
+    // et l'article de tête (« Port-d'Espagne » ≈ « port d'espagne » ; « le peso » ≈ « peso »).
+    const normalize = (value: string) => {
+      const trimmed = value.trim()
+      if (question.content.caseSensitive) return trimmed
+      return trimmed
+        .toLocaleLowerCase('fr')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '') // enlève les accents (diacritiques U+0300–U+036F)
+        .replace(/[-'‘’`\s]+/g, ' ') // traits d'union / apostrophes / espaces → une espace
+        .replace(/^(le|la|les|l|the) /, '')
+        .trim()
+    }
     return question.content.expectedAnswers.map(normalize).includes(normalize(answer))
   }
   if (question.type === 'numeric') {
