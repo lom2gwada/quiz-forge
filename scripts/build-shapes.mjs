@@ -25,6 +25,8 @@ const MATCH = {
   'Guadeloupe': p => p.NAME === 'Guadeloupe',
   'Martinique': p => p.NAME === 'Martinique',
   'Saint-Martin': p => p.ADMIN === 'Saint Martin',
+  'Saint-Barthélemy': p => p.ADMIN === 'Saint Barthelemy',
+  'Sint Maarten': p => p.ADMIN === 'Sint Maarten',
   'Aruba': p => p.ADMIN === 'Aruba',
   'Curaçao': p => p.ADMIN === 'Curaçao',
   'Antigua-et-Barbuda': p => p.ADMIN === 'Antigua and Barbuda',

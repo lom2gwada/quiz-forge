@@ -225,7 +225,7 @@ describe('generateQuiz', () => {
   })
 
   it('skips empty cells: no independence question about a non-sovereign territory', () => {
-    const territories = ['Guadeloupe', 'Martinique', 'Aruba', 'Curaçao', 'Porto Rico', 'Saint-Martin', 'Îles Caïmans']
+    const territories = ['Guadeloupe', 'Martinique', 'Aruba', 'Curaçao', 'Porto Rico', 'Saint-Martin', 'Saint-Barthélemy', 'Sint Maarten', 'Îles Caïmans']
     const independence = quiz.questions.filter((q) => q.tags.includes('independance'))
     for (const q of independence) {
       const blob = JSON.stringify(q)
