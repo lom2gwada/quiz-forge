@@ -1,8 +1,16 @@
 # Plan : internationalisation de quiz-forge
 
 > **Statut** : plan validé, pas encore implémenté. Rédigé le 2026-09-10.
-> Langues visées : français (défaut + source de vérité), **anglais**, **espagnol**, puis
-> d'autres au besoin. L'architecture doit rester **ouverte à n'importe quelle locale**.
+> Langues visées : français (défaut + source de vérité), puis **anglais**, **espagnol**,
+> **néerlandais** (Aruba / Curaçao / Sint Maarten), **créole**. L'architecture reste
+> **ouverte à n'importe quelle locale** — ajouter une langue ne touche pas le cœur.
+>
+> ⚠️ **Créole** : il n'y a pas *un* créole. Choix à faire avec l'utilisateur (créole
+> guadeloupéen — le jeu de données est caribéen et c'est sa région — vs haïtien, vs
+> martiniquais) **et** l'orthographe (GEREC vs standard haïtien). L'article y est **postposé**
+> (« kapital-la ») → `grammar.of` gère, mais certains gabarits diffèrent davantage. À traiter
+> en dernier, avec relecture d'un locuteur natif.
+> **Néerlandais** : grammaire simple (article `de`/`het`, pas de contraction) — surtout du contenu.
 
 Voir aussi [`architecture-packs.md`](architecture-packs.md) — l'i18n et la vision « packs »
 convergent : à terme, une locale est une facette du pack (templates + grammaire + traductions).
@@ -193,9 +201,11 @@ export const i18n: {
 | **2 — génération pluggable** | `grammar/{fr,en}`, `templates/{fr,en}`, refactor `generateQuiz` (`fill`, grammar, `qid` locale-indep) + tests | ~1 j | non seul (questions = « Capital of Jamaïque ? ») |
 | **3 — données EN** | `caribbean.i18n.ts` (valeurs + articles + libellés EN), `tr()` dans le générateur | ~1 j (surtout contenu) | **oui — EN complet**, on active `en` dans le `<select>` |
 | **4 — espagnol** | `messages/es`, `grammar/es` (de/del), `templates/es`, colonne `es` dans `caribbean.i18n.ts` | ~0,5 j | oui — on active `es` |
+| **5 — néerlandais** | idem, grammaire simple | ~0,5 j | oui |
+| **6 — créole** | idem + choix de la variante/orthographe + relecture native ; article postposé → gabarits adaptés | ~1 j + relecture | oui |
 | **N — autre langue** | 1 fichier messages + 1 grammar (souvent trivial) + 1 templates + 1 colonne dans le sidecar de données | ~0,5 j | oui |
 
-**Total EN complet : ~2,5 j. +0,5 j par langue supplémentaire.**
+**Total EN complet : ~2,5 j. +0,5 j par langue « facile », ~1 j pour le créole.**
 
 Phases 0–1 d'abord (socle propre + UI), on valide, puis 2–3 (le gros), puis 4+.
 
