@@ -258,6 +258,45 @@ describe('generateQuiz', () => {
     }
   })
 
+  it('generates English prompts when locale is "en" (data still FR until phase 3)', () => {
+    const en = generateQuiz(caribbeanRows, schema, { seed: 'test', locale: 'en' })
+    expect(() => parseQuiz(en)).not.toThrow()
+
+    const cloze = en.questions.find((q) => q.type === 'cloze' && q.subject === 'Cuba' && q.tags.includes('capitale'))
+    expect(cloze?.question).toBe('Capitale of Cuba: ___')
+
+    const ordering = en.questions.find((q) => q.type === 'ordering')
+    expect(ordering?.question).toMatch(/^Order these \S+ by .+ \((ascending|descending)\)\.$/)
+
+    const matching = en.questions.find((q) => q.type === 'matching')
+    expect(matching?.question).toMatch(/^Match each \S+ to: /)
+
+    const truthy = en.questions.find((q) => q.type === 'boolean')
+    expect(truthy?.explanation).toMatch(/^(True|False)\. /)
+
+    // aucune formulation française résiduelle dans les énoncés
+    for (const q of en.questions) {
+      expect(q.question).not.toMatch(/Classez|Associez|Estimez|En quelle année|représente-t-il/)
+    }
+  })
+
+  it('is deterministic per (seed, locale)', () => {
+    const a = generateQuiz(caribbeanRows, schema, { seed: 'x', locale: 'en' })
+    const b = generateQuiz(caribbeanRows, schema, { seed: 'x', locale: 'en' })
+    expect(a).toEqual(b)
+    expect(generateQuiz(caribbeanRows, schema, { seed: 'x', locale: 'fr' })).not.toEqual(a)
+  })
+
+  it('keeps question ids and subjects locale-independent (history survives a language switch)', () => {
+    const fr = generateQuiz(caribbeanRows, schema, { seed: 'k', locale: 'fr' })
+    const en = generateQuiz(caribbeanRows, schema, { seed: 'k', locale: 'en' })
+    const byId = (q: { id: string }) => q.id
+    expect(new Set(en.questions.map(byId))).toEqual(new Set(fr.questions.map(byId)))
+    const frCloze = fr.questions.find((q) => q.type === 'cloze' && q.subject === 'Cuba' && q.tags.includes('capitale'))
+    const enCloze = en.questions.find((q) => q.id === frCloze?.id)
+    expect(enCloze?.subject).toBe('Cuba')
+  })
+
   it('picks the first text column as subject when no header hint matches', () => {
     const rows: Row[] = [
       { ref: '1', lieu: 'Paris', pop: '2100000' },

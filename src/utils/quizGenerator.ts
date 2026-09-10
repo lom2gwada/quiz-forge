@@ -1,4 +1,7 @@
 import type { AnswerOption, MatchingItem, OrderingItem, Question, Quiz } from '../types/quiz'
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locale'
+import { getGrammar } from '../i18n/grammar'
+import { fill, getTemplates } from '../i18n/templates'
 import { formatNumber, formatNumericValue } from './number'
 
 // Génère un quiz jouable à partir de lignes tabulaires (un CSV, plus tard une base de données)
@@ -177,19 +180,6 @@ function niceStep(span: number): number {
   return [1, 2, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag
 }
 const roundTo = (v: number, step: number): number => Math.round(v / step) * step
-const capitalize = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s)
-const humanList = (items: string[]): string =>
-  items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`
-
-const startsWithVowel = (s: string): boolean => /^[aeiouyàâäéèêëîïôöûüh]/i.test(s)
-function dePhrase(name: string, article?: string): string {
-  const art = (article ?? '').trim().toLowerCase()
-  if (art === 'les') return `des ${name}`
-  if (art === 'le') return `du ${name}`
-  if (art === 'la') return `de la ${name}`
-  if (art === "l'") return `de l'${name}`
-  return startsWithVowel(name) ? `d'${name}` : `de ${name}`
-}
 
 // --- Génération --------------------------------------------------------
 // Pas de quota : chaque colonne produit toutes les questions possibles.
@@ -210,8 +200,13 @@ const CFG = {
 export function generateQuiz(
   rows: Row[],
   schema: GenSchema,
-  opts: { seed: string; shapes?: Record<string, string>; aliases?: Record<string, string[]> },
+  opts: { seed: string; locale?: Locale; shapes?: Record<string, string>; aliases?: Record<string, string[]> },
 ): Quiz {
+  const locale = opts.locale ?? DEFAULT_LOCALE
+  const grammar = getGrammar(locale)
+  const tpl = getTemplates(locale)
+  const T = (key: keyof typeof tpl, params: Record<string, string | number> = {}): string => fill(tpl[key], params)
+
   const rand = mulberry32(hashStr(opts.seed))
   const shuffle = <T>(arr: T[]): T[] => {
     const a = [...arr]
@@ -243,7 +238,8 @@ export function generateQuiz(
     return groups
   }
   const artOf = (row: Row): string => (articleColumn ? row[articleColumn] ?? '' : '')
-  const de = (row: Row): string => dePhrase(nameOf(row), artOf(row))
+  const de = (row: Row): string => grammar.of(nameOf(row), artOf(row))
+  const nouns = grammar.plural(noun, 2)
 
   // Colonne image du schéma (drapeau…) : sert aux questions « image + valeur ».
   const imageCol = Object.entries(schema.columns).find(([, s]) => s.include && s.isImage && s.unique)?.[0]
@@ -276,7 +272,10 @@ export function generateQuiz(
     const domain = [...new Set(rows.flatMap(atomsOf))]
     const rowsWith = rows.filter((row) => atomsOf(row).length > 0)
     const numRowsWith = spec.kind === 'number' ? rowsWith.filter((row) => Number.isFinite(asNumber(row[col]))) : rowsWith
-    const Label = capitalize(spec.label)
+    const label = spec.label
+    const Label = grammar.cap(label)
+    // Contexte commun aux gabarits d'une ligne : libellé de colonne + « de <sujet> ».
+    const ctx = (row: Row) => ({ label, Label, noun, nouns, subject: nameOf(row), ofSubject: de(row) })
 
     // Distracteurs pour un nombre : autres valeurs réelles de la colonne (années) puis valeurs perturbées.
     const numericDistractors = (target: number, n: number): string[] => {
@@ -302,11 +301,11 @@ export function generateQuiz(
         if (distractors.length < CFG.image.choices - 1) continue
         questions.push({
           id: qid([col, 'image', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.image.difficulty, points: CFG.image.points, tags: [col],
-          question: `Quel ${noun} ce ${spec.label} représente-t-il ?`,
-          topic: `${Label} ${de(row)}`, subject: nameOf(row),
-          explanation: `Ce ${spec.label} est celui ${de(row)}.`,
+          question: T('prompt.image', { noun, label }),
+          topic: T('topic.labelSubject', ctx(row)), subject: nameOf(row),
+          explanation: T('explanation.image', { label, ofSubject: de(row) }),
           imageUrl: row[col],
-          imageAlt: `Un ${spec.label}.`,
+          imageAlt: T('alt.image', { label }),
           content: {
             multiple: false,
             answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
@@ -320,8 +319,8 @@ export function generateQuiz(
       for (const row of rowsWith) {
         const corrects = atomsOf(row)
         if (!corrects.length) continue
-        const about = `${Label} ${de(row)}`
-        const fact = `${about} : ${humanList(corrects)}.`
+        const about = T('topic.labelSubject', ctx(row))
+        const fact = T('explanation.fact', { ...ctx(row), value: grammar.list(corrects) })
 
         if (corrects.length > 1) {
           const pool = domain.filter((v) => !corrects.includes(v))
@@ -330,7 +329,7 @@ export function generateQuiz(
             const options = shuffle([...corrects, ...sample(pool, nDist)])
             questions.push({
               id: qid([col, 'qcm-multi', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmMulti.difficulty, points: CFG.qcmMulti.points, tags: [col],
-              question: `${Label} ${de(row)} ? (plusieurs réponses)`,
+              question: T('prompt.qcmMulti', ctx(row)),
               topic: about, subject: nameOf(row),
               explanation: fact,
               content: {
@@ -345,9 +344,9 @@ export function generateQuiz(
           if (distractors.length >= CFG.qcm.choices - 1) {
             questions.push({
               id: qid([col, 'qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
-              question: `${Label} ${de(row)} ?`,
+              question: T('prompt.qcm', ctx(row)),
               topic: about, subject: nameOf(row),
-              explanation: `${about} : ${correct}.`,
+              explanation: T('explanation.fact', { ...ctx(row), value: correct }),
               content: {
                 multiple: false,
                 answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
@@ -364,9 +363,9 @@ export function generateQuiz(
         if (shown) {
           questions.push({
             id: qid([col, 'boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
-            question: `${Label} ${de(row)} : ${shown}.`,
+            question: T('prompt.boolean', { ...ctx(row), value: shown }),
             topic: about, subject: nameOf(row),
-            explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
+            explanation: T('explanation.boolean', { verdict: showTrue ? tpl['word.true'] : tpl['word.false'], fact }),
             content: { isTrue: showTrue },
           })
         }
@@ -375,7 +374,7 @@ export function generateQuiz(
         const expected = [...new Set(corrects.flatMap((v) => [v, ...(opts.aliases?.[v] ?? [])]))]
         questions.push({
           id: qid([col, 'cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
-          question: `${Label} ${de(row)} : ___`,
+          question: T('prompt.cloze', ctx(row)),
           topic: about, subject: nameOf(row),
           explanation: fact,
           content: { expectedAnswers: expected, caseSensitive: false },
@@ -390,9 +389,9 @@ export function generateQuiz(
         const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.qcmBackward.choices - 1)
         questions.push({
           id: qid([col, 'qcm-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
-          question: `Quel ${noun} a pour ${spec.label} « ${row[col]} » ?`,
-          topic: `${Label} ${de(row)}`, subject: nameOf(row),
-          explanation: `${Label} ${de(row)} : ${row[col]}.`,
+          question: T('prompt.inverse', { noun, label, value: row[col] }),
+          topic: T('topic.labelSubject', ctx(row)), subject: nameOf(row),
+          explanation: T('explanation.fact', { ...ctx(row), value: row[col] }),
           content: {
             multiple: false,
             answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
@@ -417,10 +416,10 @@ export function generateQuiz(
         questions.push({
           id: qid([col, 'numeric', nameOf(row)]), type: 'numeric', category: categoryId, difficulty: CFG.estimate.difficulty, points: CFG.estimate.points, tags: [col],
           question: spec.isYear
-            ? `En quelle année : ${spec.label} ${de(row)} ?`
-            : `Estimez : ${spec.label} ${de(row)}${spec.unit ? ` (en ${spec.unit})` : ''}.`,
-          topic: `${Label} ${de(row)}`, subject: nameOf(row),
-          explanation: `${Label} ${de(row)} : ${formatNumericValue(target, spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}.`,
+            ? T('prompt.numericYear', ctx(row))
+            : T(spec.unit ? 'prompt.estimateUnit' : 'prompt.estimate', { ...ctx(row), unit: spec.unit ?? '' }),
+          topic: T('topic.labelSubject', ctx(row)), subject: nameOf(row),
+          explanation: T('explanation.fact', { ...ctx(row), value: `${formatNumericValue(target, spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''}` }),
           content: { min, max, step, target, tolerance, isYear: spec.isYear, ...(spec.unit && !spec.isYear ? { unit: spec.unit } : {}) },
         })
       }
@@ -438,8 +437,8 @@ export function generateQuiz(
           direction === 'asc' ? asNumber(a[col]) - asNumber(b[col]) : asNumber(b[col]) - asNumber(a[col]))
         questions.push({
           id: qid([col, 'ordering', ...members]), type: 'ordering', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
-          question: `Classez ces ${noun}s par ${spec.label} ${direction === 'asc' ? 'croissante' : 'décroissante'}.`,
-          topic: `${Label} : ${members.join(', ')}`,
+          question: T('prompt.ordering', { nouns, label, direction: grammar.direction(direction) }),
+          topic: T('topic.labelList', { Label, list: members.join(', ') }),
           explanation: sorted
             .map((r) => `${nameOf(r)} (${formatNumericValue(asNumber(r[col]), spec.isYear)}${spec.unit && !spec.isYear ? ` ${spec.unit}` : ''})`)
             .join(' › '),
@@ -457,14 +456,16 @@ export function generateQuiz(
         const target = asNumber(row[col])
         const shown = formatNumericValue(target, spec.isYear)
         const unitSuffix = spec.unit && !spec.isYear ? ` ${spec.unit}` : ''
-        const about = `${Label} ${de(row)}`
-        const fact = `${about} : ${shown}${unitSuffix}.`
+        const about = T('topic.labelSubject', ctx(row))
+        const fact = T('explanation.fact', { ...ctx(row), value: `${shown}${unitSuffix}` })
 
         const dist = numericDistractors(target, CFG.qcm.choices - 1)
         if (dist.length >= CFG.qcm.choices - 1) {
           questions.push({
             id: qid([col, 'num-qcm', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcm.difficulty, points: CFG.qcm.points, tags: [col],
-            question: spec.isYear ? `En quelle année : ${spec.label} ${de(row)} ?` : `${about}${spec.unit ? ` (en ${spec.unit})` : ''} ?`,
+            question: spec.isYear
+              ? T('prompt.numericYear', ctx(row))
+              : T(spec.unit ? 'prompt.numericValueUnit' : 'prompt.qcm', { ...ctx(row), unit: spec.unit ?? '' }),
             topic: about, subject: nameOf(row),
             explanation: fact,
             content: {
@@ -480,9 +481,9 @@ export function generateQuiz(
         if (shownVal) {
           questions.push({
             id: qid([col, 'num-boolean', nameOf(row)]), type: 'boolean', category: categoryId, difficulty: CFG.boolean.difficulty, points: CFG.boolean.points, tags: [col],
-            question: `${about} : ${shownVal}${unitSuffix}.`,
+            question: T('prompt.boolean', { ...ctx(row), value: `${shownVal}${unitSuffix}` }),
             topic: about, subject: nameOf(row),
-            explanation: `${showTrue ? 'Vrai' : 'Faux'}. ${fact}`,
+            explanation: T('explanation.boolean', { verdict: showTrue ? tpl['word.true'] : tpl['word.false'], fact }),
             content: { isTrue: showTrue },
           })
         }
@@ -491,7 +492,7 @@ export function generateQuiz(
         if (spec.isYear) {
           questions.push({
             id: qid([col, 'num-cloze', nameOf(row)]), type: 'cloze', category: categoryId, difficulty: CFG.cloze.difficulty, points: CFG.cloze.points, tags: [col],
-            question: `${about} : ___`,
+            question: T('prompt.cloze', ctx(row)),
             topic: about, subject: nameOf(row),
             explanation: fact,
             content: { expectedAnswers: [String(target), shown], caseSensitive: false },
@@ -508,9 +509,9 @@ export function generateQuiz(
         const distractors = sample(rows.filter((r) => r !== row).map(nameOf), CFG.qcmBackward.choices - 1)
         questions.push({
           id: qid([col, 'num-inverse', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.qcmBackward.difficulty, points: CFG.qcmBackward.points, tags: [col],
-          question: `Quel ${noun} a pour ${spec.label} « ${shown} » ?`,
-          topic: `${Label} ${de(row)}`, subject: nameOf(row),
-          explanation: `${Label} ${de(row)} : ${shown}.`,
+          question: T('prompt.inverse', { noun, label, value: shown }),
+          topic: T('topic.labelSubject', ctx(row)), subject: nameOf(row),
+          explanation: T('explanation.fact', { ...ctx(row), value: shown }),
           content: {
             multiple: false,
             answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
@@ -529,8 +530,8 @@ export function generateQuiz(
         const members = [...group].map(nameOf).sort()
         questions.push({
           id: qid([col, 'num-matching', ...members]), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
-          question: `Associez chaque ${noun} à : ${spec.label}.`,
-          topic: `${Label} : ${members.join(', ')}`,
+          question: T('prompt.matching', { noun, label }),
+          topic: T('topic.labelList', { Label, list: members.join(', ') }),
           explanation: group.map((r) => `${nameOf(r)} → ${valOf(r)}`).join(' · '),
           content: {
             left: group.map<MatchingItem>((r) => ({ id: leftId(r), label: nameOf(r) })),
@@ -552,11 +553,11 @@ export function generateQuiz(
         if (dist.length < CFG.image.choices - 1) continue
         questions.push({
           id: qid([col, 'image-year', nameOf(row)]), type: 'qcm', category: categoryId, difficulty: CFG.order.difficulty, points: CFG.order.points, tags: [col],
-          question: `Ce ${imgLabel} représente un ${noun}. En quelle année : ${spec.label} ?`,
-          topic: `${Label} ${de(row)}`, subject: nameOf(row),
-          explanation: `Ce ${imgLabel} est celui ${de(row)} — ${spec.label} : ${shown}.`,
+          question: T('prompt.imageYear', { imageLabel: imgLabel, noun, label }),
+          topic: T('topic.labelSubject', ctx(row)), subject: nameOf(row),
+          explanation: T('explanation.imageYear', { imageLabel: imgLabel, ofSubject: de(row), label, value: shown }),
           imageUrl: row[imageCol],
-          imageAlt: `Un ${imgLabel}.`,
+          imageAlt: T('alt.image', { label: imgLabel }),
           content: {
             multiple: false,
             answers: shuffle([shown, ...dist]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === shown })),
@@ -573,8 +574,8 @@ export function generateQuiz(
         const members = [...group].map(nameOf).sort()
         questions.push({
           id: qid([col, 'matching', ...members]), type: 'matching', category: categoryId, difficulty: CFG.matching.difficulty, points: CFG.matching.points, tags: [col],
-          question: `Associez chaque ${noun} à : ${spec.label}.`,
-          topic: `${Label} : ${members.join(', ')}`,
+          question: T('prompt.matching', { noun, label }),
+          topic: T('topic.labelList', { Label, list: members.join(', ') }),
           explanation: group.map((r) => `${nameOf(r)} → ${r[col]}`).join(' · '),
           content: {
             left: group.map<MatchingItem>((r) => ({ id: leftId(r), label: nameOf(r) })),
@@ -595,11 +596,11 @@ export function generateQuiz(
       if (distractors.length < CFG.image.choices - 1) continue
       questions.push({
         id: qid(['silhouette', correct]), type: 'qcm', category: 'silhouette', difficulty: CFG.image.difficulty, points: CFG.image.points, tags: ['silhouette'],
-        question: `Quel ${noun} a cette silhouette ?`,
-        topic: `Silhouette ${de(row)}`, subject: correct,
-        explanation: `Cette silhouette est celle ${de(row)}.`,
+        question: T('prompt.silhouette', { noun }),
+        topic: T('topic.silhouette', { ofSubject: de(row) }), subject: correct,
+        explanation: T('explanation.silhouette', { ofSubject: de(row) }),
         shapeSvg: opts.shapes[correct],
-        imageAlt: `Silhouette d’un ${noun}.`,
+        imageAlt: T('alt.silhouette', { noun }),
         content: {
           multiple: false,
           answers: shuffle([correct, ...distractors]).map<AnswerOption>((label, i) => ({ id: 'abcd'[i], label, isCorrect: label === correct })),
@@ -612,8 +613,8 @@ export function generateQuiz(
   // (dans l'ordre du tableau source), plus « Silhouette » si des contours ont été fournis.
   const used = new Set(questions.map((q) => q.category))
   const categories = [
-    ...Object.entries(schema.columns).filter(([col]) => used.has(col)).map(([col, spec]) => ({ id: col, label: capitalize(spec.label) })),
-    ...(used.has('silhouette') ? [{ id: 'silhouette', label: 'Silhouette' }] : []),
+    ...Object.entries(schema.columns).filter(([col]) => used.has(col)).map(([col, spec]) => ({ id: col, label: grammar.cap(spec.label) })),
+    ...(used.has('silhouette') ? [{ id: 'silhouette', label: tpl['word.silhouetteCategory'] }] : []),
   ]
 
   return {
@@ -622,7 +623,7 @@ export function generateQuiz(
       title: schema.title,
       author: 'Quiz Forge',
       createdAt: new Date().toISOString().slice(0, 10),
-      description: `${formatNumber(questions.length)} questions générées à partir de ${formatNumber(rows.length)} ${noun}s (seed « ${opts.seed} »).`,
+      description: T('meta.description', { count: formatNumber(questions.length), rows: formatNumber(rows.length), nouns, seed: opts.seed }),
     },
     categories,
     questions: shuffle(questions),
