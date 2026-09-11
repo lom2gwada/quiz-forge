@@ -11,7 +11,7 @@ import { ProfilePage } from './components/ProfilePage'
 import { AtlasPage } from './components/AtlasPage'
 import { FicheModal } from './components/FicheModal'
 import { QuizContentPage } from './components/QuizContentPage'
-import { QuizPage } from './components/QuizPage'
+import { QuizPage, type GameMode } from './components/QuizPage'
 import { ResultPage } from './components/ResultPage'
 import type { AnswersByQuestion, Difficulty, Quiz, Question } from './types/quiz'
 import type { Profile } from './types/profile'
@@ -46,6 +46,8 @@ type Dataset = {
 }
 
 const questionCounts = [5, 10, 20, 30, 50]
+/** Durées proposées pour le contre-la-montre, en minutes ; 0 = illimité. */
+const timeAttackDurations = [5, 10, 15, 20, 0]
 
 const FALLBACK_QUIZ: Quiz = {
   version: '1.0',
@@ -135,7 +137,14 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
   const [answers, setAnswers] = useState<AnswersByQuestion>({})
   const [fileError, setFileError] = useState('')
   const [questionCount, setQuestionCount] = useState(10)
+  const [gameMode, setGameMode] = useState<GameMode>('classic')
+  const [timeAttackMinutes, setTimeAttackMinutes] = useState(10)
+  // Mode/limite de temps figés au lancement (`startQuiz`/`replayMissed`), indépendants des réglages
+  // du panneau de démarrage qui restent modifiables pendant la partie sans l'affecter.
+  const [activeMode, setActiveMode] = useState<GameMode>('classic')
+  const [activeTimeLimit, setActiveTimeLimit] = useState<number | undefined>(undefined)
   const [sessionQuestions, setSessionQuestions] = useState<Quiz['questions']>([])
+  const [resultQuestions, setResultQuestions] = useState<Quiz['questions']>([])
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [muted, setMuted] = useState(isSoundMuted())
   const theme = profile?.theme ?? 'lagon'
@@ -227,13 +236,22 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
   const startQuiz = () => {
     playClick()
     setAnswers({})
-    setSessionQuestions(pickRandomQuestions(filteredQuestions, questionCount))
+    setActiveMode(gameMode)
+    if (gameMode === 'timeAttack') {
+      setActiveTimeLimit(timeAttackMinutes > 0 ? timeAttackMinutes * 60 : undefined)
+      setSessionQuestions(shuffle(filteredQuestions))
+    } else {
+      setActiveTimeLimit(undefined)
+      setSessionQuestions(pickRandomQuestions(filteredQuestions, questionCount))
+    }
     navigate('quiz')
   }
 
   const replayMissed = (questions: Question[]) => {
     playClick()
     setAnswers({})
+    setActiveMode('classic')
+    setActiveTimeLimit(undefined)
     setSessionQuestions(questions)
     navigate('quiz')
   }
@@ -241,6 +259,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
   const backToStart = () => {
     setAnswers({})
     setSessionQuestions([])
+    setResultQuestions([])
     setElapsedSeconds(0)
     replace('start')
   }
@@ -253,14 +272,36 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
   return <main className="app-shell">
     <ChartBackground />
     <header><div><p className="eyebrow">QUIZ FORGE</p><h1>{quiz.metadata.title}</h1><p>{t('header.by', { author: quiz.metadata.author })}</p>{view === 'start' && quiz.metadata.description && <p className="quiz-description-preview">{quiz.metadata.description}</p>}</div><div className="header-actions"><button type="button" className="secondary" onClick={toggleSound} aria-label={muted ? t('header.soundOn') : t('header.soundOff')}>{muted ? '🔇' : '🔊'}</button>{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('profile')}>{profile ? `${profile.avatar} ${profile.pseudo}` : `👤 ${t('nav.profile')}`}</button>}{view === 'start' && dataset && <button type="button" className="secondary" onClick={() => navigate('atlas')}>🗺️ {t('nav.fiches')}</button>}{view === 'start' && <button type="button" className="secondary" onClick={() => navigate('content')}>⚙️ {t('nav.quiz')}</button>}</div></header>
-    {view === 'start' && <section className="start-page"><FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} /><label className="question-count">{t('start.questionCount')}<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{t(count === 1 ? 'start.count.one' : 'start.count.other', { n: count })}{count > filteredQuestions.length ? t('start.unavailableSuffix') : ''}</option>)}<option value={filteredQuestions.length}>{t('start.allQuestions', { n: formatNumber(filteredQuestions.length) })}</option></select></label><p>{t('start.availability', { n: formatNumber(filteredQuestions.length), picked: Math.min(questionCount, filteredQuestions.length) })}</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>{t('start.play')}</button></div></section>}
-    {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} onFinish={(nextAnswers, duration) => {
-      setAnswers(nextAnswers); setElapsedSeconds(duration); replace('results')
+    {view === 'start' && <section className="start-page">
+      <FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} />
+      <div className="mode-toggle" role="radiogroup" aria-label={t('start.mode.aria')}>
+        <label className={gameMode === 'classic' ? 'mode-chip is-active' : 'mode-chip'}>
+          <input type="radio" name="game-mode" checked={gameMode === 'classic'} onChange={() => { playClick(); setGameMode('classic') }} />
+          🎯 {t('start.mode.classic')}
+        </label>
+        <label className={gameMode === 'timeAttack' ? 'mode-chip is-active' : 'mode-chip'}>
+          <input type="radio" name="game-mode" checked={gameMode === 'timeAttack'} onChange={() => { playClick(); setGameMode('timeAttack') }} />
+          ⏱️ {t('start.mode.timeAttack')}
+        </label>
+      </div>
+      {gameMode === 'classic'
+        ? <>
+            <label className="question-count">{t('start.questionCount')}<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{t(count === 1 ? 'start.count.one' : 'start.count.other', { n: count })}{count > filteredQuestions.length ? t('start.unavailableSuffix') : ''}</option>)}<option value={filteredQuestions.length}>{t('start.allQuestions', { n: formatNumber(filteredQuestions.length) })}</option></select></label>
+            <p>{t('start.availability', { n: formatNumber(filteredQuestions.length), picked: Math.min(questionCount, filteredQuestions.length) })}</p>
+          </>
+        : <>
+            <label className="question-count">{t('start.duration')}<select value={timeAttackMinutes} onChange={(event) => { playClick(); setTimeAttackMinutes(Number(event.target.value)) }}>{timeAttackDurations.map((minutes) => <option key={minutes} value={minutes}>{minutes === 0 ? t('start.duration.infinite') : t(minutes === 1 ? 'start.duration.one' : 'start.duration.other', { n: minutes })}</option>)}</select></label>
+            <p>{t('start.timeAttackHint', { n: formatNumber(filteredQuestions.length) })}</p>
+          </>}
+      <div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>{t('start.play')}</button></div>
+    </section>}
+    {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} mode={activeMode} timeLimitSeconds={activeTimeLimit} onFinish={(nextAnswers, duration, shown) => {
+      setAnswers(nextAnswers); setResultQuestions(shown); setElapsedSeconds(duration); replace('results')
       const historyKey = historyKeyOf(dataset, quiz)
-      saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.categories, duration, historyKey))
-      saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, historyKey))
+      saveQuizResult(buildQuizResultPayload(shown, nextAnswers, quiz.categories, duration, historyKey))
+      saveQuestionResults(buildQuestionResultPayloads(shown, nextAnswers, historyKey))
     }} onCancel={backToStart} />}
-    {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
+    {view === 'results' && <ResultPage questions={resultQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
     {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
     {ficheSubject && dataset && (() => {

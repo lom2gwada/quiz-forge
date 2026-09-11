@@ -25,6 +25,14 @@ export const fr = {
   'start.unavailableSuffix': ' (indisponible)',
   'start.allQuestions': 'Toutes les questions ({n})',
   'start.availability': '{n} questions disponibles · {picked} tirées au hasard.',
+  'start.mode.aria': 'Mode de jeu',
+  'start.mode.classic': 'Classique',
+  'start.mode.timeAttack': 'Contre la montre',
+  'start.duration': 'Durée',
+  'start.duration.one': '{n} minute',
+  'start.duration.other': '{n} minutes',
+  'start.duration.infinite': 'Illimitée',
+  'start.timeAttackHint': '{n} questions disponibles pour tenir la distance.',
   'start.play': 'Démarrer le quiz',
 
   // — filtres —
@@ -56,6 +64,11 @@ export const fr = {
   'quiz.previous': 'Précédente',
   'quiz.next': 'Suivante',
   'quiz.finish': 'Voir ma correction',
+  'quiz.stop': 'Terminer maintenant',
+  'quiz.unlimited': 'illimité',
+  'quiz.answered.one': '{n} question répondue',
+  'quiz.answered.other': '{n} questions répondues',
+  'quiz.poolExhausted': 'Vous avez répondu à toutes les questions disponibles !',
   'quiz.abandonConfirm': 'Abandonner le quiz en cours ? Votre progression sera perdue.',
   'quiz.points': '{n} pts',
 
