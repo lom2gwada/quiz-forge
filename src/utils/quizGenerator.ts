@@ -1,7 +1,7 @@
 import type { AnswerOption, MatchingItem, OrderingItem, Question, Quiz } from '../types/quiz'
 import { DEFAULT_LOCALE, type Locale } from '../i18n/locale'
 import type { DataI18n } from '../i18n/data'
-import { makeDatasetI18n } from '../i18n/dataset'
+import { makeDatasetI18n, splitAnnotation } from '../i18n/dataset'
 import { getGrammar } from '../i18n/grammar'
 import { fill, getTemplates } from '../i18n/templates'
 import { formatNumber, formatNumericValue } from './number'
@@ -292,7 +292,8 @@ export function generateQuiz(
     const sep = spec.multivalueSeparator
     const atomsOf = (row: Row): string[] => {
       if (!hasValue(row[col])) return []
-      return sep ? String(row[col]).split(sep).map((s) => s.trim()).filter(Boolean) : [String(row[col])]
+      const raw = sep ? String(row[col]).split(sep).map((s) => s.trim()).filter(Boolean) : [String(row[col])]
+      return raw.map((v) => splitAnnotation(v).name)
     }
     // `domain` = valeurs distinctes affichables (traduites) ; sert de vivier de distracteurs.
     const domain = [...new Set(rows.flatMap(atomsOf).map(tr))]

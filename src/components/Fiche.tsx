@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
 import type { DataI18n } from '../i18n/data'
 import type { RegionShape } from '../data/region'
-import { makeDatasetI18n } from '../i18n/dataset'
+import { makeDatasetI18n, splitAnnotation } from '../i18n/dataset'
 import { getGrammar } from '../i18n/grammar'
 import { useLocale, useT } from '../i18n'
 import { formatNumericValue } from '../utils/number'
@@ -76,7 +76,11 @@ export function Fiche({ row, schema, shapes, region, regionViewBox, capitalColum
           const raw = (row[col] ?? '').trim()
           if (!raw) return null
           const parts = spec.multivalueSeparator
-            ? raw.split(spec.multivalueSeparator).map((s) => data.value(s.trim())).filter(Boolean)
+            ? raw.split(spec.multivalueSeparator).map((s) => {
+                const { name, annotation } = splitAnnotation(s.trim())
+                const translated = data.value(name)
+                return translated && annotation ? `${translated} ${annotation}` : translated
+              }).filter(Boolean)
             : null
           let value = spec.kind === 'number' ? raw : data.value(raw)
           if (!parts && spec.kind === 'number') {

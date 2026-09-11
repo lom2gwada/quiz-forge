@@ -95,6 +95,37 @@ const values: DataI18n['values'] = {
   'Morne Diablotins': { ht: 'Mòn Dyabloten' },
   'Morne du Vitet': { ht: 'Mòn Vitèt' },
   'Pic Paradis': { ht: 'Pik Paradi' },
+
+  // — régimes politiques —
+  'monarchie constitutionnelle': { en: 'constitutional monarchy', es: 'monarquía constitucional', nl: 'constitutionele monarchie', ht: 'monachi konstitisyonèl' },
+  'monarchie constitutionnelle fédérale': { en: 'federal constitutional monarchy', es: 'monarquía constitucional federal', nl: 'federale constitutionele monarchie', ht: 'monachi konstitisyonèl federal' },
+  'république parlementaire': { en: 'parliamentary republic', es: 'república parlamentaria', nl: 'parlementaire republiek', ht: 'repiblik palmantè' },
+  'république socialiste à parti unique': { en: 'one-party socialist republic', es: 'república socialista de partido único', nl: 'socialistische eenpartijrepubliek', ht: 'repiblik sosyalis yon sèl pati' },
+  'république semi-présidentielle': { en: 'semi-presidential republic', es: 'república semipresidencial', nl: 'semipresidentiële republiek', ht: 'repiblik semi-prezidansyèl' },
+  'république présidentielle': { en: 'presidential republic', es: 'república presidencial', nl: 'presidentiële republiek', ht: 'repiblik prezidansyèl' },
+  'république fédérale présidentielle': { en: 'federal presidential republic', es: 'república federal presidencial', nl: 'federale presidentiële republiek', ht: 'repiblik federal prezidansyèl' },
+  "département et région d'outre-mer français": { en: 'French overseas department and region', es: 'departamento y región de ultramar francés', nl: 'Frans overzees departement en regio', ht: 'depatman ak rejyon lòtbò lanmè fransè' },
+  'collectivité territoriale unique française': { en: 'French single territorial authority', es: 'colectividad territorial única francesa', nl: 'Franse territoriale eenheidsgemeenschap', ht: 'kolektivite teritoryal inik fransè' },
+  "collectivité d'outre-mer française": { en: 'French overseas collectivity', es: 'colectividad de ultramar francesa', nl: 'Franse overzeese gemeenschap', ht: 'kolektivite lòtbò lanmè fransè' },
+  'pays constitutif du royaume des Pays-Bas': { en: 'constituent country of the Kingdom of the Netherlands', es: 'país constitutivo del Reino de los Países Bajos', nl: 'land binnen het Koninkrijk der Nederlanden', ht: 'peyi ki fè pati Wayòm Peyi Ba yo' },
+  "territoire non incorporé des États-Unis": { en: 'unincorporated territory of the United States', es: 'territorio no incorporado de los Estados Unidos', nl: 'niet-geïncorporeerd gebied van de Verenigde Staten', ht: 'teritwa Etazini ki pa enkòpore' },
+  "territoire britannique d'outre-mer": { en: 'British Overseas Territory', es: 'territorio británico de ultramar', nl: 'Brits overzees gebied', ht: 'teritwa britanik lòtbò lanmè' },
+
+  // — organisations internationales (chaque atome d'une cellule multivaleur) —
+  ONU: { en: 'UN', nl: 'VN' },
+  OEA: { en: 'OAS', nl: 'OAS' },
+  UE: { en: 'EU', nl: 'EU' },
+
+  // — religions (chaque atome, hors pourcentage entre parenthèses — jamais traduit, cf. `splitAnnotation`) —
+  protestantisme: { en: 'Protestantism', es: 'protestantismo', nl: 'protestantisme', ht: 'Pwotestantis' },
+  catholicisme: { en: 'Catholicism', es: 'catolicismo', nl: 'katholicisme', ht: 'Katolisis' },
+  'protestantisme évangélique': { en: 'evangelical Protestantism', es: 'protestantismo evangélico', nl: 'evangelisch protestantisme', ht: 'Pwotestantis Evanjelik' },
+  'sans religion ou autre': { en: 'no religion or other', es: 'sin religión u otra', nl: 'geen religie of anders', ht: 'san relijyon oswa lòt' },
+  rastafari: { en: 'Rastafari', ht: 'Rastafari' },
+  vaudou: { en: 'Vodou', es: 'vudú', nl: 'voodoo', ht: 'Vodou' },
+  hindouisme: { en: 'Hinduism', es: 'hinduismo', nl: 'hindoeïsme', ht: 'Endouyis' },
+  islam: { en: 'Islam', ht: 'Islam' },
+  santería: { en: 'Santería', ht: 'Senteria' },
 }
 
 const articles: DataI18n['articles'] = {
@@ -122,6 +153,9 @@ const columnLabels: DataI18n['columnLabels'] = {
   president: { fr: 'président', en: 'president', es: 'presidente', nl: 'president', ht: 'prezidan' },
   'premier ministre': { en: 'prime minister', es: 'primer ministro', nl: 'premier', ht: 'premye minis' },
   independance: { fr: 'indépendance', en: 'independence', es: 'independencia', nl: 'onafhankelijkheid', ht: 'endepandans' },
+  'regime politique': { fr: 'régime politique', en: 'political system', es: 'régimen político', nl: 'politiek regime', ht: 'rejim politik' },
+  organisations: { en: 'international organisations', es: 'organizaciones internacionales', nl: 'internationale organisaties', ht: 'òganizasyon entènasyonal' },
+  religions: { en: 'religions', es: 'religiones', nl: 'religies', ht: 'relijyon' },
   drapeau: { en: 'flag', es: 'bandera', nl: 'vlag', ht: 'drapo' },
 }
 

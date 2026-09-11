@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { caribbeanI18n } from '../data/caribbean.i18n'
-import { makeDatasetI18n } from './dataset'
+import { makeDatasetI18n, splitAnnotation } from './dataset'
 
 describe('makeDatasetI18n', () => {
   it('falls back to the raw value when no sidecar / no locale entry', () => {
@@ -33,5 +33,23 @@ describe('makeDatasetI18n', () => {
     // override du sidecar
     expect(en.ofSubject('Bahamas', 'les')).toBe('of the Bahamas')
     expect(en.subject('Bahamas', 'les')).toBe('the Bahamas')
+  })
+})
+
+describe('splitAnnotation', () => {
+  it('extracts a trailing parenthetical annotation', () => {
+    expect(splitAnnotation('christianisme (85 %)')).toEqual({ name: 'christianisme', annotation: '(85 %)' })
+  })
+
+  it('leaves a value with no annotation untouched', () => {
+    expect(splitAnnotation('christianisme')).toEqual({ name: 'christianisme', annotation: '' })
+  })
+
+  it('strips any trailing parenthetical, not just a percentage', () => {
+    expect(splitAnnotation('Saint-Georges (île)')).toEqual({ name: 'Saint-Georges', annotation: '(île)' })
+  })
+
+  it('only strips a parenthetical at the very end, not one that starts the string', () => {
+    expect(splitAnnotation('(entre parenthèses) pas à la fin')).toEqual({ name: '(entre parenthèses) pas à la fin', annotation: '' })
   })
 })

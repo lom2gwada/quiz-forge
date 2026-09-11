@@ -2,6 +2,15 @@ import { getGrammar } from './grammar'
 import { DEFAULT_LOCALE, type Locale } from './locale'
 import { type DataI18n, trValue } from './data'
 
+/** Un atome multivaleur peut porter une annotation informative entre parenthèses en fin de
+ * cellule (ex. « christianisme (85 %) ») : jamais traduite ni utilisée par le générateur (ça
+ * ferait des distracteurs quasi-identiques d'un territoire à l'autre, ou une « valeur unique »
+ * artificielle) — réservée à l'affichage en fiche, ré-accolée après traduction du nom. */
+export function splitAnnotation(raw: string): { name: string; annotation: string } {
+  const match = raw.match(/^(.*?)\s*(\([^()]*\))$/)
+  return match ? { name: match[1], annotation: match[2] } : { name: raw, annotation: '' }
+}
+
 /** Traducteur d'un jeu de données pour une locale donnée. Même logique que celle câblée dans
  * `generateQuiz` — partagée avec les fiches pour que le quiz et les fiches traduisent les mêmes
  * données de la même façon. Repli systématique sur le français. */

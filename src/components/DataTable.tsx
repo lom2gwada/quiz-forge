@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
 import type { DataI18n } from '../i18n/data'
-import { makeDatasetI18n } from '../i18n/dataset'
+import { makeDatasetI18n, splitAnnotation } from '../i18n/dataset'
 import { getGrammar } from '../i18n/grammar'
 import { useLocale, useT } from '../i18n'
 import { formatNumber } from '../utils/number'
@@ -38,7 +38,11 @@ export function DataTable({ rows, schema, i18n }: DataTableProps) {
     if (separated.has(header) && Number.isFinite(Number(raw))) return formatNumber(Number(raw))
     if (schema.columns[header]?.kind === 'number') return trimmed
     const sep = schema.columns[header]?.multivalueSeparator
-    if (sep) return trimmed.split(sep).map((part) => data.value(part.trim())).filter(Boolean).join(', ')
+    if (sep) return trimmed.split(sep).map((part) => {
+      const { name, annotation } = splitAnnotation(part.trim())
+      const translated = data.value(name)
+      return translated && annotation ? `${translated} ${annotation}` : translated
+    }).filter(Boolean).join(', ')
     return data.value(trimmed)
   }
 

@@ -363,9 +363,10 @@ describe('generateQuiz', () => {
     expect(label(fixed, 'pib_mds_usd')).toBe('PIB')
     expect(label(fixed, 'densite_hab_km2')).toBe('Densité')
     expect(label(fixed, 'independance')).toBe('Indépendance')
+    expect(label(fixed, 'regime_politique')).toBe('Régime politique')
     // rien d'autre ne bouge : mêmes questions, mêmes ids, même ordre
     expect(fixed.questions.map((q) => q.id)).toEqual(plain.questions.map((q) => q.id))
-    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident/i
+    const corrected = /pib|densit|ind[ée]pendance|t[ée]l[ée]phonique|pr[ée]sident|r[ée]gime/i
     const untouched = (quiz: typeof plain) => quiz.questions.map((q) => q.question).filter((q) => !corrected.test(q))
     expect(untouched(fixed)).toEqual(untouched(plain))
   })
