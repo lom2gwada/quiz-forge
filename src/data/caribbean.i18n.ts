@@ -107,6 +107,8 @@ const articles: DataI18n['articles'] = {
 // on les corrige ici pour `fr` aussi (accents, acronymes).
 const columnLabels: DataI18n['columnLabels'] = {
   capitale: { en: 'capital', es: 'capital', nl: 'hoofdstad', ht: 'kapital' },
+  latitude: { en: 'latitude', es: 'latitud', nl: 'breedtegraad', ht: 'latitid' },
+  longitude: { en: 'longitude', es: 'longitud', nl: 'lengtegraad', ht: 'lonjitid' },
   population: { en: 'population', es: 'población', nl: 'bevolking', ht: 'popilasyon' },
   superficie: { en: 'area', es: 'superficie', nl: 'oppervlakte', ht: 'sipèfisi' },
   densite: { fr: 'densité', en: 'density', es: 'densidad', nl: 'dichtheid', ht: 'dansite' },

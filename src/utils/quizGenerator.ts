@@ -112,6 +112,7 @@ const UNIT_SUFFIXES: Array<[RegExp, string]> = [
   [/_hab_km2$/i, 'hab/km²'],
   [/_mds_usd$/i, 'Mds $'],
   [/_km2$/i, 'km²'],
+  [/_deg$/i, '°'],
   [/_m$/i, 'm'],
   [/_pct$/i, '%'],
   [/_pourcent$/i, '%'],
@@ -176,8 +177,10 @@ export function inferSchema(rows: Row[], opts?: { subjectColumn?: string }): Gen
 }
 
 // --- Helpers de génération ----------------------------------------------
+// `Math.abs` : `span` peut être négatif (ex. une longitude, target ≈ -77) — la magnitude du pas
+// ne dépend que de l'ampleur de la variation, pas de son signe.
 function niceStep(span: number): number {
-  const raw = span / 40
+  const raw = Math.abs(span) / 40
   const mag = 10 ** Math.floor(Math.log10(raw || 1))
   return [1, 2, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag
 }
@@ -309,10 +312,16 @@ export function generateQuiz(
       }
       const factors = spec.isYear ? [-18, -11, -6, 5, 9, 15, 24] : [0.4, 0.6, 0.75, 1.3, 1.6, 2.1]
       const step = spec.isYear ? 1 : niceStep(target * 2)
+      // Colonne à valeurs négatives (ex. longitude, target < 0) : on force les perturbations à
+      // rester négatives (symétrique du floor `Math.max(step, …)` utilisé pour un domaine positif).
       for (const f of shuffle(factors)) {
         if (out.size >= n) break
-        const v = spec.isYear ? target + f : Math.max(step, roundTo(target * f, step))
-        if (v !== target && v > 0 && (!spec.isYear || v <= 2024)) out.add(v)
+        const v = spec.isYear
+          ? target + f
+          : target >= 0
+            ? Math.max(step, roundTo(target * f, step))
+            : Math.min(-step, roundTo(target * f, step))
+        if (v !== target && (target >= 0 ? v > 0 : v < 0) && (!spec.isYear || v <= 2024)) out.add(v)
       }
       return shuffle([...out]).slice(0, n).map((v) => formatNumericValue(v, spec.isYear))
     }
@@ -434,8 +443,15 @@ export function generateQuiz(
           min = target - 40; max = Math.min(2000, target + 40); step = 1; tolerance = 4
         } else {
           step = niceStep(target * 2)
-          min = Math.max(0, roundTo(target * 0.3, step))
-          max = roundTo(target * 2.2, step)
+          // Domaine négatif (ex. longitude) : mêmes proportions, en miroir — la borne côté zéro
+          // est plafonnée à 0 (au lieu d'être plancherée à 0 pour un domaine positif).
+          if (target >= 0) {
+            min = Math.max(0, roundTo(target * 0.3, step))
+            max = roundTo(target * 2.2, step)
+          } else {
+            min = roundTo(target * 2.2, step)
+            max = Math.min(0, roundTo(target * 0.3, step))
+          }
           tolerance = Math.max(step, roundTo(target * 0.12, step))
         }
         questions.push({

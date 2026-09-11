@@ -201,6 +201,31 @@ describe('generateQuiz', () => {
     }
   })
 
+  it('handles a negative-valued numeric column (longitude) without NaN ranges or missing distractors', () => {
+    const byCol = (c: string) => quiz.questions.filter((q) => q.tags.includes(c))
+    const lon = byCol('longitude_deg')
+    expect(lon.length).toBeGreaterThan(0)
+    expect(new Set(lon.map((q) => q.type))).toEqual(new Set(['numeric', 'ordering', 'qcm', 'boolean', 'matching']))
+    for (const q of lon) {
+      if (q.type === 'numeric') {
+        const { min, max, step, target, tolerance } = q.content
+        for (const n of [min, max, step, target, tolerance]) expect(Number.isFinite(n), q.question).toBe(true)
+        expect(target).toBeLessThan(0) // toutes les longitudes du jeu de données sont à l'ouest
+        expect(min).toBeLessThanOrEqual(target)
+        expect(target).toBeLessThanOrEqual(max)
+        expect(tolerance).toBeGreaterThan(0)
+      }
+      if (q.type === 'qcm') {
+        expect(q.content.answers.filter((a) => a.isCorrect)).toHaveLength(1)
+        expect(q.content.answers.length).toBeGreaterThanOrEqual(3)
+        expect(new Set(q.content.answers.map((a) => a.label)).size).toBe(q.content.answers.length)
+      }
+    }
+    // libellé + unité « ° » dérivés de l'en-tête `longitude_deg`
+    expect(quiz.categories.find((c) => c.id === 'longitude_deg')?.label).toBe('Longitude')
+    expect(lon.some((q) => q.question.includes('°'))).toBe(true)
+  })
+
   it('adds declared aliases to the accepted answers of a cloze', () => {
     const withAlias = generateQuiz(caribbeanRows, schema, {
       seed: 'test',
