@@ -111,7 +111,6 @@ export const nl: Record<MessageKey, string> = {
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Vragen opnieuw genereren',
   'content.importCsv': 'Een CSV importeren',
-  'content.importJson': 'Een quiz (JSON) importeren',
   'content.distribution': 'Verdeling van de vragen',
   'content.categoriesChart': 'Categorieën — {n} vragen',
   'content.typesChart': 'Types — {n} vragen',

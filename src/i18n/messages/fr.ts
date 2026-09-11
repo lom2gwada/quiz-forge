@@ -121,7 +121,6 @@ export const fr = {
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Régénérer les questions',
   'content.importCsv': 'Importer un CSV',
-  'content.importJson': 'Importer un quiz (JSON)',
   'content.distribution': 'Répartition des questions',
   'content.categoriesChart': 'Catégories — {n} questions',
   'content.typesChart': 'Types — {n} questions',

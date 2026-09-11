@@ -112,7 +112,6 @@ export const ht: Record<MessageKey, string> = {
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Rejenere kesyon yo',
   'content.importCsv': 'Enpòte yon CSV',
-  'content.importJson': 'Enpòte yon quiz (JSON)',
   'content.distribution': 'Repartisyon kesyon yo',
   'content.categoriesChart': 'Kategori — {n} kesyon',
   'content.typesChart': 'Tip — {n} kesyon',

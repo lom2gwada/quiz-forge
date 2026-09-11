@@ -16,7 +16,6 @@ interface QuizContentPageProps {
   quiz: Quiz
   dataset: { rows: Row[]; schema: GenSchema; i18n?: DataI18n } | null
   onBack: () => void
-  onJsonChange: (file?: File) => void
   onCsvChange: (file?: File) => void
   onGenerate: (schema: GenSchema, seed: string) => void
   onRegenerate: () => void
@@ -24,7 +23,7 @@ interface QuizContentPageProps {
   genError: string
 }
 
-export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChange, onGenerate, onRegenerate, fileError, genError }: QuizContentPageProps) {
+export function QuizContentPage({ quiz, dataset, onBack, onCsvChange, onGenerate, onRegenerate, fileError, genError }: QuizContentPageProps) {
   const t = useT()
   const total = formatNumber(quiz.questions.length)
 
@@ -61,7 +60,6 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
     {dataset && <button type="button" className="secondary regenerate-btn" onClick={onRegenerate}>{t('content.regenerate')}</button>}
     <div className="quiz-import">
       <label className="file-input">{t('content.importCsv')}<input type="file" accept="text/csv,.csv,.tsv,text/plain" onChange={(event) => onCsvChange(event.target.files?.[0])} /></label>
-      <label className="file-input">{t('content.importJson')}<input type="file" accept="application/json,.json" onChange={(event) => onJsonChange(event.target.files?.[0])} /></label>
       {fileError && <p className="alert" role="alert">{fileError}</p>}
     </div>
     {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} i18n={dataset.i18n} onGenerate={onGenerate} error={genError} />}

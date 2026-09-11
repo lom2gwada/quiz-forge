@@ -193,17 +193,6 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
     if (dataset && genRef.current.locale !== locale) applyGenerated(dataset, genRef.current.seed)
   }, [locale, dataset]) // applyGenerated volontairement hors deps : ne dépend que de (locale, dataset)
 
-  const loadJson = async (file?: File) => {
-    if (!file) return
-    try {
-      applyQuiz(parseQuiz(JSON.parse(await file.text())))
-      setDataset(null) // un quiz JSON importé n'a pas de données source à afficher/éditer
-      setFileError('')
-    } catch (error) {
-      setFileError(error instanceof Error ? error.message : 'Fichier JSON invalide.')
-    }
-  }
-
   const loadCsv = async (file?: File) => {
     if (!file) return
     try {
@@ -272,7 +261,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
       saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, historyKey))
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
-    {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
+    {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
     {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} capitalColumn={dataset.capitalColumn} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
     {ficheSubject && dataset && (() => {
       const row = dataset.rows.find((r) => r[dataset.schema.subjectColumn] === ficheSubject)

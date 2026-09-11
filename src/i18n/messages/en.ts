@@ -110,7 +110,6 @@ export const en: Record<MessageKey, string> = {
   'content.title': 'Quiz',
   'content.regenerate': '🎲 Regenerate the questions',
   'content.importCsv': 'Import a CSV',
-  'content.importJson': 'Import a quiz (JSON)',
   'content.distribution': 'Question breakdown',
   'content.categoriesChart': 'Categories — {n} questions',
   'content.typesChart': 'Types — {n} questions',
