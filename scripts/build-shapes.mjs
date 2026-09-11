@@ -3,49 +3,15 @@
 // à l échelle indépendamment dans une viewBox 100x100, projection équirectangulaire (parallèle = latitude
 // du centre). Usage : node scripts/build-shapes.mjs
 import fs from 'node:fs'
+import { MATCH, NE_SOURCE } from './caribbean-territories.mjs'
 
-const SRC = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_map_subunits.geojson'
+const SRC = NE_SOURCE
 const OUT = new URL('../src/data/shapes.ts', import.meta.url)
 const VIEW = 100
 const PAD = 8
 const RDP_EPS = 0.35          // en unités de viewBox
 const MIN_RING_FRAC = 0.008   // garde les anneaux ≥ 0.8 % de l'aire de l'anneau principal
 const MAX_RINGS = 30
-
-// nom CSV (français) -> prédicat sur properties Natural Earth
-const MATCH = {
-  'Cuba': p => p.ADMIN === 'Cuba',
-  'Haïti': p => p.ADMIN === 'Haiti',
-  'République dominicaine': p => p.ADMIN === 'Dominican Republic',
-  'Jamaïque': p => p.ADMIN === 'Jamaica',
-  'Bahamas': p => p.ADMIN === 'The Bahamas',
-  'Trinité-et-Tobago': p => p.ADMIN === 'Trinidad and Tobago',
-  'Îles Caïmans': p => p.ADMIN === 'Cayman Islands',
-  'Porto Rico': p => p.ADMIN === 'Puerto Rico',
-  'Guadeloupe': p => p.NAME === 'Guadeloupe',
-  'Martinique': p => p.NAME === 'Martinique',
-  'Saint-Martin': p => p.ADMIN === 'Saint Martin',
-  'Saint-Barthélemy': p => p.ADMIN === 'Saint Barthelemy',
-  'Sint Maarten': p => p.ADMIN === 'Sint Maarten',
-  'Aruba': p => p.ADMIN === 'Aruba',
-  'Curaçao': p => p.ADMIN === 'Curaçao',
-  'Antigua-et-Barbuda': p => p.ADMIN === 'Antigua and Barbuda',
-  'Dominique': p => p.ADMIN === 'Dominica',
-  'Grenade': p => p.ADMIN === 'Grenada',
-  'Saint-Christophe-et-Niévès': p => p.ADMIN === 'Saint Kitts and Nevis',
-  'Sainte-Lucie': p => p.ADMIN === 'Saint Lucia',
-  'Saint-Vincent-et-les-Grenadines': p => p.ADMIN === 'Saint Vincent and the Grenadines',
-  'Barbade': p => p.ADMIN === 'Barbados',
-  'Belize': p => p.ADMIN === 'Belize',
-  'Guatemala': p => p.ADMIN === 'Guatemala',
-  'Honduras': p => p.ADMIN === 'Honduras',
-  'Nicaragua': p => p.ADMIN === 'Nicaragua',
-  'Costa Rica': p => p.ADMIN === 'Costa Rica',
-  'Panama': p => p.ADMIN === 'Panama',
-  'Colombie': p => p.ADMIN === 'Colombia',
-  'Venezuela': p => p.ADMIN === 'Venezuela',
-  'Mexique': p => p.ADMIN === 'Mexico',
-}
 
 const ringArea = r => {
   let a = 0

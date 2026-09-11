@@ -156,6 +156,7 @@ export const fr = {
   'atlas.empty': 'Aucune fiche pour « {query} ».',
   'fiche.silhouetteLabel': 'Silhouette : {name} (survoler pour agrandir)',
   'fiche.flagLabel': 'Image de {name} — survoler pour agrandir, cliquer pour ouvrir',
+  'fiche.regionLabel': 'Position dans les Caraïbes : {name} (survoler pour agrandir)',
   'fiche.modalLabel': 'Fiche : {name}',
   'fiche.close': 'Fermer',
 

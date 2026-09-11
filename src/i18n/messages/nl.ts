@@ -144,6 +144,7 @@ export const nl: Record<MessageKey, string> = {
   'atlas.empty': 'Geen kaart voor "{query}".',
   'fiche.silhouetteLabel': 'Omtrek: {name} (beweeg de muis om te vergroten)',
   'fiche.flagLabel': 'Afbeelding van {name} — beweeg de muis om te vergroten, klik om te openen',
+  'fiche.regionLabel': 'Ligging in het Caribisch gebied: {name} (beweeg de muis om te vergroten)',
   'fiche.modalLabel': 'Kaart: {name}',
   'fiche.close': 'Sluiten',
 

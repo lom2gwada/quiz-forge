@@ -3,6 +3,7 @@ import caribbeanCsv from './data/caribbean.csv?raw'
 import { shapes as caribbeanShapes } from './data/shapes'
 import { aliases as caribbeanAliases } from './data/aliases'
 import { caribbeanI18n } from './data/caribbean.i18n'
+import { region as caribbeanRegion, REGION_VIEWBOX, type RegionShape } from './data/region'
 import { ChartBackground } from './components/ChartBackground'
 import { FilterPanel } from './components/FilterPanel'
 import { HistoryPage } from './components/HistoryPage'
@@ -33,6 +34,8 @@ type Dataset = {
   schema: GenSchema
   shapes?: Record<string, string>
   aliases?: Record<string, string[]>
+  region?: Record<string, RegionShape>
+  regionViewBox?: string
   i18n?: DataI18n
   /** Nom d'un élément par locale (le CSV n'a pas cette info) ; défaut = `schema.noun`. */
   nouns?: Partial<Record<Locale, string>>
@@ -81,6 +84,8 @@ const initialDataset: Dataset | null = bundledRows.length
       schema: { ...inferSchema(bundledRows), noun: 'territoire', title: 'Autour de la mer des Caraïbes' },
       shapes: caribbeanShapes,
       aliases: caribbeanAliases,
+      region: caribbeanRegion,
+      regionViewBox: REGION_VIEWBOX,
       i18n: caribbeanI18n,
       nouns: { fr: 'territoire', en: 'territory', es: 'territorio', nl: 'gebied', ht: 'teritwa' },
       titles: {
@@ -265,10 +270,10 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
-    {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
+    {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
     {ficheSubject && dataset && (() => {
       const row = dataset.rows.find((r) => r[dataset.schema.subjectColumn] === ficheSubject)
-      return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
+      return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} region={dataset.region} regionViewBox={dataset.regionViewBox} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
     })()}
     {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} historyKey={historyKeyOf(dataset, quiz)} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}

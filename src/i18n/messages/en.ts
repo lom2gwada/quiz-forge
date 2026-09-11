@@ -143,6 +143,7 @@ export const en: Record<MessageKey, string> = {
   'atlas.empty': 'No card for "{query}".',
   'fiche.silhouetteLabel': 'Outline: {name} (hover to enlarge)',
   'fiche.flagLabel': 'Image of {name} — hover to enlarge, click to open',
+  'fiche.regionLabel': 'Position in the Caribbean: {name} (hover to enlarge)',
   'fiche.modalLabel': 'Card: {name}',
   'fiche.close': 'Close',
 

@@ -145,6 +145,7 @@ export const ht: Record<MessageKey, string> = {
   'atlas.empty': 'Pa gen fich pou "{query}".',
   'fiche.silhouetteLabel': 'Kontou: {name} (pase sourit la pou agrandi)',
   'fiche.flagLabel': 'Imaj {name} — pase sourit la pou agrandi, klike pou ouvri',
+  'fiche.regionLabel': 'Pozisyon nan Karayib la: {name} (pase sourit la pou agrandi)',
   'fiche.modalLabel': 'Fich: {name}',
   'fiche.close': 'Fèmen',
 

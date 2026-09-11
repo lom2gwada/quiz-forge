@@ -14,6 +14,7 @@ L'idée : au lieu d'écrire chaque question à la main, on charge un CSV (une li
 - Historique des parties et profil (pseudo / avatar / thème) stockés localement (`localStorage`), sans backend
 - Jeu de données embarqué : [`src/data/caribbean.csv`](src/data/caribbean.csv) (29 pays et territoires du bassin caribéen), généré à l'ouverture
 - Questions visuelles : drapeaux (URLs Wikimedia) et **silhouettes** de territoires ([`src/data/shapes.ts`](src/data/shapes.ts), contours Natural Earth générés par [`scripts/build-shapes.mjs`](scripts/build-shapes.mjs))
+- Sur chaque fiche, petite **carte de positionnement** dans les Caraïbes ([`src/data/region.ts`](src/data/region.ts), même source Natural Earth mais projection partagée entre tous les territoires, générée par [`scripts/build-region.mjs`](scripts/build-region.mjs)) ; les micro-territoires trop petits pour rester lisibles n'affichent qu'un point d'accent
 
 ## Prérequis
 

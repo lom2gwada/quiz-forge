@@ -144,6 +144,7 @@ export const es: Record<MessageKey, string> = {
   'atlas.empty': 'Ninguna ficha para «{query}».',
   'fiche.silhouetteLabel': 'Silueta: {name} (pasa el ratón para ampliar)',
   'fiche.flagLabel': 'Imagen de {name} — pasa el ratón para ampliar, haz clic para abrir',
+  'fiche.regionLabel': 'Posición en el Caribe: {name} (pasa el ratón para ampliar)',
   'fiche.modalLabel': 'Ficha: {name}',
   'fiche.close': 'Cerrar',
 

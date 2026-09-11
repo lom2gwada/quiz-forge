@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { GenSchema, Row } from '../utils/quizGenerator'
 import type { DataI18n } from '../i18n/data'
+import type { RegionShape } from '../data/region'
 import { makeDatasetI18n } from '../i18n/dataset'
 import { useLocale, useT } from '../i18n'
 import { Fiche } from './Fiche'
@@ -10,13 +11,15 @@ interface FicheModalProps {
   row: Row
   schema: GenSchema
   shapes?: Record<string, string>
+  region?: Record<string, RegionShape>
+  regionViewBox?: string
   i18n?: DataI18n
   onClose: () => void
 }
 
 /** Affiche une fiche dans une modale centrée (portail sur `<body>`) : Échap / clic hors panneau
  * / bouton × pour fermer. */
-export function FicheModal({ row, schema, shapes, i18n, onClose }: FicheModalProps) {
+export function FicheModal({ row, schema, shapes, region, regionViewBox, i18n, onClose }: FicheModalProps) {
   const t = useT()
   const locale = useLocale()
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -44,7 +47,7 @@ export function FicheModal({ row, schema, shapes, i18n, onClose }: FicheModalPro
         onClick={(event) => event.stopPropagation()}
       >
         <button ref={closeRef} type="button" className="modal-close" onClick={onClose} aria-label={t('fiche.close')}>×</button>
-        <Fiche row={row} schema={schema} shapes={shapes} i18n={i18n} />
+        <Fiche row={row} schema={schema} shapes={shapes} region={region} regionViewBox={regionViewBox} i18n={i18n} />
       </div>
     </div>,
     document.body,

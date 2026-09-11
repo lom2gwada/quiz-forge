@@ -140,6 +140,7 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .hover-preview-pop img { max-height: 150px; max-width: 224px; width: auto; height: auto; display: block; background: #fff; border-radius: 2px; }
 .hover-preview-pop .question-shape { margin: 0; color: var(--ink); }
 .hover-preview-pop .question-shape svg { height: 150px; width: auto; margin: 0; filter: none; }
+.hover-preview-pop .region-map { width: 220px; height: 151px; color: var(--ink); }
 /* Atlas — une fiche par entité. */
 .atlas-page { display: grid; gap: 1.2rem; }
 .atlas-controls { display: flex; flex-wrap: wrap; gap: .7rem; align-items: end; }
@@ -160,6 +161,14 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .fiche-shape.question-shape { margin: 0; }
 .fiche-shape.question-shape svg { height: 44px; width: auto; margin: 0; filter: none; }
 .fiche-flag { height: 26px; width: auto; display: block; border: 1px solid var(--border); border-radius: 3px; background: #fff; }
+.fiche-region-wrap { color: var(--accent); }
+.region-map { position: relative; display: block; }
+.region-map svg { display: block; width: 100%; height: 100%; }
+.region-land path { fill: var(--surface-alt); }
+.region-land .region-hl { fill: currentColor; }
+.region-dot { position: absolute; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 1px var(--surface-solid); }
+.region-dot-solo { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; }
+.fiche-region { width: 58px; height: 40px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface-solid); }
 .fiche-facts { margin: 0; display: grid; gap: .45rem; }
 .fiche-fact { display: grid; grid-template-columns: 42% 1fr; gap: .1rem .6rem; align-items: baseline; }
 .fiche-fact dt { margin: 0; color: var(--text-muted); font-size: .78rem; }
@@ -175,6 +184,7 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .fiche-modal .fiche-head h3 { font-size: 1.25rem; }
 .fiche-modal .fiche-shape.question-shape svg { height: 58px; }
 .fiche-modal .fiche-flag { height: 38px; }
+.fiche-modal .fiche-region { width: 78px; height: 54px; }
 .fiche-modal .fiche-fact { font-size: .9rem; }
 .pie-chart { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; display: grid; justify-items: center; gap: .8rem; }
 .pie-chart svg { width: 140px; height: 140px; }
