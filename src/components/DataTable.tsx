@@ -1,17 +1,25 @@
+import { useMemo } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
-import { useT } from '../i18n'
+import type { DataI18n } from '../i18n/data'
+import { makeDatasetI18n } from '../i18n/dataset'
+import { getGrammar } from '../i18n/grammar'
+import { useLocale, useT } from '../i18n'
 import { formatNumber } from '../utils/number'
 import { CellImagePreview } from './CellImagePreview'
 
 interface DataTableProps {
   rows: Row[]
   schema: GenSchema
+  i18n?: DataI18n
 }
 
-// Affiche les données source du quiz (le CSV). Lecture seule pour l'instant ;
-// l'édition par l'admin (cellules éditables + remontée des changements) viendra ici.
-export function DataTable({ rows, schema }: DataTableProps) {
+// Affiche les données source du quiz (le CSV) traduites : en-têtes → libellés lisibles,
+// valeurs texte via le sidecar. Lecture seule ; l'édition par l'admin viendra ici.
+export function DataTable({ rows, schema, i18n }: DataTableProps) {
   const t = useT()
+  const locale = useLocale()
+  const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
+  const cap = getGrammar(locale).cap
   const headers = rows.length ? Object.keys(rows[0]) : []
   if (!headers.length) return null
   const subject = schema.subjectColumn
@@ -20,10 +28,18 @@ export function DataTable({ rows, schema }: DataTableProps) {
   const separated = new Set(
     headers.filter((h) => schema.columns[h]?.kind === 'number' && !schema.columns[h]?.isYear),
   )
+  const headerLabel = (header: string): string => {
+    const label = schema.columns[header]?.label
+    return label ? cap(data.label(label)) : header
+  }
   const display = (header: string, raw: string): string => {
-    if (!raw.trim()) return '—'
+    const trimmed = raw.trim()
+    if (!trimmed) return '—'
     if (separated.has(header) && Number.isFinite(Number(raw))) return formatNumber(Number(raw))
-    return raw.trim()
+    if (schema.columns[header]?.kind === 'number') return trimmed
+    const sep = schema.columns[header]?.multivalueSeparator
+    if (sep) return trimmed.split(sep).map((part) => data.value(part.trim())).filter(Boolean).join(', ')
+    return data.value(trimmed)
   }
 
   return (
@@ -35,7 +51,7 @@ export function DataTable({ rows, schema }: DataTableProps) {
             <tr>
               <th className="row-num" scope="col">#</th>
               {headers.map((header) => (
-                <th key={header} scope="col" className={header === subject ? 'sticky-col' : undefined}>{header}</th>
+                <th key={header} scope="col" className={header === subject ? 'sticky-col' : undefined}>{headerLabel(header)}</th>
               ))}
             </tr>
           </thead>

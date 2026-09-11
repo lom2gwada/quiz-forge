@@ -1,5 +1,6 @@
 import type { Difficulty, Quiz } from '../types/quiz'
 import type { GenSchema, Row } from '../utils/quizGenerator'
+import type { DataI18n } from '../i18n/data'
 import { useT } from '../i18n'
 import { formatNumber } from '../utils/number'
 import { DataTable } from './DataTable'
@@ -13,7 +14,7 @@ const DIFFICULTY_COLORS: Record<Difficulty, string> = { easy: '#34d399', medium:
 
 interface QuizContentPageProps {
   quiz: Quiz
-  dataset: { rows: Row[]; schema: GenSchema } | null
+  dataset: { rows: Row[]; schema: GenSchema; i18n?: DataI18n } | null
   onBack: () => void
   onJsonChange: (file?: File) => void
   onCsvChange: (file?: File) => void
@@ -63,13 +64,13 @@ export function QuizContentPage({ quiz, dataset, onBack, onJsonChange, onCsvChan
       <label className="file-input">{t('content.importJson')}<input type="file" accept="application/json,.json" onChange={(event) => onJsonChange(event.target.files?.[0])} /></label>
       {fileError && <p className="alert" role="alert">{fileError}</p>}
     </div>
-    {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} onGenerate={onGenerate} error={genError} />}
+    {dataset && <GeneratorPanel key={Object.keys(dataset.rows[0] ?? {}).join(',')} rows={dataset.rows} schema={dataset.schema} i18n={dataset.i18n} onGenerate={onGenerate} error={genError} />}
     <h3 className="stats-group-title">{t('content.distribution')}</h3>
     <div className="stats-grid">
       <PieChart title={t('content.categoriesChart', { n: total })} data={byCategory} />
       <PieChart title={t('content.typesChart', { n: total })} data={byType} />
       <PieChart title={t('content.difficultyChart', { n: total })} data={byDifficulty} />
     </div>
-    {dataset && <DataTable rows={dataset.rows} schema={dataset.schema} />}
+    {dataset && <DataTable rows={dataset.rows} schema={dataset.schema} i18n={dataset.i18n} />}
   </section>
 }

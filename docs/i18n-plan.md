@@ -8,8 +8,9 @@
 > « bn $ »…). `Question.subjectLabel` (nom traduit) traverse `parseQuiz`. FR verrouillé par les
 > tests. `src/i18n/dataset.ts` (`makeDatasetI18n`) factorise la traduction du jeu de données,
 > partagée par le générateur ET les fiches. Titre du quiz traduit par locale (`Dataset.titles`) —
-> la clé d'historique reste `schema.title` (FR, stable). Fiches / Atlas traduits.
-> Reste : tableau « données source » et panneau générateur (vues brutes du CSV). Plan rédigé le 2026-09-10.
+> la clé d'historique reste `schema.title` (FR, stable). Fiches / Atlas, tableau « données
+> source » et panneau générateur traduits (en-têtes → libellés, valeurs via le sidecar).
+> **Tout ce que voit le joueur est traduisible.** Plan rédigé le 2026-09-10.
 > Langues visées : français (défaut + source de vérité), puis **anglais**, **espagnol**,
 > **néerlandais** (Aruba / Curaçao / Sint Maarten), **créole**. L'architecture reste
 > **ouverte à n'importe quelle locale** — ajouter une langue ne touche pas le cœur.

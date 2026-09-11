@@ -1,13 +1,17 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
 import type { MessageKey } from '../i18n'
-import { useT } from '../i18n'
+import type { DataI18n } from '../i18n/data'
+import { makeDatasetI18n } from '../i18n/dataset'
+import { getGrammar } from '../i18n/grammar'
+import { useLocale, useT } from '../i18n'
 import { inferSchema, randomSeed } from '../utils/quizGenerator'
 import { playClick } from '../utils/sound'
 
 interface GeneratorPanelProps {
   rows: Row[]
   schema: GenSchema
+  i18n?: DataI18n
   onGenerate: (schema: GenSchema, seed: string) => void
   error: string
 }
@@ -25,11 +29,19 @@ function typeBadges(spec: GenSchema['columns'][string]): MessageKey[] {
   return badges
 }
 
-export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPanelProps) {
+export function GeneratorPanel({ rows, schema, i18n, onGenerate, error }: GeneratorPanelProps) {
   const t = useT()
+  const locale = useLocale()
+  const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
+  const cap = getGrammar(locale).cap
   const [draft, setDraft] = useState<GenSchema>(schema)
   const [seed, setSeed] = useState(randomSeed())
   const headers = rows.length ? Object.keys(rows[0]) : []
+  // Libellé lisible d'une colonne (repli sur la clé CSV pour sujet / article).
+  const colLabel = (col: string): string => {
+    const label = draft.columns[col]?.label
+    return label ? cap(data.label(label)) : col
+  }
 
   const patchColumn = (col: string, patch: Partial<GenSchema['columns'][string]>) =>
     setDraft((current) => ({ ...current, columns: { ...current.columns, [col]: { ...current.columns[col], ...patch } } }))
@@ -48,7 +60,7 @@ export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPan
       <div className="generator-fields">
         <label>{t('gen.subjectColumn')}
           <select value={draft.subjectColumn} onChange={(event) => changeSubject(event.target.value)}>
-            {headers.map((h) => <option key={h} value={h}>{h}</option>)}
+            {headers.map((h) => <option key={h} value={h}>{colLabel(h)}</option>)}
           </select>
         </label>
         <label>{t('gen.itemNoun')}
@@ -64,7 +76,7 @@ export function GeneratorPanel({ rows, schema, onGenerate, error }: GeneratorPan
           <li key={col} className={spec.include ? '' : 'is-excluded'}>
             <label className="generator-column-toggle">
               <input type="checkbox" checked={spec.include} onChange={(event) => patchColumn(col, { include: event.target.checked })} />
-              <span className="generator-column-name">{col}</span>
+              <span className="generator-column-name" title={col}>{colLabel(col)}</span>
             </label>
             <span className="generator-column-badges">{typeBadges(spec).map((badge) => <span key={badge} className="generator-badge">{t(badge)}</span>)}</span>
             {spec.kind === 'string' && !spec.isImage && spec.include && (
