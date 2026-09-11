@@ -36,6 +36,8 @@ type Dataset = {
   i18n?: DataI18n
   /** Nom d'un élément par locale (le CSV n'a pas cette info) ; défaut = `schema.noun`. */
   nouns?: Partial<Record<Locale, string>>
+  /** Titre du quiz par locale ; défaut = `schema.title`. La clé d'historique reste `schema.title`. */
+  titles?: Partial<Record<Locale, string>>
 }
 
 const questionCounts = [5, 10, 20, 30, 50]
@@ -47,9 +49,17 @@ const FALLBACK_QUIZ: Quiz = {
   questions: [],
 }
 
+/** Clé stable d'un jeu de données pour l'agrégation d'historique (indépendante de la langue). */
+function historyKeyOf(dataset: Dataset | null, quiz: Quiz): string {
+  return dataset ? dataset.schema.title : quiz.metadata.title
+}
+
 function safeGenerate(dataset: Dataset, seed: string, locale: Locale = DEFAULT_LOCALE): { quiz: Quiz; error: string } {
-  const localeNoun = dataset.nouns?.[locale]
-  const schema = localeNoun ? { ...dataset.schema, noun: localeNoun } : dataset.schema
+  const schema = {
+    ...dataset.schema,
+    ...(dataset.nouns?.[locale] ? { noun: dataset.nouns[locale] } : {}),
+    ...(dataset.titles?.[locale] ? { title: dataset.titles[locale] } : {}),
+  }
   try {
     return {
       quiz: parseQuiz(generateQuiz(dataset.rows, schema, {
@@ -73,6 +83,13 @@ const initialDataset: Dataset | null = bundledRows.length
       aliases: caribbeanAliases,
       i18n: caribbeanI18n,
       nouns: { fr: 'territoire', en: 'territory', es: 'territorio', nl: 'gebied', ht: 'teritwa' },
+      titles: {
+        fr: 'Autour de la mer des Caraïbes',
+        en: 'Around the Caribbean Sea',
+        es: 'Alrededor del mar Caribe',
+        nl: 'Rond de Caribische Zee',
+        ht: 'Toutalantou lanmè Karayib la',
+      },
     }
   : null
 const initialQuiz = initialDataset ? safeGenerate(initialDataset, 'caribbean').quiz : FALLBACK_QUIZ
@@ -242,17 +259,18 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
     {view === 'start' && <section className="start-page"><FilterPanel categories={quiz.categories} selectedCategories={selectedCategories} difficulty={difficulty} onCategoryToggle={toggleCategory} onDifficultyChange={setDifficulty} /><label className="question-count">{t('start.questionCount')}<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{t(count === 1 ? 'start.count.one' : 'start.count.other', { n: count })}{count > filteredQuestions.length ? t('start.unavailableSuffix') : ''}</option>)}<option value={filteredQuestions.length}>{t('start.allQuestions', { n: formatNumber(filteredQuestions.length) })}</option></select></label><p>{t('start.availability', { n: formatNumber(filteredQuestions.length), picked: Math.min(questionCount, filteredQuestions.length) })}</p><div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>{t('start.play')}</button></div></section>}
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} onFinish={(nextAnswers, duration) => {
       setAnswers(nextAnswers); setElapsedSeconds(duration); replace('results')
-      saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.categories, duration, quiz.metadata.title))
-      saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, quiz.metadata.title))
+      const historyKey = historyKeyOf(dataset, quiz)
+      saveQuizResult(buildQuizResultPayload(sessionQuestions, nextAnswers, quiz.categories, duration, historyKey))
+      saveQuestionResults(buildQuestionResultPayloads(sessionQuestions, nextAnswers, historyKey))
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={sessionQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}
     {view === 'content' && <QuizContentPage quiz={quiz} dataset={dataset} onBack={() => navigate('start')} onJsonChange={loadJson} onCsvChange={loadCsv} onGenerate={generateFromPanel} onRegenerate={regenerateQuestions} fileError={fileError} genError={genError} />}
-    {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
+    {view === 'atlas' && dataset && <AtlasPage rows={dataset.rows} schema={dataset.schema} shapes={dataset.shapes} i18n={dataset.i18n} onOpenFiche={setFicheSubject} onBack={() => navigate('start')} />}
     {ficheSubject && dataset && (() => {
       const row = dataset.rows.find((r) => r[dataset.schema.subjectColumn] === ficheSubject)
-      return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} onClose={() => setFicheSubject(null)} /> : null
+      return row ? <FicheModal row={row} schema={dataset.schema} shapes={dataset.shapes} i18n={dataset.i18n} onClose={() => setFicheSubject(null)} /> : null
     })()}
-    {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} onReplayMissed={replayMissed} />}
+    {view === 'history' && <HistoryPage onBack={() => navigate(historyBack)} quiz={quiz} historyKey={historyKeyOf(dataset, quiz)} onReplayMissed={replayMissed} />}
     {view === 'profile' && <ProfilePage profile={profile} onBack={() => navigate('start')} onSave={async (next) => { await saveProfile(next); onProfileChange(next) }} onViewHistory={() => viewHistory('profile')} />}
   </main>
 }

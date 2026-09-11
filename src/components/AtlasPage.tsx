@@ -1,21 +1,26 @@
 import { useMemo, useState } from 'react'
 import type { GenSchema, Row } from '../utils/quizGenerator'
-import { useT } from '../i18n'
+import type { DataI18n } from '../i18n/data'
+import { makeDatasetI18n } from '../i18n/dataset'
+import { useLocale, useT } from '../i18n'
 import { Fiche } from './Fiche'
 
 interface AtlasPageProps {
   rows: Row[]
   schema: GenSchema
   shapes?: Record<string, string>
+  i18n?: DataI18n
   onBack: () => void
-  /** Ouvre la fiche d'une entité en modale (clic sur une carte). */
+  /** Ouvre la fiche d'une entité en modale (clic sur une carte). Reçoit la valeur FR canonique. */
   onOpenFiche: (name: string) => void
 }
 
 /** Grille de fiches, une par entité, dans l'ordre du tri choisi. Filtre + tri génériques
  * depuis le schéma. Cliquer une carte ouvre la fiche en modale. */
-export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPageProps) {
+export function AtlasPage({ rows, schema, shapes, i18n, onBack, onOpenFiche }: AtlasPageProps) {
   const t = useT()
+  const locale = useLocale()
+  const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState('name') // 'name' ou une colonne nombre
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
@@ -37,12 +42,18 @@ export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPa
     return Number.isFinite(n) ? n : null
   }
 
+  const nameOf = (r: Row) => data.value(r[subjectColumn] ?? '')
   const q = query.trim().toLowerCase()
-  const filtered = q ? rows.filter((r) => (r[subjectColumn] ?? '').toLowerCase().includes(q)) : rows
+  const filtered = q
+    ? rows.filter((r) => {
+        const raw = r[subjectColumn] ?? ''
+        return raw.toLowerCase().includes(q) || data.value(raw).toLowerCase().includes(q)
+      })
+    : rows
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
       if (sortKey === 'name') {
-        const cmp = (a[subjectColumn] ?? '').localeCompare(b[subjectColumn] ?? '', 'fr')
+        const cmp = nameOf(a).localeCompare(nameOf(b), locale)
         return sortDir === 'asc' ? cmp : -cmp
       }
       const na = numOf(a, sortKey), nb = numOf(b, sortKey)
@@ -72,7 +83,7 @@ export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPa
           {t('atlas.sortBy')}
           <select value={sortKey} onChange={(event) => changeSort(event.target.value)}>
             <option value="name">{t('atlas.sortName')}</option>
-            {numCols.map(([col, spec]) => <option key={col} value={col}>{spec.label}</option>)}
+            {numCols.map(([col, spec]) => <option key={col} value={col}>{data.label(spec.label)}</option>)}
           </select>
         </label>
         <button
@@ -86,19 +97,19 @@ export function AtlasPage({ rows, schema, shapes, onBack, onOpenFiche }: AtlasPa
       </div>
       <div className="atlas-grid">
         {sorted.map((row) => {
-          const name = row[subjectColumn] ?? ''
+          const canonical = row[subjectColumn] ?? '' // valeur FR : clé d'ouverture de la fiche
           return (
             <div
               className="fiche-card"
-              key={name}
+              key={canonical}
               role="button"
               tabIndex={0}
-              onClick={() => onOpenFiche(name)}
+              onClick={() => onOpenFiche(canonical)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onOpenFiche(name) }
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onOpenFiche(canonical) }
               }}
             >
-              <Fiche row={row} schema={schema} shapes={shapes} />
+              <Fiche row={row} schema={schema} shapes={shapes} i18n={i18n} />
             </div>
           )
         })}

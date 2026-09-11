@@ -8,7 +8,7 @@ import { PieChart } from './PieChart'
 import { QUESTION_TYPES, difficultyLabel, typeLabel } from './QuizPage'
 import { ScoreChart } from './ScoreChart'
 
-export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => void; quiz: Quiz; onReplayMissed: (questions: Question[]) => void }) {
+export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBack: () => void; quiz: Quiz; historyKey: string; onReplayMissed: (questions: Question[]) => void }) {
   const t = useT()
   const locale = useLocale()
   const shortDate = (iso: string) => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
@@ -32,7 +32,7 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
   }, [t])
 
   const quizTitles = rows ? Array.from(new Set(rows.map((row) => row.quiz_title))) : []
-  const activeQuiz = selectedQuiz && quizTitles.includes(selectedQuiz) ? selectedQuiz : (quizTitles.includes(quiz.metadata.title) ? quiz.metadata.title : quizTitles[0])
+  const activeQuiz = selectedQuiz && quizTitles.includes(selectedQuiz) ? selectedQuiz : (quizTitles.includes(historyKey) ? historyKey : quizTitles[0])
   const quizRows = rows ? rows.filter((row) => row.quiz_title === activeQuiz) : null
 
   const records = quizRows ? computeRecords(quizRows) : null
@@ -42,7 +42,7 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
   const byDifficulty = quizRows ? bucketsToChartGroups(sumBuckets(quizRows, (row) => row.by_difficulty), diffName, pass, fail) : []
 
   const missedQuestions = activeQuiz ? computeMissedQuestions(questionRows, activeQuiz) : []
-  const canReplay = activeQuiz === quiz.metadata.title
+  const canReplay = activeQuiz === historyKey
   const replayQuestions = canReplay
     ? missedQuestions.map((missed) => quiz.questions.find((question) => question.id === missed.questionId)).filter((question): question is Question => Boolean(question))
     : []
@@ -57,7 +57,7 @@ export function HistoryPage({ onBack, quiz, onReplayMissed }: { onBack: () => vo
     {rows && !rows.length && <p>{t('history.empty')}</p>}
     {quizTitles.length > 1 && <label className="quiz-select">{t('history.quizLabel')}
       <select value={activeQuiz} onChange={(event) => setSelectedQuiz(event.target.value)}>
-        {quizTitles.map((title) => <option key={title} value={title}>{title}</option>)}
+        {quizTitles.map((title) => <option key={title} value={title}>{title === historyKey ? quiz.metadata.title : title}</option>)}
       </select>
     </label>}
     {records && records.gamesPlayed > 0 && <>

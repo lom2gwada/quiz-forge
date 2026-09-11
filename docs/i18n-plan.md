@@ -6,8 +6,10 @@
 > `messages/<loc>` + `grammar/<loc>` + `templates/<loc>` + colonne `<loc>` dans
 > `caribbean.i18n.ts` (+ `nouns.<loc>` dans `App`). `DataI18n` a gagné `units` (« Mds $ » →
 > « bn $ »…). `Question.subjectLabel` (nom traduit) traverse `parseQuiz`. FR verrouillé par les
-> tests. Restes connus : titre du quiz gardé FR (clé d'historique stable) ; fiches / tableau
-> source / panneau générateur affichent encore les données FR. Plan rédigé le 2026-09-10.
+> tests. `src/i18n/dataset.ts` (`makeDatasetI18n`) factorise la traduction du jeu de données,
+> partagée par le générateur ET les fiches. Titre du quiz traduit par locale (`Dataset.titles`) —
+> la clé d'historique reste `schema.title` (FR, stable). Fiches / Atlas traduits.
+> Reste : tableau « données source » et panneau générateur (vues brutes du CSV). Plan rédigé le 2026-09-10.
 > Langues visées : français (défaut + source de vérité), puis **anglais**, **espagnol**,
 > **néerlandais** (Aruba / Curaçao / Sint Maarten), **créole**. L'architecture reste
 > **ouverte à n'importe quelle locale** — ajouter une langue ne touche pas le cœur.

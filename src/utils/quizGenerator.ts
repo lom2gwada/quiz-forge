@@ -1,6 +1,7 @@
 import type { AnswerOption, MatchingItem, OrderingItem, Question, Quiz } from '../types/quiz'
 import { DEFAULT_LOCALE, type Locale } from '../i18n/locale'
-import { type DataI18n, trValue } from '../i18n/data'
+import type { DataI18n } from '../i18n/data'
+import { makeDatasetI18n } from '../i18n/dataset'
 import { getGrammar } from '../i18n/grammar'
 import { fill, getTemplates } from '../i18n/templates'
 import { formatNumber, formatNumericValue } from './number'
@@ -213,12 +214,11 @@ export function generateQuiz(
   const grammar = getGrammar(locale)
   const tpl = getTemplates(locale)
   const T = (key: keyof typeof tpl, params: Record<string, string | number> = {}): string => fill(tpl[key], params)
-  // Traduction d'une valeur de cellule texte pour l'affichage (repli FR). Jamais sur un nombre.
-  const tr = (value: string): string => trValue(opts.i18n, value, locale)
-  // Libellé de colonne traduit (minuscule ; `grammar.cap` capitalise si besoin).
-  const labelFor = (rawLabel: string): string => opts.i18n?.columnLabels[rawLabel]?.[locale] ?? rawLabel
-  // Unité traduite (« Mds $ » → « bn $ »…) ; repli sur la forme FR.
-  const unitFor = (rawUnit: string): string => opts.i18n?.units?.[rawUnit]?.[locale] ?? rawUnit
+  // Traduction du jeu de données (valeurs, libellés, unités, article) — partagée avec les fiches.
+  const data = makeDatasetI18n(opts.i18n, locale)
+  const tr = data.value // valeur de cellule texte (repli FR ; jamais sur un nombre)
+  const labelFor = data.label
+  const unitFor = data.unit
 
   const rand = mulberry32(hashStr(opts.seed))
   const shuffle = <T>(arr: T[]): T[] => {
@@ -259,13 +259,8 @@ export function generateQuiz(
     }
     return groups
   }
-  // Article de tête : override de locale (sidecar) en priorité ; sinon la colonne `article` du
-  // CSV, mais SEULEMENT en français (elle contient « le »/« la »/« les », propres à la grammaire
-  // FR — les passer à `grammar.es`/`nl` produirait « de le Nicaragua »).
-  const artOf = (row: Row): string =>
-    opts.i18n?.articles[nameOf(row)]?.[locale] ??
-    (locale === DEFAULT_LOCALE && articleColumn ? row[articleColumn] ?? '' : '')
-  const de = (row: Row): string => grammar.of(displayName(row), artOf(row))
+  const csvArticle = (row: Row): string | undefined => (articleColumn ? row[articleColumn] : undefined)
+  const de = (row: Row): string => data.ofSubject(nameOf(row), csvArticle(row))
   const nouns = grammar.plural(noun, 2)
 
   // Colonne image du schéma (drapeau…) : sert aux questions « image + valeur ».
