@@ -16,12 +16,14 @@ interface FicheProps {
   shapes?: Record<string, string>
   region?: Record<string, RegionShape>
   regionViewBox?: string
+  /** Colonne « capitale » du jeu de données, pour l'étiquette sur la carte agrandie. */
+  capitalColumn?: string
   i18n?: DataI18n
 }
 
 /** Contenu d'une fiche : en-tête (silhouette + nom + drapeau) et liste des champs non vides,
  * rendu générique depuis le schéma, traduit via le sidecar. Utilisé dans la grille Atlas et la modale. */
-export function Fiche({ row, schema, shapes, region, regionViewBox, i18n }: FicheProps) {
+export function Fiche({ row, schema, shapes, region, regionViewBox, capitalColumn, i18n }: FicheProps) {
   const t = useT()
   const locale = useLocale()
   const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
@@ -34,6 +36,7 @@ export function Fiche({ row, schema, shapes, region, regionViewBox, i18n }: Fich
   const imageCol = Object.keys(columns).find((c) => columns[c].include && columns[c].isImage)
   const flag = imageCol && /^https?:\/\//.test((row[imageCol] ?? '').trim()) ? row[imageCol].trim() : null
   const shape = shapes?.[canonical]
+  const capital = capitalColumn ? data.value((row[capitalColumn] ?? '').trim()) : ''
   const factCols = Object.entries(columns).filter(
     ([c, s]) => s.include && !s.isImage && c !== subjectColumn && c !== articleColumn,
   )
@@ -64,7 +67,7 @@ export function Fiche({ row, schema, shapes, region, regionViewBox, i18n }: Fich
             className="fiche-region-wrap"
             label={t('fiche.regionLabel', { name })}
             trigger={<RegionMap data={region} viewBox={regionViewBox} highlight={canonical} className="fiche-region" />}
-            preview={<RegionMap data={region} viewBox={regionViewBox} highlight={canonical} />}
+            preview={<RegionMap data={region} viewBox={regionViewBox} highlight={canonical} label={{ territory: name, capital }} />}
           />
         )}
       </header>

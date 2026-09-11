@@ -12,6 +12,7 @@ interface AtlasPageProps {
   shapes?: Record<string, string>
   region?: Record<string, RegionShape>
   regionViewBox?: string
+  capitalColumn?: string
   i18n?: DataI18n
   onBack: () => void
   /** Ouvre la fiche d'une entité en modale (clic sur une carte). Reçoit la valeur FR canonique. */
@@ -20,7 +21,7 @@ interface AtlasPageProps {
 
 /** Grille de fiches, une par entité, dans l'ordre du tri choisi. Filtre + tri génériques
  * depuis le schéma. Cliquer une carte ouvre la fiche en modale. */
-export function AtlasPage({ rows, schema, shapes, region, regionViewBox, i18n, onBack, onOpenFiche }: AtlasPageProps) {
+export function AtlasPage({ rows, schema, shapes, region, regionViewBox, capitalColumn, i18n, onBack, onOpenFiche }: AtlasPageProps) {
   const t = useT()
   const locale = useLocale()
   const data = useMemo(() => makeDatasetI18n(i18n, locale), [i18n, locale])
@@ -112,7 +113,7 @@ export function AtlasPage({ rows, schema, shapes, region, regionViewBox, i18n, o
                 if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onOpenFiche(canonical) }
               }}
             >
-              <Fiche row={row} schema={schema} shapes={shapes} region={region} regionViewBox={regionViewBox} i18n={i18n} />
+              <Fiche row={row} schema={schema} shapes={shapes} region={region} regionViewBox={regionViewBox} capitalColumn={capitalColumn} i18n={i18n} />
             </div>
           )
         })}

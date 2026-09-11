@@ -169,6 +169,10 @@ pre { padding: 1rem; overflow: auto; background: var(--code-bg); border: 1px sol
 .region-dot { position: absolute; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 1px var(--surface-solid); }
 .region-dot-solo { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; }
 .fiche-region { width: 58px; height: 40px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface-solid); }
+.region-title { position: absolute; top: 3px; left: 4px; right: 4px; text-align: center; font-size: .64rem; font-weight: 700; color: var(--ink); text-shadow: 0 1px 3px var(--surface-solid), 0 1px 3px var(--surface-solid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.region-capital { position: absolute; transform: translateX(-50%); font-size: .6rem; font-weight: 600; color: var(--ink); text-shadow: 0 1px 3px var(--surface-solid), 0 1px 3px var(--surface-solid); white-space: nowrap; pointer-events: none; }
+.region-capital-below { margin-top: 5px; }
+.region-capital-above { transform: translate(-50%, calc(-100% - 5px)); }
 .fiche-facts { margin: 0; display: grid; gap: .45rem; }
 .fiche-fact { display: grid; grid-template-columns: 42% 1fr; gap: .1rem .6rem; align-items: baseline; }
 .fiche-fact dt { margin: 0; color: var(--text-muted); font-size: .78rem; }
