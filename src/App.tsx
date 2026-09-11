@@ -302,7 +302,7 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} mode={activeMode} timeLimitSeconds={activeTimeLimit} onFinish={(nextAnswers, duration, shown) => {
       setAnswers(nextAnswers); setResultQuestions(shown); setElapsedSeconds(duration); replace('results')
       const historyKey = historyKeyOf(dataset, quiz)
-      saveQuizResult(buildQuizResultPayload(shown, nextAnswers, quiz.categories, duration, historyKey))
+      saveQuizResult(buildQuizResultPayload(shown, nextAnswers, quiz.categories, duration, historyKey, activeMode))
       saveQuestionResults(buildQuestionResultPayloads(shown, nextAnswers, historyKey))
     }} onCancel={backToStart} />}
     {view === 'results' && <ResultPage questions={resultQuestions} answers={answers} categories={quiz.categories} elapsedSeconds={elapsedSeconds} onRestart={backToStart} onViewHistory={() => viewHistory('results')} onViewFiche={dataset ? setFicheSubject : undefined} />}

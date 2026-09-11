@@ -53,35 +53,69 @@ describe('buildQuizResultPayload', () => {
   it('tags the payload with the given quiz title', () => {
     expect(buildQuizResultPayload([qcm], {}, categories, 0, 'Test technique IT').quiz_title).toBe('Test technique IT')
   })
+
+  it('defaults to classic mode and counts correct questions regardless of points', () => {
+    const payload = buildQuizResultPayload([qcm, bool], { q1: ['a'], q2: ['true'] }, categories, 0, 'Culture générale')
+    expect(payload.mode).toBe('classic')
+    expect(payload.correct_count).toBe(2)
+  })
+
+  it('tags the payload with the given mode', () => {
+    expect(buildQuizResultPayload([qcm], { q1: ['a'] }, categories, 0, 'Culture générale', 'timeAttack').mode).toBe('timeAttack')
+  })
 })
 
 function row(overrides: Partial<QuizResultRow>): QuizResultRow {
   return {
-    id: '1', created_at: '2026-01-01T00:00:00Z', quiz_title: 'Culture générale', score: 50, earned_points: 1, total_points: 2,
-    elapsed_seconds: 60, question_count: 2, categories: [], by_category: {}, by_type: {}, by_difficulty: {},
+    id: '1', created_at: '2026-01-01T00:00:00Z', quiz_title: 'Culture générale', mode: 'classic', score: 50, earned_points: 1, total_points: 2,
+    correct_count: 1, elapsed_seconds: 60, question_count: 2, categories: [], by_category: {}, by_type: {}, by_difficulty: {},
     ...overrides,
   }
 }
 
 describe('computeRecords', () => {
   it('returns zeroed records for an empty history', () => {
-    expect(computeRecords([])).toEqual({ gamesPlayed: 0, bestScore: 0, averageScore: 0, totalPlaytimeSeconds: 0 })
+    expect(computeRecords([])).toEqual({ gamesPlayed: 0, bestScore: 0, averageScore: 0, totalPlaytimeSeconds: 0, bestTimeAttackCorrect: 0, bestStreak: 0 })
   })
 
-  it('counts games played', () => {
-    expect(computeRecords([row({}), row({}), row({})]).gamesPlayed).toBe(3)
+  it('counts games played across every mode', () => {
+    expect(computeRecords([row({}), row({ mode: 'timeAttack' }), row({ mode: 'noMistake' })]).gamesPlayed).toBe(3)
   })
 
-  it('finds the best score regardless of row order', () => {
+  it('finds the best classic score regardless of row order', () => {
     expect(computeRecords([row({ score: 40 }), row({ score: 90 }), row({ score: 70 })]).bestScore).toBe(90)
   })
 
-  it('rounds the average score', () => {
+  it('rounds the average classic score', () => {
     expect(computeRecords([row({ score: 40 }), row({ score: 41 })]).averageScore).toBe(41)
   })
 
-  it('sums total playtime across all games', () => {
-    expect(computeRecords([row({ elapsed_seconds: 30 }), row({ elapsed_seconds: 45 })]).totalPlaytimeSeconds).toBe(75)
+  it('sums total playtime across all games and modes', () => {
+    expect(computeRecords([row({ elapsed_seconds: 30 }), row({ mode: 'timeAttack', elapsed_seconds: 45 })]).totalPlaytimeSeconds).toBe(75)
+  })
+
+  it('ignores non-classic rows for bestScore/averageScore', () => {
+    const records = computeRecords([row({ mode: 'timeAttack', score: 100 }), row({ mode: 'noMistake', score: 100 })])
+    expect(records.bestScore).toBe(0)
+    expect(records.averageScore).toBe(0)
+  })
+
+  it('finds the best time-attack correct count, ignoring other modes', () => {
+    const records = computeRecords([
+      row({ mode: 'timeAttack', correct_count: 12 }),
+      row({ mode: 'timeAttack', correct_count: 30 }),
+      row({ mode: 'classic', correct_count: 99 }),
+    ])
+    expect(records.bestTimeAttackCorrect).toBe(30)
+  })
+
+  it('finds the longest no-mistake streak, ignoring other modes', () => {
+    const records = computeRecords([
+      row({ mode: 'noMistake', correct_count: 5 }),
+      row({ mode: 'noMistake', correct_count: 18 }),
+      row({ mode: 'timeAttack', correct_count: 99 }),
+    ])
+    expect(records.bestStreak).toBe(18)
   })
 })
 

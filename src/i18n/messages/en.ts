@@ -107,6 +107,8 @@ export const en: Record<MessageKey, string> = {
   'history.bestScore': 'Best score',
   'history.avgScore': 'Average score',
   'history.totalTime': 'Total play time',
+  'history.bestTimeAttack': 'Correct answers (time attack)',
+  'history.bestStreak': 'Longest streak (no mistakes)',
   'history.byType': 'By question type',
   'history.toReview': 'Questions to review',
   'history.replayMistakes': 'Retry my mistakes',

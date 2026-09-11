@@ -108,6 +108,8 @@ export const nl: Record<MessageKey, string> = {
   'history.bestScore': 'Beste score',
   'history.avgScore': 'Gemiddelde score',
   'history.totalTime': 'Totale speeltijd',
+  'history.bestTimeAttack': 'Juiste antwoorden (tegen de klok)',
+  'history.bestStreak': 'Langste reeks (foutloos)',
   'history.byType': 'Per vraagtype',
   'history.toReview': 'Vragen om te herhalen',
   'history.replayMistakes': 'Mijn fouten opnieuw',

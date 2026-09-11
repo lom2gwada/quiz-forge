@@ -109,6 +109,8 @@ export const ht: Record<MessageKey, string> = {
   'history.bestScore': 'Pi bon nòt',
   'history.avgScore': 'Nòt mwayen',
   'history.totalTime': 'Total tan jwe',
+  'history.bestTimeAttack': 'Bon repons (kont lamont)',
+  'history.bestStreak': 'Pi long seri (san fot)',
   'history.byType': 'Pa tip kesyon',
   'history.toReview': 'Kesyon pou retravay',
   'history.replayMistakes': 'Repran erè m yo',

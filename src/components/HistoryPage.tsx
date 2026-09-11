@@ -5,8 +5,10 @@ import { useLocale, useT } from '../i18n'
 import { bucketsToChartGroups, computeMissedQuestions, computeRecords, fetchQuestionResults, fetchQuizHistory, sumBuckets } from '../utils/quizHistory'
 import { formatDuration } from '../utils/time'
 import { PieChart } from './PieChart'
-import { QUESTION_TYPES, difficultyLabel, typeLabel } from './QuizPage'
+import { QUESTION_TYPES, difficultyLabel, typeLabel, type GameMode } from './QuizPage'
 import { ScoreChart } from './ScoreChart'
+
+const MODE_ICONS: Record<GameMode, string> = { classic: '🎯', timeAttack: '⏱️', noMistake: '🔥' }
 
 export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBack: () => void; quiz: Quiz; historyKey: string; onReplayMissed: (questions: Question[]) => void }) {
   const t = useT()
@@ -18,6 +20,7 @@ export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBa
   // Les parties stockent l'id de catégorie (indépendant de la langue) ; on résout le libellé ici.
   // Anciennes lignes (libellé FR déjà stocké) : introuvable comme id → affiché tel quel.
   const catName = (key: string) => quiz.categories.find((category) => category.id === key)?.label ?? key
+  const modeLabel = (mode: GameMode) => mode === 'timeAttack' ? t('start.mode.timeAttack') : mode === 'noMistake' ? t('start.mode.noMistake') : t('start.mode.classic')
   const pass = t('result.passed')
   const fail = t('result.failed')
 
@@ -66,6 +69,8 @@ export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBa
         <div className="record-tile"><span className="record-value">{records.bestScore}%</span><span className="record-label">{t('history.bestScore')}</span></div>
         <div className="record-tile"><span className="record-value">{records.averageScore}%</span><span className="record-label">{t('history.avgScore')}</span></div>
         <div className="record-tile"><span className="record-value">{formatDuration(records.totalPlaytimeSeconds)}</span><span className="record-label">{t('history.totalTime')}</span></div>
+        {records.bestTimeAttackCorrect > 0 && <div className="record-tile"><span className="record-value">{records.bestTimeAttackCorrect}</span><span className="record-label">{t('history.bestTimeAttack')}</span></div>}
+        {records.bestStreak > 0 && <div className="record-tile"><span className="record-value">{records.bestStreak}</span><span className="record-label">{t('history.bestStreak')}</span></div>}
       </div>
       <ScoreChart points={chartPoints} />
       <div className="stats-groups">
@@ -97,6 +102,7 @@ export function HistoryPage({ onBack, quiz, historyKey, onReplayMissed }: { onBa
     </div>}
     {quizRows && quizRows.length > 0 && <ul className="history-list">
       {quizRows.map((row) => <li className="history-item" key={row.id}>
+        <span title={modeLabel(row.mode)} role="img" aria-label={modeLabel(row.mode)}>{MODE_ICONS[row.mode]}</span>
         <span className="history-score">{row.score}%</span>
         <span className="history-date">{longDate(row.created_at)}</span>
         <span className="history-categories">{row.categories.map(catName).join(', ')}</span>

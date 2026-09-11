@@ -108,6 +108,8 @@ export const es: Record<MessageKey, string> = {
   'history.bestScore': 'Mejor puntuación',
   'history.avgScore': 'Puntuación media',
   'history.totalTime': 'Tiempo de juego total',
+  'history.bestTimeAttack': 'Respuestas correctas (contrarreloj)',
+  'history.bestStreak': 'Racha más larga (sin fallos)',
   'history.byType': 'Por tipo de pregunta',
   'history.toReview': 'Preguntas por repasar',
   'history.replayMistakes': 'Repetir mis errores',

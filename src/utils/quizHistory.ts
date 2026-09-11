@@ -1,6 +1,7 @@
 import type { AnswersByQuestion, Category, Question } from '../types/quiz'
 import type { ChartGroup, MissedQuestion, QuestionResultPayload, QuestionResultRow, QuizRecords, QuizResultPayload, QuizResultRow, StatBucket } from '../types/history'
 import { isCorrect } from '../components/ResultPage'
+import type { GameMode } from '../components/QuizPage'
 
 const QUIZ_KEY = 'quiz-forge:quiz-results'
 const QUESTION_KEY = 'quiz-forge:question-results'
@@ -40,15 +41,18 @@ function aggregate(questions: Question[], answers: AnswersByQuestion, keyOf: (qu
  * catégorie (noms de colonnes, indépendants de la langue), pas les libellés : l'historique ne
  * se retrouve pas en langue mixte si l'utilisateur change de langue. Les libellés sont résolus
  * à l'affichage (`HistoryPage`). Les anciennes lignes (libellés FR) : repli sur la clé telle quelle. */
-export function buildQuizResultPayload(questions: Question[], answers: AnswersByQuestion, _categories: Category[], elapsedSeconds: number, quizTitle: string): QuizResultPayload {
-  const earnedPoints = questions.filter((question) => isCorrect(question, answers[question.id])).reduce((sum, question) => sum + question.points, 0)
+export function buildQuizResultPayload(questions: Question[], answers: AnswersByQuestion, _categories: Category[], elapsedSeconds: number, quizTitle: string, mode: GameMode = 'classic'): QuizResultPayload {
+  const correctQuestions = questions.filter((question) => isCorrect(question, answers[question.id]))
+  const earnedPoints = correctQuestions.reduce((sum, question) => sum + question.points, 0)
   const totalPoints = questions.reduce((sum, question) => sum + question.points, 0)
 
   return {
     quiz_title: quizTitle,
+    mode,
     score: totalPoints ? Math.round((earnedPoints / totalPoints) * 100) : 0,
     earned_points: earnedPoints,
     total_points: totalPoints,
+    correct_count: correctQuestions.length,
     elapsed_seconds: elapsedSeconds,
     question_count: questions.length,
     categories: Array.from(new Set(questions.map((question) => question.category))),
@@ -65,12 +69,13 @@ export async function saveQuizResult(payload: QuizResultPayload): Promise<void> 
   writeRows(QUIZ_KEY, rows)
 }
 
-type LegacyQuizResultRow = QuizResultRow & { themes?: string[]; by_theme?: Record<string, StatBucket> }
+type LegacyQuizResultRow = QuizResultRow & { themes?: string[]; by_theme?: Record<string, StatBucket>; mode?: GameMode; correct_count?: number }
 
-/** Reprend les anciennes lignes d'historique (`themes`/`by_theme`) sous les noms actuels. */
+/** Reprend les anciennes lignes d'historique (`themes`/`by_theme`, absence de `mode`/`correct_count`
+ * — toutes antérieures au contre-la-montre/sans-faute, donc forcément « classique ») sous les noms actuels. */
 function normalizeRow(row: LegacyQuizResultRow): QuizResultRow {
-  if (row.by_category !== undefined) return row
-  return { ...row, categories: row.categories ?? row.themes ?? [], by_category: row.by_theme ?? {} }
+  const withCategories = row.by_category !== undefined ? row : { ...row, categories: row.categories ?? row.themes ?? [], by_category: row.by_theme ?? {} }
+  return { ...withCategories, mode: withCategories.mode ?? 'classic', correct_count: withCategories.correct_count ?? 0 }
 }
 
 export async function fetchQuizHistory(): Promise<QuizResultRow[]> {
@@ -115,14 +120,21 @@ export function computeMissedQuestions(rows: QuestionResultRow[], quizTitle: str
   return Array.from(byQuestion.values()).filter((entry) => entry.wrongCount > 0).sort((a, b) => b.wrongCount - a.wrongCount)
 }
 
-/** `rows` peut être dans n'importe quel ordre — seuls les agrégats comptent ici. */
+/** `rows` peut être dans n'importe quel ordre — seuls les agrégats comptent ici.
+ * `bestScore`/`averageScore` ne portent que sur le mode classique (le `%` n'est pas comparable
+ * entre modes : `correct_count` est la métrique pertinente pour contre-la-montre et sans-faute). */
 export function computeRecords(rows: QuizResultRow[]): QuizRecords {
-  if (!rows.length) return { gamesPlayed: 0, bestScore: 0, averageScore: 0, totalPlaytimeSeconds: 0 }
+  if (!rows.length) return { gamesPlayed: 0, bestScore: 0, averageScore: 0, totalPlaytimeSeconds: 0, bestTimeAttackCorrect: 0, bestStreak: 0 }
+  const classicRows = rows.filter((row) => row.mode === 'classic')
+  const timeAttackRows = rows.filter((row) => row.mode === 'timeAttack')
+  const noMistakeRows = rows.filter((row) => row.mode === 'noMistake')
   return {
     gamesPlayed: rows.length,
-    bestScore: Math.max(...rows.map((row) => row.score)),
-    averageScore: Math.round(rows.reduce((sum, row) => sum + row.score, 0) / rows.length),
+    bestScore: classicRows.length ? Math.max(...classicRows.map((row) => row.score)) : 0,
+    averageScore: classicRows.length ? Math.round(classicRows.reduce((sum, row) => sum + row.score, 0) / classicRows.length) : 0,
     totalPlaytimeSeconds: rows.reduce((sum, row) => sum + row.elapsed_seconds, 0),
+    bestTimeAttackCorrect: timeAttackRows.length ? Math.max(...timeAttackRows.map((row) => row.correct_count)) : 0,
+    bestStreak: noMistakeRows.length ? Math.max(...noMistakeRows.map((row) => row.correct_count)) : 0,
   }
 }
 

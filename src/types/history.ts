@@ -1,3 +1,5 @@
+import type { GameMode } from '../components/QuizPage'
+
 export interface StatBucket {
   correct: number
   total: number
@@ -5,9 +7,13 @@ export interface StatBucket {
 
 export interface QuizResultPayload {
   quiz_title: string
+  mode: GameMode
   score: number
   earned_points: number
   total_points: number
+  /** Nombre de questions correctes, indépendant des points — la métrique pertinente pour
+   * contre-la-montre (bonnes réponses) et sans-faute (longueur de la série), où le `%` ne l'est pas. */
+  correct_count: number
   elapsed_seconds: number
   question_count: number
   categories: string[]
@@ -23,9 +29,12 @@ export interface QuizResultRow extends QuizResultPayload {
 
 export interface QuizRecords {
   gamesPlayed: number
+  /** `bestScore`/`averageScore` : mode classique uniquement (le `%` n'est pas comparable entre modes). */
   bestScore: number
   averageScore: number
   totalPlaytimeSeconds: number
+  bestTimeAttackCorrect: number
+  bestStreak: number
 }
 
 export interface ChartGroup {

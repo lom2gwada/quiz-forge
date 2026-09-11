@@ -116,6 +116,8 @@ export const fr = {
   'history.bestScore': 'Meilleur score',
   'history.avgScore': 'Score moyen',
   'history.totalTime': 'Temps de jeu cumulé',
+  'history.bestTimeAttack': 'Bonnes réponses (contre la montre)',
+  'history.bestStreak': 'Plus longue série (sans-faute)',
   'history.byType': 'Par type de question',
   'history.toReview': 'Questions à retravailler',
   'history.replayMistakes': 'Reprendre mes erreurs',
