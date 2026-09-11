@@ -237,12 +237,12 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
     playClick()
     setAnswers({})
     setActiveMode(gameMode)
-    if (gameMode === 'timeAttack') {
-      setActiveTimeLimit(timeAttackMinutes > 0 ? timeAttackMinutes * 60 : undefined)
-      setSessionQuestions(shuffle(filteredQuestions))
-    } else {
+    if (gameMode === 'classic') {
       setActiveTimeLimit(undefined)
       setSessionQuestions(pickRandomQuestions(filteredQuestions, questionCount))
+    } else {
+      setActiveTimeLimit(gameMode === 'timeAttack' && timeAttackMinutes > 0 ? timeAttackMinutes * 60 : undefined)
+      setSessionQuestions(shuffle(filteredQuestions))
     }
     navigate('quiz')
   }
@@ -283,16 +283,20 @@ function AppInner({ profile, onProfileChange }: { profile: Profile | null; onPro
           <input type="radio" name="game-mode" checked={gameMode === 'timeAttack'} onChange={() => { playClick(); setGameMode('timeAttack') }} />
           ⏱️ {t('start.mode.timeAttack')}
         </label>
+        <label className={gameMode === 'noMistake' ? 'mode-chip is-active' : 'mode-chip'}>
+          <input type="radio" name="game-mode" checked={gameMode === 'noMistake'} onChange={() => { playClick(); setGameMode('noMistake') }} />
+          🔥 {t('start.mode.noMistake')}
+        </label>
       </div>
-      {gameMode === 'classic'
-        ? <>
-            <label className="question-count">{t('start.questionCount')}<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{t(count === 1 ? 'start.count.one' : 'start.count.other', { n: count })}{count > filteredQuestions.length ? t('start.unavailableSuffix') : ''}</option>)}<option value={filteredQuestions.length}>{t('start.allQuestions', { n: formatNumber(filteredQuestions.length) })}</option></select></label>
-            <p>{t('start.availability', { n: formatNumber(filteredQuestions.length), picked: Math.min(questionCount, filteredQuestions.length) })}</p>
-          </>
-        : <>
-            <label className="question-count">{t('start.duration')}<select value={timeAttackMinutes} onChange={(event) => { playClick(); setTimeAttackMinutes(Number(event.target.value)) }}>{timeAttackDurations.map((minutes) => <option key={minutes} value={minutes}>{minutes === 0 ? t('start.duration.infinite') : t(minutes === 1 ? 'start.duration.one' : 'start.duration.other', { n: minutes })}</option>)}</select></label>
-            <p>{t('start.timeAttackHint', { n: formatNumber(filteredQuestions.length) })}</p>
-          </>}
+      {gameMode === 'classic' && <>
+        <label className="question-count">{t('start.questionCount')}<select value={questionCount} onChange={(event) => { playClick(); setQuestionCount(Number(event.target.value)) }}>{questionCounts.map((count) => <option key={count} value={count} disabled={count > filteredQuestions.length}>{t(count === 1 ? 'start.count.one' : 'start.count.other', { n: count })}{count > filteredQuestions.length ? t('start.unavailableSuffix') : ''}</option>)}<option value={filteredQuestions.length}>{t('start.allQuestions', { n: formatNumber(filteredQuestions.length) })}</option></select></label>
+        <p>{t('start.availability', { n: formatNumber(filteredQuestions.length), picked: Math.min(questionCount, filteredQuestions.length) })}</p>
+      </>}
+      {gameMode === 'timeAttack' && <>
+        <label className="question-count">{t('start.duration')}<select value={timeAttackMinutes} onChange={(event) => { playClick(); setTimeAttackMinutes(Number(event.target.value)) }}>{timeAttackDurations.map((minutes) => <option key={minutes} value={minutes}>{minutes === 0 ? t('start.duration.infinite') : t(minutes === 1 ? 'start.duration.one' : 'start.duration.other', { n: minutes })}</option>)}</select></label>
+        <p>{t('start.timeAttackHint', { n: formatNumber(filteredQuestions.length) })}</p>
+      </>}
+      {gameMode === 'noMistake' && <p>{t('start.noMistakeHint', { n: formatNumber(filteredQuestions.length) })}</p>}
       <div className="quiz-actions"><button type="button" onClick={startQuiz} disabled={!filteredQuestions.length}>{t('start.play')}</button></div>
     </section>}
     {view === 'quiz' && <QuizPage quiz={quiz} questions={sessionQuestions} mode={activeMode} timeLimitSeconds={activeTimeLimit} onFinish={(nextAnswers, duration, shown) => {
